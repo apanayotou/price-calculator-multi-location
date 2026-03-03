@@ -3,357 +3,360 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Price Calculator - Spain 2026</title>
+<title>Price Calculator - Spanish 2026</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F7F7F5; color: #1A1A1A; }
-  .header { background: #fff; border-bottom: 1px solid #E5E5E5; padding: 16px 32px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
-  .header h1 { font-size: 20px; font-weight: 700; }
-  .header .meta { font-size: 11px; color: #999; margin-left: auto; }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
-  .input-box { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 24px; border: 1px solid #E5E5E5; }
-  .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 16px; align-items: end; }
-  .input-row + .input-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
-  @media (max-width: 700px) { .input-row { grid-template-columns: 1fr 1fr; } }
-  .input-row label { font-size: 12px; font-weight: 600; color: #444; margin-bottom: 6px; display: block; letter-spacing: 0.03em; }
-  .input-row select { width: 100%; padding: 8px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; background: #fff; color: #1A1A1A; cursor: pointer; outline: none; }
-  .btn-remove { width: 32px; height: 36px; border: 1px solid #E5E5E5; border-radius: 4px; background: #fff; color: #999; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-bottom: 1px; }
-  .btn-remove:hover { background: #FEE; color: #C00; border-color: #C00; }
-  .btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px dashed #1B7B6E; border-radius: 4px; background: #fff; color: #1B7B6E; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 16px; font-family: inherit; }
-  .btn-add:hover { background: #F0F7F6; }
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
-  @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } }
-  .card-head { background: #fff; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 20px 24px; }
-  .card-head.elite { border: 1px solid #E5E5E5; }
-  .card-head.ep { border: 1px solid #E5E5E5; position: relative; background: #FFFDF5; }
-  .card-head h2 { font-size: 22px; font-weight: 700; }
-  .card-head .sub { font-size: 13px; color: #999; margin-top: 4px; }
-  .card-head .elp-info { font-size: 13px; color: #1B7B6E; font-weight: 600; margin-top: 2px; }
-  .badge-rec { position: absolute; top: 12px; right: 12px; background: #E8B54D; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em; }
-  .row { padding: 18px 24px; background: #fff; }
-  .row.elite { border-left: 1px solid #E5E5E5; border-right: 1px solid #E5E5E5; border-bottom: 1px solid #F0F0F0; }
-  .row.elite.last { border-bottom: 1px solid #E5E5E5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
-  .row.ep { border-left: 1px solid #E5E5E5; border-right: 1px solid #E5E5E5; border-bottom: 1px solid #F0F0F0; background: #FFFDF5; }
-  .row.ep.last { border-bottom: 1px solid #E5E5E5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; background: #FFFDF5; }
-  .row .period { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 4px; }
-  .save-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 3px; color: #fff; }
-  .save-badge.green { background: #1B7B6E; }
-  .save-badge.gold { background: #E8B54D; }
-  .price { font-size: 26px; font-weight: 700; margin-top: 4px; }
-  .price .suffix { font-size: 13px; font-weight: 400; color: #999; }
-  .monthly { font-size: 13px; color: #999; margin-top: 2px; }
-  .breakdown-box { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
-  .breakdown-box .title { padding: 16px 24px; border-bottom: 1px solid #E5E5E5; font-size: 14px; font-weight: 600; }
-  table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 12px; }
-  th { text-align: left; padding: 8px 4px; font-weight: 600; color: #444; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #E5E5E5; }
-  td { padding: 8px 4px; border-bottom: 1px solid #F0F0F0; }
-  .tbl-wrap { padding: 0 24px 16px; overflow-x: auto; }
-  tr.total-row td { font-weight: 700; border-top: 2px solid #E5E5E5; border-bottom: none; }
-  .empty { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; padding: 40px; text-align: center; color: #999; font-size: 14px; }
-  .footer { text-align: center; padding: 24px 0 8px; font-size: 11px; color: #999; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F7F7F5;color:#1A1A1A}
+.header{background:#fff;border-bottom:1px solid #E5E5E5;padding:16px 32px;display:flex;align-items:center;position:sticky;top:0;z-index:10}
+.header h1{font-size:20px;font-weight:700}
+.header .meta{font-size:11px;color:#999;margin-left:auto}
+.toggle-bar{display:flex;gap:0;margin-left:24px;border:1px solid #E5E5E5;border-radius:6px;overflow:hidden}
+.toggle-btn{padding:6px 16px;font-size:12px;font-weight:600;font-family:inherit;background:#fff;color:#666;border:none;cursor:pointer;transition:all 0.15s}
+.toggle-btn.active{background:#1B7B6E;color:#fff}
+.toggle-btn:not(.active):hover{background:#F0F7F6;color:#1B7B6E}
+
+/* Calculator */
+.wrap{max-width:1100px;margin:0 auto;padding:32px 24px}
+.input-box{background:#fff;border-radius:8px;padding:24px;margin-bottom:24px;border:1px solid #E5E5E5}
+.input-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:16px;align-items:end}
+.input-row+.input-row{margin-top:16px;padding-top:16px;border-top:1px solid #F0F0F0}
+@media(max-width:700px){.input-row{grid-template-columns:1fr 1fr}}
+.input-row label{font-size:12px;font-weight:600;color:#444;margin-bottom:6px;display:block;letter-spacing:0.03em}
+.input-row select{width:100%;padding:8px 12px;border:1px solid #E5E5E5;border-radius:4px;font-size:14px;font-family:inherit;background:#fff;color:#1A1A1A;cursor:pointer;outline:none}
+.btn-remove{width:32px;height:36px;border:1px solid #E5E5E5;border-radius:4px;background:#fff;color:#999;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-bottom:1px}
+.btn-remove:hover{background:#FEE;color:#C00;border-color:#C00}
+.btn-add{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px dashed #1B7B6E;border-radius:4px;background:#fff;color:#1B7B6E;font-size:13px;font-weight:600;cursor:pointer;margin-top:16px;font-family:inherit}
+.btn-add:hover{background:#F0F7F6}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+@media(max-width:700px){.cards{grid-template-columns:1fr}}
+.card-head{background:#fff;border-top-left-radius:8px;border-top-right-radius:8px;padding:20px 24px}
+.card-head.elite{border:1px solid #E5E5E5}
+.card-head.ep{border:1px solid #E5E5E5;position:relative;background:#FFFDF5}
+.card-head h2{font-size:22px;font-weight:700}
+.card-head .sub{font-size:13px;color:#999;margin-top:4px}
+.card-head .elp-info{font-size:13px;color:#1B7B6E;font-weight:600;margin-top:2px}
+.badge-rec{position:absolute;top:12px;right:12px;background:#E8B54D;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;letter-spacing:0.05em}
+.row{padding:18px 24px;background:#fff}
+.row.elite{border-left:1px solid #E5E5E5;border-right:1px solid #E5E5E5;border-bottom:1px solid #F0F0F0}
+.row.elite.last{border-bottom:1px solid #E5E5E5;border-bottom-left-radius:8px;border-bottom-right-radius:8px}
+.row.ep{border-left:1px solid #E5E5E5;border-right:1px solid #E5E5E5;border-bottom:1px solid #F0F0F0;background:#FFFDF5}
+.row.ep.last{border-bottom:1px solid #E5E5E5;border-bottom-left-radius:8px;border-bottom-right-radius:8px;background:#FFFDF5}
+.row .period{font-size:13px;font-weight:600;color:#444;margin-bottom:4px}
+.save-badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:3px;color:#fff}
+.save-badge.green{background:#1B7B6E}
+.save-badge.gold{background:#E8B54D}
+.price{font-size:26px;font-weight:700;margin-top:4px}
+.price .suffix{font-size:13px;font-weight:400;color:#999}
+.monthly{font-size:13px;color:#999;margin-top:2px}
+.breakdown-box{background:#fff;border-radius:8px;border:1px solid #E5E5E5;margin-top:24px;overflow:hidden}
+.breakdown-box .title{padding:16px 24px;border-bottom:1px solid #E5E5E5;font-size:14px;font-weight:600}
+.calc-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:12px}
+.calc-table th{text-align:left;padding:8px 4px;font-weight:600;color:#444;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #E5E5E5}
+.calc-table td{padding:8px 4px;border-bottom:1px solid #F0F0F0}
+.tbl-wrap{padding:0 24px 16px;overflow-x:auto}
+.calc-table tr.total-row td{font-weight:700;border-top:2px solid #E5E5E5;border-bottom:none}
+.empty{background:#fff;border-radius:8px;border:1px solid #E5E5E5;padding:40px;text-align:center;color:#999;font-size:14px}
+.footer{text-align:center;padding:24px 0 8px;font-size:11px;color:#999}
+
+/* Cheat Sheet */
+.cs-card{background:#fff;border:1px solid #E5E5E5;border-radius:8px;padding:24px;margin-bottom:20px}
+.cs-card h2{font-size:15px;font-weight:700;margin-bottom:16px}
+.cs-card p{font-size:13px;line-height:1.6}
+.cs-formula{background:#F7F7F5;border:1px solid #E5E5E5;border-radius:6px;padding:16px 20px;margin-top:16px;font-family:'SF Mono','Fira Code',monospace;font-size:13px;line-height:1.8;color:#333}
+.cs-formula .lbl{font-family:'Inter',-apple-system,sans-serif;font-size:11px;font-weight:600;color:#1B7B6E;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.cs-dim{color:#999}
+.cs-note{font-size:12px;color:#999;margin-top:12px;line-height:1.5}
+.cs-tbl{width:100%;font-size:13px;border-collapse:collapse;margin-top:16px}
+.cs-tbl th{text-align:left;padding:8px 4px;font-weight:600;color:#444;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #E5E5E5}
+.cs-tbl td{padding:8px 4px;border-bottom:1px solid #F0F0F0}
+.cs-tbl tr:last-child td{border-bottom:none}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Price Calculator - Spain 2026</h1>
+  <h1>Price Calculator - Spanish 2026</h1>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" id="tab-calc" onclick="showTab('calc')">Calculator</button>
+    <button class="toggle-btn" id="tab-cheat" onclick="showTab('cheat')">How It Works</button>
+  </div>
   <span class="meta">Data refreshed Mar 2026</span>
 </div>
 
-<div class="wrap">
-  <div class="input-box">
-    <div id="rows-container"></div>
-    <button class="btn-add" id="btn-add">+ Add Province</button>
+<div id="view-calc">
+  <div class="wrap">
+    <div class="input-box">
+      <div id="rows-container"></div>
+      <button class="btn-add" id="btn-add">+ Add Province</button>
+    </div>
+    <div id="output"></div>
+    <div class="footer">Source: JamesEdition BigQuery - 12-month rolling window - Real Estate (excl. rentals)</div>
   </div>
-  <div id="output"></div>
-  <div class="footer">Source: JamesEdition BigQuery · 12-month rolling window · Real Estate (excl. rentals)</div>
+</div>
+
+<div id="view-cheat" style="display:none">
+  <div style="max-width:860px;margin:0 auto;padding:32px 24px">
+
+    <div class="cs-card">
+      <h2>Elite - Per-Listing Price</h2>
+      <p style="margin-bottom:16px">The Elite price is based on the value a listing generates for the agent. We take the median property value in a district, estimate the commission an agent would earn on a deal, factor in how many leads each listing receives and the likelihood of conversion, then apply our take rate.</p>
+      <div class="cs-formula">
+        <div class="lbl">BigQuery View - datasets.price_calculator</div>
+        price_per_listing = median_lead_value x 3% <span class="cs-dim">(commission)</span> x 3% <span class="cs-dim">(conversion)</span> x leads_per_listing <span class="cs-dim">(3 months)</span> x 6% <span class="cs-dim">(take rate)</span>
+      </div>
+      <p class="cs-note">Uses a 12-month rolling window. Districts need 67+ avg monthly leads and top 10 per country to qualify, otherwise bucketed as "Other". Leads per listing is the average over 3 months, calculated across all countries using only Elite and Elite Plus listings. The resulting price_per_listing is a 3-month rate.</p>
+    </div>
+
+    <div class="cs-card">
+      <h2>Elite Period Pricing</h2>
+      <p style="margin-bottom:16px">The per-listing price is a 3-month rate. To get the total, we multiply it by the number of listings and the number of 3-month chunks in the period (1 for 3m, 2 for 6m, 4 for 12m). Longer commitments get a discount: 10% off for 6 months, 20% off for 12 months.</p>
+      <div class="cs-formula">
+        <div class="lbl">Elite - Listing cost per period</div>
+        3 months: price_per_listing x listings<br>
+        6 months: price_per_listing x 2 x 0.9 x listings <span class="cs-dim">(10% off)</span><br>
+        12 months: price_per_listing x 4 x 0.8 x listings <span class="cs-dim">(20% off)</span>
+      </div>
+    </div>
+
+    <div class="cs-card">
+      <h2>Psychological Rounding</h2>
+      <p>All displayed totals are rounded to end in 9 for charm pricing.</p>
+      <table class="cs-tbl">
+        <thead>
+          <tr><th>Range</th><th>Rule</th><th>Before</th><th>After</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Under 200</td><td>Round to nearest 10, subtract 1</td><td>153</td><td>149</td></tr>
+          <tr><td>200 to 9,999</td><td>Round to nearest 100, subtract 1</td><td>1,247</td><td>1,199</td></tr>
+          <tr><td>10,000+</td><td>Round to nearest 500, subtract 1</td><td>14,800</td><td>14,999</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cs-card">
+      <h2>Whole Country Option</h2>
+      <p>Uses the single most expensive district (by price_per_listing). For Spain this is Ibiza. The source district is shown as a note in the breakdown table.</p>
+    </div>
+
+    <div class="cs-card" style="border-left:3px solid #E8B54D">
+      <h2>Elite Plus - How It Differs</h2>
+      <p style="margin-bottom:16px">Elite Plus = Elite listing cost + ELP (Elite Listing Promotion) cost. The per-listing price uses a <strong>7% take rate</strong> instead of Elite's 6%. Each tier includes ELPs, and users can add 0-10 more on top.</p>
+      <div class="cs-formula">
+        <div class="lbl">ELP per-month price</div>
+        price_elp = median_lead_value x 3% <span class="cs-dim">(commission)</span> x 3% <span class="cs-dim">(conversion)</span> x leads_per_elp <span class="cs-dim">(3 months)</span> x 7% <span class="cs-dim">(take rate)</span> x demand_multiplier
+      </div>
+      <table class="cs-tbl">
+        <thead>
+          <tr><th>Tier</th><th>Included ELPs</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1-5</td><td>1</td></tr>
+          <tr><td>6-15</td><td>2</td></tr>
+          <tr><td>16-30</td><td>3</td></tr>
+          <tr><td>31-60</td><td>5</td></tr>
+          <tr><td>61-100</td><td>7</td></tr>
+        </tbody>
+      </table>
+      <div class="cs-formula">
+        <div class="lbl">Demand Multiplier</div>
+        demand_multiplier = clamp(current_elp_count / ideal_slots, 0.9, 1.3)
+      </div>
+      <p class="cs-note" style="margin-bottom:16px">Ideal slots = district impressions / 400,000. Fewer ELPs than ideal means multiplier drops toward 0.9 (lower price). Saturated means it pushes toward 1.3 (higher price). Applied to ELP pricing only.</p>
+      <div class="cs-formula">
+        <div class="lbl">ELP cost per period</div>
+        ELP 3m: price_elp x 3 x total_elps<br>
+        ELP 6m: price_elp x 3 x total_elps x 2<br>
+        ELP 12m: price_elp x 3 x total_elps x 4<br>
+        <span class="cs-dim">price_elp is a monthly value, x3 gives the quarterly price</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-var ALL_DATA = {
-  ES: [
-    { district:"Alicante", price_elite:14.42, price_elite_plus:16.83, price_elp_3m:136.00 },
-    { district:"Barcelona", price_elite:16.19, price_elite_plus:18.89, price_elp_3m:106.00 },
-    { district:"Ibiza", price_elite:38.75, price_elite_plus:45.21, price_elp_3m:268.00 },
-    { district:"Madrid", price_elite:32.38, price_elite_plus:37.77, price_elp_3m:273.00 },
-    { district:"Malaga", price_elite:33.16, price_elite_plus:38.69, price_elp_3m:235.00 },
-    { district:"Mallorca", price_elite:35.22, price_elite_plus:41.09, price_elp_3m:231.00 },
-    { district:"Other", price_elite:14.72, price_elite_plus:17.17, price_elp_3m:96.00 },
-  ],
+function showTab(tab){
+  document.getElementById('view-calc').style.display=tab==='calc'?'':'none';
+  document.getElementById('view-cheat').style.display=tab==='cheat'?'':'none';
+  document.getElementById('tab-calc').className='toggle-btn'+(tab==='calc'?' active':'');
+  document.getElementById('tab-cheat').className='toggle-btn'+(tab==='cheat'?' active':'');
+}
+
+var ALL_DATA={
+  ES:[
+    {district:"Alicante",price_elite:14.42,price_elite_plus:16.83,price_elp_3m:136.00},
+    {district:"Barcelona",price_elite:16.19,price_elite_plus:18.89,price_elp_3m:106.00},
+    {district:"Ibiza",price_elite:38.75,price_elite_plus:45.21,price_elp_3m:268.00},
+    {district:"Madrid",price_elite:32.38,price_elite_plus:37.77,price_elp_3m:273.00},
+    {district:"Malaga",price_elite:33.16,price_elite_plus:38.69,price_elp_3m:235.00},
+    {district:"Mallorca",price_elite:35.22,price_elite_plus:41.09,price_elp_3m:231.00},
+    {district:"Other",price_elite:14.72,price_elite_plus:17.17,price_elp_3m:96.00}
+  ]
 };
 
-var TIERS = [
-  { label:"0", count:0, elps:0 },
-  { label:"1-5", count:5, elps:1 },
-  { label:"6-15", count:15, elps:2 },
-  { label:"16-30", count:30, elps:3 },
-  { label:"31-60", count:60, elps:5 },
-  { label:"61-100", count:100, elps:7 },
+var TIERS=[
+  {label:"0",count:0,elps:0},
+  {label:"1-5",count:5,elps:1},
+  {label:"6-15",count:15,elps:2},
+  {label:"16-30",count:30,elps:3},
+  {label:"31-60",count:60,elps:5},
+  {label:"61-100",count:100,elps:7}
 ];
 
-var country = "ES";
-var districts = ALL_DATA[country];
-var rows = [];
-var nextId = 0;
+var country="ES";
+var districts=ALL_DATA[country];
+var rows=[];
+var nextId=0;
 
-function psych(v) {
-  if (v <= 0) return 0;
-  if (v < 200) return Math.round(v / 10) * 10 - 1;
-  if (v < 10000) return Math.round(v / 100) * 100 - 1;
-  return Math.round(v / 500) * 500 - 1;
+function psych(v){
+  if(v<=0)return 0;
+  if(v<200)return Math.round(v/10)*10-1;
+  if(v<10000)return Math.round(v/100)*100-1;
+  return Math.round(v/500)*500-1;
 }
 
-function fmt(v) { return "\u20AC" + v.toLocaleString("en-US"); }
-function fmtDec(v) { return "\u20AC" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+function fmt(v){return"\u20AC"+v.toLocaleString("en-US")}
+function fmtDec(v){return"\u20AC"+v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
 
-function getDistrictData(loc) {
-  if (loc === "__whole__") {
-    var maxD = districts[0];
-    for (var i = 1; i < districts.length; i++) {
-      if (districts[i].price_elite > maxD.price_elite) maxD = districts[i];
-    }
-    return { data: { district:"Whole Country", price_elite:maxD.price_elite, price_elite_plus:maxD.price_elite_plus, price_elp_3m:maxD.price_elp_3m }, source: maxD.district };
+function getDistrictData(loc){
+  if(loc==="__whole__"){
+    var maxD=districts[0];
+    for(var i=1;i<districts.length;i++){if(districts[i].price_elite>maxD.price_elite)maxD=districts[i]}
+    return{data:{district:"Whole Country",price_elite:maxD.price_elite,price_elite_plus:maxD.price_elite_plus,price_elp_3m:maxD.price_elp_3m},source:maxD.district};
   }
-  for (var i = 0; i < districts.length; i++) {
-    if (districts[i].district === loc) return { data: districts[i], source: null };
-  }
-  return { data: districts[0], source: null };
+  for(var i=0;i<districts.length;i++){if(districts[i].district===loc)return{data:districts[i],source:null}}
+  return{data:districts[0],source:null};
 }
 
-function addRow(loc, tierIdx, addElps) {
-  var id = nextId++;
-  rows.push({ id: id, loc: loc || "__whole__", tierIdx: tierIdx || 0, addElps: addElps || 0 });
-  renderRows();
-  render();
+function addRow(loc,tierIdx,addElps){
+  var id=nextId++;
+  rows.push({id:id,loc:loc||"__whole__",tierIdx:tierIdx||0,addElps:addElps||0});
+  renderRows();render();
 }
 
-function removeRow(id) {
-  rows = rows.filter(function(r) { return r.id !== id; });
-  renderRows();
-  render();
+function removeRow(id){
+  rows=rows.filter(function(r){return r.id!==id});
+  renderRows();render();
 }
 
-function renderRows() {
-  var container = document.getElementById("rows-container");
-  container.innerHTML = "";
-
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i];
-    var div = document.createElement("div");
-    div.className = "input-row";
-    div.setAttribute("data-id", r.id);
-
-    var showRemove = rows.length > 1;
-
-    var html = '<div><label>Country</label><select disabled><option>ES</option></select></div>';
-
-    html += '<div><label>Province</label><select class="sel-loc" data-id="' + r.id + '">';
-    html += '<option value="__whole__"' + (r.loc === "__whole__" ? " selected" : "") + '>Whole Country</option>';
-    for (var j = 0; j < districts.length; j++) {
-      html += '<option value="' + districts[j].district + '"' + (r.loc === districts[j].district ? " selected" : "") + '>' + districts[j].district + '</option>';
+function renderRows(){
+  var c=document.getElementById("rows-container");
+  c.innerHTML="";
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    var div=document.createElement("div");
+    div.className="input-row";
+    div.setAttribute("data-id",r.id);
+    var showRemove=rows.length>1;
+    var html='<div><label>Country</label><select disabled><option>ES</option></select></div>';
+    html+='<div><label>Province</label><select class="sel-loc" data-id="'+r.id+'">';
+    html+='<option value="__whole__"'+(r.loc==="__whole__"?" selected":"")+'>Whole Country</option>';
+    for(var j=0;j<districts.length;j++){
+      html+='<option value="'+districts[j].district+'"'+(r.loc===districts[j].district?" selected":"")+'>'+districts[j].district+'</option>';
     }
-    html += '</select></div>';
-
-    html += '<div><label>Listings</label><select class="sel-tier" data-id="' + r.id + '">';
-    for (var j = 0; j < TIERS.length; j++) {
-      html += '<option value="' + j + '"' + (r.tierIdx === j ? " selected" : "") + '>' + TIERS[j].label + '</option>';
+    html+='</select></div>';
+    html+='<div><label>Listings</label><select class="sel-tier" data-id="'+r.id+'">';
+    for(var j=0;j<TIERS.length;j++){
+      html+='<option value="'+j+'"'+(r.tierIdx===j?" selected":"")+'>'+TIERS[j].label+'</option>';
     }
-    html += '</select></div>';
-
-    html += '<div><label>Additional ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
-    for (var j = 0; j <= 10; j++) {
-      html += '<option value="' + j + '"' + (r.addElps === j ? " selected" : "") + '>' + j + '</option>';
+    html+='</select></div>';
+    html+='<div><label>Additional ELPs</label><select class="sel-elps" data-id="'+r.id+'">';
+    for(var j=0;j<=10;j++){
+      html+='<option value="'+j+'"'+(r.addElps===j?" selected":"")+'>'+j+'</option>';
     }
-    html += '</select></div>';
-
-    if (showRemove) {
-      html += '<button class="btn-remove" data-id="' + r.id + '">&times;</button>';
-    } else {
-      html += '<div style="width:32px"></div>';
-    }
-
-    div.innerHTML = html;
-    container.appendChild(div);
+    html+='</select></div>';
+    if(showRemove){html+='<button class="btn-remove" data-id="'+r.id+'">&times;</button>'}
+    else{html+='<div style="width:32px"></div>'}
+    div.innerHTML=html;
+    c.appendChild(div);
   }
-
-  // Wire up events
-  var locs = container.querySelectorAll(".sel-loc");
-  for (var i = 0; i < locs.length; i++) {
-    locs[i].addEventListener("change", function() {
-      var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].loc = this.value; }
-      render();
-    });
-  }
-  var tiers = container.querySelectorAll(".sel-tier");
-  for (var i = 0; i < tiers.length; i++) {
-    tiers[i].addEventListener("change", function() {
-      var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].tierIdx = parseInt(this.value); }
-      render();
-    });
-  }
-  var elps = container.querySelectorAll(".sel-elps");
-  for (var i = 0; i < elps.length; i++) {
-    elps[i].addEventListener("change", function() {
-      var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].addElps = parseInt(this.value); }
-      render();
-    });
-  }
-  var removes = container.querySelectorAll(".btn-remove");
-  for (var i = 0; i < removes.length; i++) {
-    removes[i].addEventListener("click", function() {
-      removeRow(parseInt(this.getAttribute("data-id")));
-    });
-  }
+  var locs=c.querySelectorAll(".sel-loc");
+  for(var i=0;i<locs.length;i++){locs[i].addEventListener("change",function(){var id=parseInt(this.getAttribute("data-id"));for(var j=0;j<rows.length;j++){if(rows[j].id===id)rows[j].loc=this.value}render()})}
+  var tiers=c.querySelectorAll(".sel-tier");
+  for(var i=0;i<tiers.length;i++){tiers[i].addEventListener("change",function(){var id=parseInt(this.getAttribute("data-id"));for(var j=0;j<rows.length;j++){if(rows[j].id===id)rows[j].tierIdx=parseInt(this.value)}render()})}
+  var elps=c.querySelectorAll(".sel-elps");
+  for(var i=0;i<elps.length;i++){elps[i].addEventListener("change",function(){var id=parseInt(this.getAttribute("data-id"));for(var j=0;j<rows.length;j++){if(rows[j].id===id)rows[j].addElps=parseInt(this.value)}render()})}
+  var removes=c.querySelectorAll(".btn-remove");
+  for(var i=0;i<removes.length;i++){removes[i].addEventListener("click",function(){removeRow(parseInt(this.getAttribute("data-id")))})}
 }
 
-function render() {
-  var $output = document.getElementById("output");
+function render(){
+  var $o=document.getElementById("output");
+  var rc=[];var tL=0;var tE=0;
+  var tE3r=0,tE6r=0,tE12r=0;
+  var tEP3r=0,tEP6r=0,tEP12r=0;
+  var hasAny=false;
 
-  // Calculate per-row data
-  var rowCalcs = [];
-  var totalListings = 0;
-  var totalElps = 0;
-  var totalE3r = 0, totalE6r = 0, totalE12r = 0;
-  var totalEP3r = 0, totalEP6r = 0, totalEP12r = 0;
-  var hasAny = false;
-
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i];
-    var tier = TIERS[r.tierIdx];
-    var info = getDistrictData(r.loc);
-    var d = info.data;
-
-    if (tier.count === 0) {
-      rowCalcs.push(null);
-      continue;
-    }
-    hasAny = true;
-
-    var cnt = tier.count;
-    var inclElps = tier.elps;
-    var rElps = inclElps + r.addElps;
-    var elpMo = d.price_elp_3m;
-
-    var e3r = d.price_elite * cnt;
-    var e6r = d.price_elite * 2 * 0.9 * cnt;
-    var e12r = d.price_elite * 4 * 0.8 * cnt;
-
-    var ep_e3r = elpMo * 3 * rElps;
-    var ep_e6r = elpMo * 3 * rElps * 2;
-    var ep_e12r = elpMo * 3 * rElps * 4;
-
-    totalListings += cnt;
-    totalElps += rElps;
-    totalE3r += e3r; totalE6r += e6r; totalE12r += e12r;
-    totalEP3r += (e3r + ep_e3r); totalEP6r += (e6r + ep_e6r); totalEP12r += (e12r + ep_e12r);
-
-    rowCalcs.push({
-      loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
-      source: info.source,
-      tier: tier,
-      cnt: cnt,
-      elps: rElps,
-      e3r: e3r, e6r: e6r, e12r: e12r,
-      ep3r: e3r + ep_e3r, ep6r: e6r + ep_e6r, ep12r: e12r + ep_e12r,
-      elpMo: elpMo,
-      priceElite: d.price_elite,
-    });
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];var tier=TIERS[r.tierIdx];var info=getDistrictData(r.loc);var d=info.data;
+    if(tier.count===0){rc.push(null);continue}
+    hasAny=true;
+    var cnt=tier.count;var iE=tier.elps;var rE=iE+r.addElps;var eM=d.price_elp_3m;
+    var e3r=d.price_elite*cnt;var e6r=d.price_elite*2*0.9*cnt;var e12r=d.price_elite*4*0.8*cnt;
+    var ep3=eM*3*rE;var ep6=eM*3*rE*2;var ep12=eM*3*rE*4;
+    tL+=cnt;tE+=rE;
+    tE3r+=e3r;tE6r+=e6r;tE12r+=e12r;
+    tEP3r+=(e3r+ep3);tEP6r+=(e6r+ep6);tEP12r+=(e12r+ep12);
+    rc.push({loc:r.loc==="__whole__"?"Whole Country":r.loc,source:info.source,tier:tier,cnt:cnt,elps:rE,e3r:e3r,e6r:e6r,e12r:e12r,ep3r:e3r+ep3,ep6r:e6r+ep6,ep12r:e12r+ep12,elpMo:eM,priceElite:d.price_elite});
   }
 
-  if (!hasAny) {
-    $output.innerHTML = '<div class="empty">Select a listing tier to see pricing.</div>';
-    return;
-  }
+  if(!hasAny){$o.innerHTML='<div class="empty">Select a listing tier to see pricing.</div>';return}
 
-  // Totals with psych rounding
-  var e3 = psych(totalE3r), e6 = psych(totalE6r), e12 = psych(totalE12r);
-  var ep3 = psych(totalEP3r), ep6 = psych(totalEP6r), ep12 = psych(totalEP12r);
+  var e3=psych(tE3r),e6=psych(tE6r),e12=psych(tE12r);
+  var ep3=psych(tEP3r),ep6=psych(tEP6r),ep12=psych(tEP12r);
+  var eS6=Math.max(psych((tE3r*2)-tE6r),0);
+  var eS12=Math.max(psych((tE3r*4)-tE12r),0);
+  var epS6=Math.max(psych((tEP3r*2)-tEP6r),0);
+  var epS12=Math.max(psych((tEP3r*4)-tEP12r),0);
 
-  var eSave6 = Math.max(psych((totalE3r * 2) - totalE6r), 0);
-  var eSave12 = Math.max(psych((totalE3r * 4) - totalE12r), 0);
-  var epSave6 = Math.max(psych((totalEP3r * 2) - totalEP6r), 0);
-  var epSave12 = Math.max(psych((totalEP3r * 4) - totalEP12r), 0);
-
-  var periods = [
-    { label:"3 Months", mo:3, eT:e3, epT:ep3, eSave:0, epSave:0 },
-    { label:"6 Months", mo:6, eT:e6, epT:ep6, eSave:eSave6, epSave:epSave6 },
-    { label:"12 Months", mo:12, eT:e12, epT:ep12, eSave:eSave12, epSave:epSave12 },
+  var periods=[
+    {label:"3 Months",mo:3,eT:e3,epT:ep3,eS:0,epS:0},
+    {label:"6 Months",mo:6,eT:e6,epT:ep6,eS:eS6,epS:epS6},
+    {label:"12 Months",mo:12,eT:e12,epT:ep12,eS:eS12,epS:epS12}
   ];
 
-  // Listing label
-  var tierLabels = [];
-  for (var i = 0; i < rowCalcs.length; i++) {
-    if (rowCalcs[i]) tierLabels.push(rowCalcs[i].tier.label);
+  var tierLabels=[];
+  for(var i=0;i<rc.length;i++){if(rc[i])tierLabels.push(rc[i].tier.label)}
+  var lL=tierLabels.join(" + ")+" Listings";
+
+  var h='<div class="cards">';
+  h+='<div class="card-head elite"><h2>Elite</h2><div class="sub">'+lL+'</div><div class="sub" style="visibility:hidden">_</div></div>';
+  h+='<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">'+lL+'</div><div class="elp-info">'+tE+' Promoted Listing'+(tE!==1?'s':'')+'</div></div>';
+
+  for(var i=0;i<periods.length;i++){
+    var p=periods[i];var last=(i===2)?" last":"";
+    h+='<div class="row elite'+last+'"><div class="period">'+p.label+'</div>';
+    h+=p.eS>0?'<div><span class="save-badge green">Save '+fmt(p.eS)+'</span></div>':'';
+    h+='<div class="price">'+fmt(p.eT)+' <span class="suffix">Total</span></div>';
+    h+='<div class="monthly">'+fmtDec(p.eT/p.mo)+' / Month</div></div>';
+    h+='<div class="row ep'+last+'"><div class="period">'+p.label+'</div>';
+    h+=p.epS>0?'<div><span class="save-badge gold">Save '+fmt(p.epS)+'</span></div>':'';
+    h+='<div class="price">'+fmt(p.epT)+' <span class="suffix">Total</span></div>';
+    h+='<div class="monthly">'+fmtDec(p.epT/p.mo)+' / Month</div></div>';
   }
-  var listingLabel = tierLabels.join(" + ") + " Listings";
+  h+='</div>';
 
-  var html = '<div class="cards">';
-
-  // Elite header
-  html += '<div class="card-head elite"><h2>Elite</h2><div class="sub">' + listingLabel + '</div><div class="sub" style="visibility:hidden">_</div></div>';
-
-  // Elite Plus header
-  html += '<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">' + listingLabel + '</div><div class="elp-info">' + totalElps + ' Promoted Listing' + (totalElps !== 1 ? 's' : '') + '</div></div>';
-
-  for (var i = 0; i < periods.length; i++) {
-    var p = periods[i];
-    var last = (i === 2) ? " last" : "";
-
-    html += '<div class="row elite' + last + '"><div class="period">' + p.label + '</div>';
-    html += p.eSave > 0 ? '<div><span class="save-badge green">Save ' + fmt(p.eSave) + '</span></div>' : '';
-    html += '<div class="price">' + fmt(p.eT) + ' <span class="suffix">Total</span></div>';
-    html += '<div class="monthly">' + fmtDec(p.eT / p.mo) + ' / Month</div></div>';
-
-    html += '<div class="row ep' + last + '"><div class="period">' + p.label + '</div>';
-    html += p.epSave > 0 ? '<div><span class="save-badge gold">Save ' + fmt(p.epSave) + '</span></div>' : '';
-    html += '<div class="price">' + fmt(p.epT) + ' <span class="suffix">Total</span></div>';
-    html += '<div class="monthly">' + fmtDec(p.epT / p.mo) + ' / Month</div></div>';
+  h+='<div class="breakdown-box"><div class="title">Cost Breakdown by Province</div><div class="tbl-wrap">';
+  h+='<table class="calc-table"><thead><tr><th>Province</th><th>Listings</th><th>ELPs</th><th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th><th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th></tr></thead><tbody>';
+  for(var i=0;i<rc.length;i++){
+    var x=rc[i];if(!x)continue;
+    var lb=x.loc;
+    if(x.source)lb+=' <span style="font-size:11px;color:#1B7B6E">('+x.source+')</span>';
+    h+='<tr><td>'+lb+'</td><td>'+x.tier.label+'</td><td>'+x.elps+'</td>';
+    h+='<td>'+fmt(psych(x.e3r))+'</td><td>'+fmt(psych(x.e6r))+'</td><td>'+fmt(psych(x.e12r))+'</td>';
+    h+='<td>'+fmt(psych(x.ep3r))+'</td><td>'+fmt(psych(x.ep6r))+'</td><td>'+fmt(psych(x.ep12r))+'</td></tr>';
   }
-
-  html += '</div>';
-
-  // Per-province breakdown
-  html += '<div class="breakdown-box"><div class="title">Cost Breakdown by Province</div><div class="tbl-wrap">';
-  html += '<table><thead><tr><th>Province</th><th>Listings</th><th>ELPs</th><th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th><th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th></tr></thead><tbody>';
-
-  for (var i = 0; i < rowCalcs.length; i++) {
-    var rc = rowCalcs[i];
-    if (!rc) continue;
-    var label = rc.loc;
-    if (rc.source) label += ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>';
-    html += '<tr>';
-    html += '<td>' + label + '</td>';
-    html += '<td>' + rc.tier.label + '</td>';
-    html += '<td>' + rc.elps + '</td>';
-    html += '<td>' + fmt(psych(rc.e3r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.e6r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.e12r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.ep3r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.ep6r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.ep12r)) + '</td>';
-    html += '</tr>';
+  if(rc.filter(function(r){return r}).length>1){
+    h+='<tr class="total-row"><td>Total</td><td>'+tL+'</td><td>'+tE+'</td>';
+    h+='<td>'+fmt(e3)+'</td><td>'+fmt(e6)+'</td><td>'+fmt(e12)+'</td>';
+    h+='<td>'+fmt(ep3)+'</td><td>'+fmt(ep6)+'</td><td>'+fmt(ep12)+'</td></tr>';
   }
-
-  if (rowCalcs.filter(function(r){return r}).length > 1) {
-    html += '<tr class="total-row">';
-    html += '<td>Total</td><td>' + totalListings + '</td><td>' + totalElps + '</td>';
-    html += '<td>' + fmt(e3) + '</td><td>' + fmt(e6) + '</td><td>' + fmt(e12) + '</td>';
-    html += '<td>' + fmt(ep3) + '</td><td>' + fmt(ep6) + '</td><td>' + fmt(ep12) + '</td>';
-    html += '</tr>';
-  }
-
-  html += '</tbody></table></div></div>';
-
-  $output.innerHTML = html;
+  h+='</tbody></table></div></div>';
+  $o.innerHTML=h;
 }
 
-document.getElementById("btn-add").addEventListener("click", function() { addRow(); });
-
-// Init with one row
-addRow("__whole__", 0, 0);
+document.getElementById("btn-add").addEventListener("click",function(){addRow()});
+addRow("__whole__",0,0);
 </script>
 </body>
 </html>
