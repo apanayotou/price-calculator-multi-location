@@ -302,12 +302,16 @@ function render(){
 
   if(!hasAny){$o.innerHTML='<div class="empty">Select a listing tier to see pricing.</div>';return}
 
-  var e3=psych(tE3r),e6=psych(tE6r),e12=psych(tE12r);
-  var ep3=psych(tEP3r),ep6=psych(tEP6r),ep12=psych(tEP12r);
-  var eS6=Math.max(psych((tE3r*2)-tE6r),0);
-  var eS12=Math.max(psych((tE3r*4)-tE12r),0);
-  var epS6=Math.max(psych((tEP3r*2)-tEP6r),0);
-  var epS12=Math.max(psych((tEP3r*4)-tEP12r),0);
+  var e3=0,e6=0,e12=0,ep3=0,ep6=0,ep12=0;
+  for(var i=0;i<rc.length;i++){
+    if(!rc[i])continue;
+    e3+=psych(rc[i].e3r);e6+=psych(rc[i].e6r);e12+=psych(rc[i].e12r);
+    ep3+=psych(rc[i].ep3r);ep6+=psych(rc[i].ep6r);ep12+=psych(rc[i].ep12r);
+  }
+  var eS6=Math.max((e3*2)-e6,0);
+  var eS12=Math.max((e3*4)-e12,0);
+  var epS6=Math.max((ep3*2)-ep6,0);
+  var epS12=Math.max((ep3*4)-ep12,0);
 
   var periods=[
     {label:"3 Months",mo:3,eT:e3,epT:ep3,eS:0,epS:0},
