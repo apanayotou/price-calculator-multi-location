@@ -179,7 +179,7 @@ function render(){
     hasAny=true;
     var cnt=tier.count;var iE=tier.elps;var rE=iE+r.addElps;var eM=d.price_elp_3m;
     var e3r=d.price_elite*cnt;var e6r=d.price_elite*2*0.9*cnt;var e12r=d.price_elite*4*0.8*cnt;
-    var ep3=eM*3*rE;var ep6=eM*3*rE*2;var ep12=eM*3*rE*4;
+    var ep3=eM*3*rE;var ep6=eM*3*rE*2*0.9;var ep12=eM*3*rE*4*0.8;
     tL+=cnt;tE+=rE;
     rc.push({loc:r.loc==="__whole__"?"Whole Country":r.loc,source:info.source,tier:tier,cnt:cnt,elps:rE,e3r:e3r,e6r:e6r,e12r:e12r,ep3r:e3r+ep3,ep6r:e6r+ep6,ep12r:e12r+ep12,elpMo:eM,priceElite:d.price_elite});
   }
