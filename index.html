@@ -98,7 +98,7 @@ var nextId=0;
 
 function psych(v){
   if(v<=0)return 0;
-  if(v<200)return Math.round(v/10)*10-1;
+  if(v<1000)return Math.round(v/10)*10-1;
   if(v<10000)return Math.round(v/100)*100-1;
   return Math.round(v/500)*500-1;
 }
