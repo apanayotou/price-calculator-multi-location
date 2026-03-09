@@ -5,52 +5,74 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Price Calculator - Spain 2026</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F7F7F5;color:#1A1A1A}
-.header{background:#fff;border-bottom:1px solid #E5E5E5;padding:16px 32px;display:flex;align-items:center;position:sticky;top:0;z-index:10}
-.header h1{font-size:20px;font-weight:700}
-.header .meta{font-size:11px;color:#999;margin-left:auto}
-.wrap{max-width:1100px;margin:0 auto;padding:32px 24px}
-.input-box{background:#fff;border-radius:8px;padding:24px;margin-bottom:24px;border:1px solid #E5E5E5}
-.input-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:16px;align-items:end}
-.input-row+.input-row{margin-top:16px;padding-top:16px;border-top:1px solid #F0F0F0}
-@media(max-width:700px){.input-row{grid-template-columns:1fr 1fr}}
-.input-row label{font-size:12px;font-weight:600;color:#444;margin-bottom:6px;display:block;letter-spacing:0.03em}
-.input-row select{width:100%;padding:8px 12px;border:1px solid #E5E5E5;border-radius:4px;font-size:14px;font-family:inherit;background:#fff;color:#1A1A1A;cursor:pointer;outline:none}
-.btn-remove{width:32px;height:36px;border:1px solid #E5E5E5;border-radius:4px;background:#fff;color:#999;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-bottom:1px}
-.btn-remove:hover{background:#FEE;color:#C00;border-color:#C00}
-.btn-add{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px dashed #1B7B6E;border-radius:4px;background:#fff;color:#1B7B6E;font-size:13px;font-weight:600;cursor:pointer;margin-top:16px;font-family:inherit}
-.btn-add:hover{background:#F0F7F6}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
-@media(max-width:700px){.cards{grid-template-columns:1fr}}
-.card-head{background:#fff;border-top-left-radius:8px;border-top-right-radius:8px;padding:20px 24px}
-.card-head.elite{border:1px solid #E5E5E5}
-.card-head.ep{border:1px solid #E5E5E5;position:relative;background:#FFFDF5}
-.card-head h2{font-size:22px;font-weight:700}
-.card-head .sub{font-size:13px;color:#999;margin-top:4px}
-.card-head .elp-info{font-size:13px;color:#1B7B6E;font-weight:600;margin-top:2px}
-.badge-rec{position:absolute;top:12px;right:12px;background:#E8B54D;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:3px;letter-spacing:0.05em}
-.row{padding:18px 24px;background:#fff}
-.row.elite{border-left:1px solid #E5E5E5;border-right:1px solid #E5E5E5;border-bottom:1px solid #F0F0F0}
-.row.elite.last{border-bottom:1px solid #E5E5E5;border-bottom-left-radius:8px;border-bottom-right-radius:8px}
-.row.ep{border-left:1px solid #E5E5E5;border-right:1px solid #E5E5E5;border-bottom:1px solid #F0F0F0;background:#FFFDF5}
-.row.ep.last{border-bottom:1px solid #E5E5E5;border-bottom-left-radius:8px;border-bottom-right-radius:8px;background:#FFFDF5}
-.row .period{font-size:13px;font-weight:600;color:#444;margin-bottom:4px}
-.save-badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:3px;color:#fff}
-.save-badge.green{background:#1B7B6E}
-.save-badge.gold{background:#E8B54D}
-.price{font-size:26px;font-weight:700;margin-top:4px}
-.price .suffix{font-size:13px;font-weight:400;color:#999}
-.monthly{font-size:13px;color:#999;margin-top:2px}
-.breakdown-box{background:#fff;border-radius:8px;border:1px solid #E5E5E5;margin-top:24px;overflow:hidden}
-.breakdown-box .title{padding:16px 24px;border-bottom:1px solid #E5E5E5;font-size:14px;font-weight:600}
-table{width:100%;font-size:13px;border-collapse:collapse;margin-top:12px}
-th{text-align:left;padding:8px 4px;font-weight:600;color:#444;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid #E5E5E5}
-td{padding:8px 4px;border-bottom:1px solid #F0F0F0}
-.tbl-wrap{padding:0 24px 16px;overflow-x:auto}
-tr.total-row td{font-weight:700;border-top:2px solid #E5E5E5;border-bottom:none}
-.empty{background:#fff;border-radius:8px;border:1px solid #E5E5E5;padding:40px;text-align:center;color:#999;font-size:14px}
-.footer{text-align:center;padding:24px 0 8px;font-size:11px;color:#999}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F7F7F5; color: #1A1A1A; }
+  .header { background: #fff; border-bottom: 1px solid #E5E5E5; padding: 16px 32px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header .meta { font-size: 11px; color: #999; margin-left: auto; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  .input-box { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 24px; border: 1px solid #E5E5E5; }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 16px; align-items: end; }
+  .input-row + .input-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
+  @media (max-width: 700px) { .input-row { grid-template-columns: 1fr 1fr; } }
+  .input-row label { font-size: 12px; font-weight: 600; color: #444; margin-bottom: 6px; display: block; letter-spacing: 0.03em; }
+  .input-row select { width: 100%; padding: 8px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; background: #fff; color: #1A1A1A; cursor: pointer; outline: none; }
+  .btn-remove { width: 32px; height: 36px; border: 1px solid #E5E5E5; border-radius: 4px; background: #fff; color: #999; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-bottom: 1px; }
+  .btn-remove:hover { background: #FEE; color: #C00; border-color: #C00; }
+  .btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px dashed #1B7B6E; border-radius: 4px; background: #fff; color: #1B7B6E; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 16px; font-family: inherit; }
+  .btn-add:hover { background: #F0F7F6; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+  @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } }
+  .card-head { background: #fff; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 20px 24px; }
+  .card-head.elite { border: 1px solid #E5E5E5; }
+  .card-head.ep { border: 1px solid #E5E5E5; position: relative; background: #FFFDF5; }
+  .card-head h2 { font-size: 22px; font-weight: 700; }
+  .card-head .sub { font-size: 13px; color: #999; margin-top: 4px; }
+  .card-head .elp-info { font-size: 13px; color: #1B7B6E; font-weight: 600; margin-top: 2px; }
+  .badge-rec { position: absolute; top: 12px; right: 12px; background: #E8B54D; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em; }
+  .row { padding: 18px 24px; background: #fff; }
+  .row.elite { border-left: 1px solid #E5E5E5; border-right: 1px solid #E5E5E5; border-bottom: 1px solid #F0F0F0; }
+  .row.elite.last { border-bottom: 1px solid #E5E5E5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+  .row.ep { border-left: 1px solid #E5E5E5; border-right: 1px solid #E5E5E5; border-bottom: 1px solid #F0F0F0; background: #FFFDF5; }
+  .row.ep.last { border-bottom: 1px solid #E5E5E5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; background: #FFFDF5; }
+  .row .period { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 4px; }
+  .save-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 3px; color: #fff; }
+  .save-badge.green { background: #1B7B6E; }
+  .save-badge.gold { background: #E8B54D; }
+  .price { font-size: 26px; font-weight: 700; margin-top: 4px; }
+  .price .suffix { font-size: 13px; font-weight: 400; color: #999; }
+  .monthly { font-size: 13px; color: #999; margin-top: 2px; }
+  .breakdown-box { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
+  .breakdown-box .title { padding: 16px 24px; border-bottom: 1px solid #E5E5E5; font-size: 14px; font-weight: 600; }
+  table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 12px; }
+  th { text-align: left; padding: 8px 4px; font-weight: 600; color: #444; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #E5E5E5; }
+  td { padding: 8px 4px; border-bottom: 1px solid #F0F0F0; }
+  .tbl-wrap { padding: 0 24px 16px; overflow-x: auto; }
+  tr.total-row td { font-weight: 700; border-top: 2px solid #E5E5E5; border-bottom: none; }
+  .empty { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; padding: 40px; text-align: center; color: #999; font-size: 14px; }
+  .footer { text-align: center; padding: 24px 0 8px; font-size: 11px; color: #999; }
+
+  /* HubSpot panel */
+  /* Row-level push buttons */
+  .row-push-btn { margin-top: 12px; width: 100%; padding: 7px 12px; background: transparent; border: 1px solid #DDDDDD; border-radius: 4px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF5F3; }
+  .row-push-btn:disabled { color: #bbb; border-color: #eee; cursor: not-allowed; background: transparent; }
+  .row-push-btn.sent { border-color: #1B7B6E; color: #1B7B6E; background: #EAF5F3; }
+  .row.ep .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF0EB; }
+  .row.ep .row-push-btn.sent { background: #EAF5F3; }
+
+  /* HubSpot panel */
+  .hs-panel { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
+  .hs-panel-body { padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #F0F0F0; }
+  .hs-deal-label { font-size: 12px; font-weight: 600; color: #444; letter-spacing: 0.03em; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+  .hs-deal-label svg { flex-shrink: 0; }
+  .hs-deal-id-input { padding: 7px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; color: #1A1A1A; outline: none; width: 180px; }
+  .hs-deal-id-input:focus { border-color: #FF7A59; }
+  .hs-hint { font-size: 12px; color: #aaa; }
+  .hs-status { padding: 10px 24px; font-size: 13px; display: none; }
+  .hs-status.success { background: #EAF5F3; color: #1B7B6E; border-top: 1px solid #C3DED9; display: block; }
+  .hs-status.error { background: #FEF2F2; color: #B91C1C; border-top: 1px solid #FECACA; display: block; }
+  .hs-status.loading { background: #F5F5F5; color: #666; border-top: 1px solid #E5E5E5; display: block; }
 </style>
 </head>
 <body>
@@ -63,189 +85,444 @@ tr.total-row td{font-weight:700;border-top:2px solid #E5E5E5;border-bottom:none}
 <div class="wrap">
   <div class="input-box">
     <div id="rows-container"></div>
-    <button class="btn-add" id="btn-add">+ Add Province</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid #F0F0F0;">
+      <button class="btn-add" id="btn-add" style="margin-top:0">+ Add Province</button>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="16" height="16" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <label style="font-size:12px;font-weight:600;color:#444;letter-spacing:0.03em;">DEAL ID</label>
+        <input type="text" id="hs-deal-id" class="hs-deal-id-input" placeholder="e.g. 12345678" />
+      </div>
+    </div>
   </div>
   <div id="output"></div>
-  <div class="footer">Source: JamesEdition BigQuery - 12-month rolling window - Real Estate (excl. rentals)</div>
+  <div class="footer">Source: JamesEdition BigQuery · 12-month rolling window · Real Estate (excl. rentals)</div>
 </div>
 
 <script>
-var ALL_DATA={
-  ES:[
-    {district:"Alicante",price_elite:14.42,price_elite_plus:16.83,price_elp_3m:136.00},
-    {district:"Barcelona",price_elite:16.19,price_elite_plus:18.89,price_elp_3m:106.00},
-    {district:"Ibiza",price_elite:38.75,price_elite_plus:45.21,price_elp_3m:268.00},
-    {district:"Madrid",price_elite:32.38,price_elite_plus:37.77,price_elp_3m:273.00},
-    {district:"Malaga",price_elite:33.16,price_elite_plus:38.69,price_elp_3m:235.00},
-    {district:"Mallorca",price_elite:35.22,price_elite_plus:41.09,price_elp_3m:231.00},
-    {district:"Other",price_elite:14.72,price_elite_plus:17.17,price_elp_3m:96.00}
-  ]
+// ─── Configuration ────────────────────────────────────────────────────────────
+var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calculator-hs";
+// ─────────────────────────────────────────────────────────────────────────────
+
+var ALL_DATA = {
+  ES: [
+    { district:"Alicante",  price_elite:14.42, price_elite_plus:16.83, price_elp_3m:136.00 },
+    { district:"Barcelona", price_elite:16.19, price_elite_plus:18.89, price_elp_3m:106.00 },
+    { district:"Ibiza",     price_elite:38.75, price_elite_plus:45.21, price_elp_3m:268.00 },
+    { district:"Madrid",    price_elite:32.38, price_elite_plus:37.77, price_elp_3m:273.00 },
+    { district:"Malaga",    price_elite:33.16, price_elite_plus:38.69, price_elp_3m:235.00 },
+    { district:"Mallorca",  price_elite:35.22, price_elite_plus:41.09, price_elp_3m:231.00 },
+    { district:"Other",     price_elite:14.72, price_elite_plus:17.17, price_elp_3m:96.00 },
+  ],
 };
 
-var TIERS=[
-  {label:"0",count:0,elps:0},
-  {label:"1-5",count:5,elps:1},
-  {label:"6-15",count:15,elps:2},
-  {label:"16-30",count:30,elps:3},
-  {label:"31-60",count:60,elps:5},
-  {label:"61-100",count:100,elps:7}
+var TIERS = [
+  { label:"0",     count:0,   elps:0 },
+  { label:"1-5",   count:5,   elps:1 },
+  { label:"6-15",  count:15,  elps:2 },
+  { label:"16-30", count:30,  elps:3 },
+  { label:"31-60", count:60,  elps:5 },
+  { label:"61-100",count:100, elps:7 },
 ];
 
-var country="ES";
-var districts=ALL_DATA[country];
-var rows=[];
-var nextId=0;
+var country   = "ES";
+var districts = ALL_DATA[country];
+var rows      = [];
+var nextId    = 0;
 
-function psych(v){
-  if(v<=0)return 0;
-  if(v<1000)return Math.round(v/10)*10-1;
-  if(v<10000)return Math.round(v/100)*100-1;
-  return Math.round(v/500)*500-1;
+// Last computed pricing snapshot — updated on every render()
+var lastPricing = null;
+
+function psych(v) {
+  if (v <= 0) return 0;
+  if (v < 1000)  return Math.round(v / 10)  * 10  - 1;
+  if (v < 10000) return Math.round(v / 100) * 100 - 1;
+  return Math.round(v / 500) * 500 - 1;
 }
 
-function fmt(v){return"\u20AC"+v.toLocaleString("en-US")}
-function fmtDec(v){return"\u20AC"+v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
+function fmt(v)    { return "\u20AC" + v.toLocaleString("en-US"); }
+function fmtDec(v) { return "\u20AC" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+function rawNum(v) { return Math.round(v); } // plain integer for HubSpot amount field
 
-function getDistrictData(loc){
-  if(loc==="__whole__"){
-    var maxD=districts[0];
-    for(var i=1;i<districts.length;i++){if(districts[i].price_elite>maxD.price_elite)maxD=districts[i]}
-    return{data:{district:"Whole Country",price_elite:maxD.price_elite,price_elite_plus:maxD.price_elite_plus,price_elp_3m:maxD.price_elp_3m},source:maxD.district};
-  }
-  for(var i=0;i<districts.length;i++){if(districts[i].district===loc)return{data:districts[i],source:null}}
-  return{data:districts[0],source:null};
-}
-
-function addRow(loc,tierIdx,addElps){
-  var id=nextId++;
-  rows.push({id:id,loc:loc||"__whole__",tierIdx:tierIdx||0,addElps:addElps||0});
-  renderRows();render();
-}
-
-function removeRow(id){
-  rows=rows.filter(function(r){return r.id!==id});
-  renderRows();render();
-}
-
-function renderRows(){
-  var c=document.getElementById("rows-container");
-  c.innerHTML="";
-  for(var i=0;i<rows.length;i++){
-    var r=rows[i];
-    var div=document.createElement("div");
-    div.className="input-row";
-    div.setAttribute("data-id",r.id);
-    var showRemove=rows.length>1;
-    var html='<div><label>Country</label><select disabled><option>ES</option></select></div>';
-    html+='<div><label>Province</label><select class="sel-loc" data-id="'+r.id+'">';
-    html+='<option value="__whole__"'+(r.loc==="__whole__"?" selected":"")+'>Whole Country</option>';
-    for(var j=0;j<districts.length;j++){
-      html+='<option value="'+districts[j].district+'"'+(r.loc===districts[j].district?" selected":"")+'>'+districts[j].district+'</option>';
+function getDistrictData(loc) {
+  if (loc === "__whole__") {
+    var maxD = districts[0];
+    for (var i = 1; i < districts.length; i++) {
+      if (districts[i].price_elite > maxD.price_elite) maxD = districts[i];
     }
-    html+='</select></div>';
-    html+='<div><label>Listings</label><select class="sel-tier" data-id="'+r.id+'">';
-    for(var j=0;j<TIERS.length;j++){
-      html+='<option value="'+j+'"'+(r.tierIdx===j?" selected":"")+'>'+TIERS[j].label+'</option>';
-    }
-    html+='</select></div>';
-    html+='<div><label>Additional ELPs</label><select class="sel-elps" data-id="'+r.id+'">';
-    for(var j=0;j<=10;j++){
-      html+='<option value="'+j+'"'+(r.addElps===j?" selected":"")+'>'+j+'</option>';
-    }
-    html+='</select></div>';
-    if(showRemove){html+='<button class="btn-remove" data-id="'+r.id+'">&times;</button>'}
-    else{html+='<div style="width:32px"></div>'}
-    div.innerHTML=html;
-    c.appendChild(div);
+    return { data: { district:"Whole Country", price_elite:maxD.price_elite, price_elite_plus:maxD.price_elite_plus, price_elp_3m:maxD.price_elp_3m }, source: maxD.district };
   }
-  var locs=c.querySelectorAll(".sel-loc");
-  for(var i=0;i<locs.length;i++){locs[i].addEventListener("change",function(){var id=parseInt(this.getAttribute("data-id"));for(var j=0;j<rows.length;j++){if(rows[j].id===id)rows[j].loc=this.value}render()})}
-  var tiers=c.querySelectorAll(".sel-tier");
-  for(var i=0;i<tiers.length;i++){tiers[i].addEventListener("change",function(){var id=parseInt(this.getAttribute("data-id"));for(var j=0;j<rows.length;j++){if(rows[j].id===id)rows[j].tierIdx=parseInt(this.value)}render()})}
-  var elps=c.querySelectorAll(".sel-elps");
-  for(var i=0;i<elps.length;i++){elps[i].addEventListener("change",function(){var id=parseInt(this.getAttribute("data-id"));for(var j=0;j<rows.length;j++){if(rows[j].id===id)rows[j].addElps=parseInt(this.value)}render()})}
-  var removes=c.querySelectorAll(".btn-remove");
-  for(var i=0;i<removes.length;i++){removes[i].addEventListener("click",function(){removeRow(parseInt(this.getAttribute("data-id")))})}
+  for (var i = 0; i < districts.length; i++) {
+    if (districts[i].district === loc) return { data: districts[i], source: null };
+  }
+  return { data: districts[0], source: null };
 }
 
-function render(){
-  var $o=document.getElementById("output");
-  var rc=[];var tL=0;var tE=0;
-  var hasAny=false;
+function addRow(loc, tierIdx, addElps) {
+  var id = nextId++;
+  rows.push({ id: id, loc: loc || "__whole__", tierIdx: tierIdx || 0, addElps: addElps || 0 });
+  renderRows();
+  render();
+}
 
-  for(var i=0;i<rows.length;i++){
-    var r=rows[i];var tier=TIERS[r.tierIdx];var info=getDistrictData(r.loc);var d=info.data;
-    if(tier.count===0){rc.push(null);continue}
-    hasAny=true;
-    var cnt=tier.count;var iE=tier.elps;var rE=iE+r.addElps;var eM=d.price_elp_3m;
-    var e3r=d.price_elite*cnt;var e6r=d.price_elite*2*0.9*cnt;var e12r=d.price_elite*4*0.8*cnt;
-    var ep3=eM*3*rE;var ep6=eM*3*rE*2*0.9;var ep12=eM*3*rE*4*0.8;
-    tL+=cnt;tE+=rE;
-    rc.push({loc:r.loc==="__whole__"?"Whole Country":r.loc,source:info.source,tier:tier,cnt:cnt,elps:rE,e3r:e3r,e6r:e6r,e12r:e12r,ep3r:e3r+ep3,ep6r:e6r+ep6,ep12r:e12r+ep12,elpMo:eM,priceElite:d.price_elite});
+function removeRow(id) {
+  rows = rows.filter(function(r) { return r.id !== id; });
+  renderRows();
+  render();
+}
+
+function renderRows() {
+  var container = document.getElementById("rows-container");
+  container.innerHTML = "";
+
+  for (var i = 0; i < rows.length; i++) {
+    var r   = rows[i];
+    var div = document.createElement("div");
+    div.className = "input-row";
+    div.setAttribute("data-id", r.id);
+
+    var showRemove = rows.length > 1;
+    var html = '<div><label>Country</label><select disabled><option>ES</option></select></div>';
+
+    html += '<div><label>Province</label><select class="sel-loc" data-id="' + r.id + '">';
+    html += '<option value="__whole__"' + (r.loc === "__whole__" ? " selected" : "") + '>Whole Country</option>';
+    for (var j = 0; j < districts.length; j++) {
+      html += '<option value="' + districts[j].district + '"' + (r.loc === districts[j].district ? " selected" : "") + '>' + districts[j].district + '</option>';
+    }
+    html += '</select></div>';
+
+    html += '<div><label>Listings</label><select class="sel-tier" data-id="' + r.id + '">';
+    for (var j = 0; j < TIERS.length; j++) {
+      html += '<option value="' + j + '"' + (r.tierIdx === j ? " selected" : "") + '>' + TIERS[j].label + '</option>';
+    }
+    html += '</select></div>';
+
+    html += '<div><label>Additional ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
+    for (var j = 0; j <= 10; j++) {
+      html += '<option value="' + j + '"' + (r.addElps === j ? " selected" : "") + '>' + j + '</option>';
+    }
+    html += '</select></div>';
+
+    html += showRemove
+      ? '<button class="btn-remove" data-id="' + r.id + '">&times;</button>'
+      : '<div style="width:32px"></div>';
+
+    div.innerHTML = html;
+    container.appendChild(div);
   }
 
-  if(!hasAny){$o.innerHTML='<div class="empty">Select a listing tier to see pricing.</div>';return}
+  var locs = container.querySelectorAll(".sel-loc");
+  for (var i = 0; i < locs.length; i++) {
+    locs[i].addEventListener("change", function() {
+      var id = parseInt(this.getAttribute("data-id"));
+      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].loc = this.value; }
+      render();
+    });
+  }
+  var tiers = container.querySelectorAll(".sel-tier");
+  for (var i = 0; i < tiers.length; i++) {
+    tiers[i].addEventListener("change", function() {
+      var id = parseInt(this.getAttribute("data-id"));
+      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].tierIdx = parseInt(this.value); }
+      render();
+    });
+  }
+  var elps = container.querySelectorAll(".sel-elps");
+  for (var i = 0; i < elps.length; i++) {
+    elps[i].addEventListener("change", function() {
+      var id = parseInt(this.getAttribute("data-id"));
+      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].addElps = parseInt(this.value); }
+      render();
+    });
+  }
+  var removes = container.querySelectorAll(".btn-remove");
+  for (var i = 0; i < removes.length; i++) {
+    removes[i].addEventListener("click", function() {
+      removeRow(parseInt(this.getAttribute("data-id")));
+    });
+  }
+}
 
-  var e3=0,e6=0,e12=0,ep3=0,ep6=0,ep12=0;
-  for(var i=0;i<rc.length;i++){
-    if(!rc[i])continue;
-    e3+=psych(rc[i].e3r);e6+=psych(rc[i].e6r);e12+=psych(rc[i].e12r);
-    ep3+=psych(rc[i].ep3r);ep6+=psych(rc[i].ep6r);ep12+=psych(rc[i].ep12r);
+function render() {
+  var $output = document.getElementById("output");
+
+  var rowCalcs = [];
+  var totalListings = 0, totalElps = 0;
+  var hasAny = false;
+
+  for (var i = 0; i < rows.length; i++) {
+    var r    = rows[i];
+    var tier = TIERS[r.tierIdx];
+    var info = getDistrictData(r.loc);
+    var d    = info.data;
+
+    if (tier.count === 0) { rowCalcs.push(null); continue; }
+    hasAny = true;
+
+    var cnt    = tier.count;
+    var rElps  = tier.elps + r.addElps;
+    var elpMo  = d.price_elp_3m;
+
+    var e3r  = d.price_elite * cnt;
+    var e6r  = d.price_elite * 2 * 0.9 * cnt;
+    var e12r = d.price_elite * 4 * 0.8 * cnt;
+
+    var ep_e3r  = elpMo * 3 * rElps;
+    var ep_e6r  = elpMo * 3 * rElps * 2 * 0.9;
+    var ep_e12r = elpMo * 3 * rElps * 4 * 0.8;
+
+    totalListings += cnt;
+    totalElps     += rElps;
+
+    rowCalcs.push({
+      loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
+      source: info.source,
+      tier: tier,
+      cnt: cnt,
+      elps: rElps,
+      e3r: e3r, e6r: e6r, e12r: e12r,
+      ep3r: e3r + ep_e3r, ep6r: e6r + ep_e6r, ep12r: e12r + ep_e12r,
+      elpMo: elpMo,
+      priceElite: d.price_elite,
+    });
   }
 
-  var eS6=Math.max(e3*2-e6,0);
-  var eS12=Math.max(e3*4-e12,0);
-  var epS6=Math.max(ep3*2-ep6,0);
-  var epS12=Math.max(ep3*4-ep12,0);
+  if (!hasAny) {
+    lastPricing = null;
+    $output.innerHTML = '<div class="empty">Select a listing tier to see pricing.</div>';
+    return;
+  }
 
-  var periods=[
-    {label:"3 Months",mo:3,eT:e3,epT:ep3,eS:0,epS:0},
-    {label:"6 Months",mo:6,eT:e6,epT:ep6,eS:eS6,epS:epS6},
-    {label:"12 Months",mo:12,eT:e12,epT:ep12,eS:eS12,epS:epS12}
+  // Totals = sum of per-row psych values (matches live file behaviour)
+  var e3=0, e6=0, e12=0, ep3=0, ep6=0, ep12=0;
+  for (var i = 0; i < rowCalcs.length; i++) {
+    var rc = rowCalcs[i];
+    if (!rc) continue;
+    e3  += psych(rc.e3r);  e6  += psych(rc.e6r);  e12  += psych(rc.e12r);
+    ep3 += psych(rc.ep3r); ep6 += psych(rc.ep6r); ep12 += psych(rc.ep12r);
+  }
+
+  var eSave6   = Math.max(e3  * 2 - e6,   0);
+  var eSave12  = Math.max(e3  * 4 - e12,  0);
+  var epSave6  = Math.max(ep3 * 2 - ep6,  0);
+  var epSave12 = Math.max(ep3 * 4 - ep12, 0);
+
+  var periods = [
+    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eSave:0,       epSave:0 },
+    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eSave:eSave6,  epSave:epSave6 },
+    { label:"12 Months", mo:12, eT:e12, epT:ep12, eSave:eSave12, epSave:epSave12 },
   ];
 
-  var tierLabels=[];
-  for(var i=0;i<rc.length;i++){if(rc[i])tierLabels.push(rc[i].tier.label)}
-  var lL=tierLabels.join(" + ")+" Listings";
-
-  var h='<div class="cards">';
-  h+='<div class="card-head elite"><h2>Elite</h2><div class="sub">'+lL+'</div><div class="sub" style="visibility:hidden">_</div></div>';
-  h+='<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">'+lL+'</div><div class="elp-info">'+tE+' Promoted Listing'+(tE!==1?'s':'')+'</div></div>';
-
-  for(var i=0;i<periods.length;i++){
-    var p=periods[i];var last=(i===2)?" last":"";
-    h+='<div class="row elite'+last+'"><div class="period">'+p.label+'</div>';
-    h+=p.eS>0?'<div><span class="save-badge green">Save '+fmt(p.eS)+'</span></div>':'';
-    h+='<div class="price">'+fmt(p.eT)+' <span class="suffix">Total</span></div>';
-    h+='<div class="monthly">'+fmtDec(p.eT/p.mo)+' / Month</div></div>';
-    h+='<div class="row ep'+last+'"><div class="period">'+p.label+'</div>';
-    h+=p.epS>0?'<div><span class="save-badge gold">Save '+fmt(p.epS)+'</span></div>':'';
-    h+='<div class="price">'+fmt(p.epT)+' <span class="suffix">Total</span></div>';
-    h+='<div class="monthly">'+fmtDec(p.epT/p.mo)+' / Month</div></div>';
+  // Build listing label
+  var tierLabels = [];
+  for (var i = 0; i < rowCalcs.length; i++) {
+    if (rowCalcs[i]) tierLabels.push(rowCalcs[i].tier.label);
   }
-  h+='</div>';
+  var listingLabel = tierLabels.join(" + ") + " Listings";
 
-  h+='<div class="breakdown-box"><div class="title">Cost Breakdown by Province</div><div class="tbl-wrap">';
-  h+='<table><thead><tr><th>Province</th><th>Listings</th><th>ELPs</th><th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th><th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th></tr></thead><tbody>';
-  for(var i=0;i<rc.length;i++){
-    var x=rc[i];if(!x)continue;
-    var lb=x.loc;
-    if(x.source)lb+=' <span style="font-size:11px;color:#1B7B6E">('+x.source+')</span>';
-    h+='<tr><td>'+lb+'</td><td>'+x.tier.label+'</td><td>'+x.elps+'</td>';
-    h+='<td>'+fmt(psych(x.e3r))+'</td><td>'+fmt(psych(x.e6r))+'</td><td>'+fmt(psych(x.e12r))+'</td>';
-    h+='<td>'+fmt(psych(x.ep3r))+'</td><td>'+fmt(psych(x.ep6r))+'</td><td>'+fmt(psych(x.ep12r))+'</td></tr>';
+  // Build province summary for note
+  var provinceSummary = [];
+  for (var i = 0; i < rowCalcs.length; i++) {
+    var rci = rowCalcs[i];
+    if (!rci) continue;
+    var pname = rci.loc + (rci.source ? " (" + rci.source + ")" : "");
+    provinceSummary.push(pname + ": " + rci.tier.label + " listings, " + rci.elps + " ELPs");
   }
-  if(rc.filter(function(r){return r}).length>1){
-    h+='<tr class="total-row"><td>Total</td><td>'+tL+'</td><td>'+tE+'</td>';
-    h+='<td>'+fmt(e3)+'</td><td>'+fmt(e6)+'</td><td>'+fmt(e12)+'</td>';
-    h+='<td>'+fmt(ep3)+'</td><td>'+fmt(ep6)+'</td><td>'+fmt(ep12)+'</td></tr>';
+
+  // Store snapshot for HubSpot push
+  lastPricing = {
+    elite_3m:  e3,  elite_6m:  e6,  elite_12m:  e12,
+    ep_3m:     ep3, ep_6m:     ep6, ep_12m:     ep12,
+    totalListings: totalListings,
+    totalElps: totalElps,
+    listingLabel: listingLabel,
+    provinceSummary: provinceSummary.join("\n"),
+    provinceLabel: provinceSummary.length === 1
+      ? rowCalcs.filter(function(r){return r;})[0].loc
+      : rowCalcs.filter(function(r){return r;}).map(function(r){return r.loc;}).join(", "),
+    rowCalcs: rowCalcs,
+  };
+
+  var html = '<div class="cards">';
+
+  html += '<div class="card-head elite"><h2>Elite</h2><div class="sub">' + listingLabel + '</div><div class="sub" style="visibility:hidden">_</div></div>';
+  html += '<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">' + listingLabel + '</div><div class="elp-info">' + totalElps + ' Promoted Listing' + (totalElps !== 1 ? 's' : '') + '</div></div>';
+
+  var planKeys = ["elite_3m", "elite_6m", "elite_12m"];
+  var epKeys   = ["ep_3m",    "ep_6m",    "ep_12m"];
+
+  for (var i = 0; i < periods.length; i++) {
+    var p    = periods[i];
+    var last = (i === 2) ? " last" : "";
+
+    html += '<div class="row elite' + last + '"><div class="period">' + p.label + '</div>';
+    html += p.eSave > 0 ? '<div><span class="save-badge green">Save ' + fmt(p.eSave) + '</span></div>' : '';
+    html += '<div class="price">' + fmt(p.eT) + ' <span class="suffix">Total</span></div>';
+    html += '<div class="monthly">' + fmtDec(p.eT / p.mo) + ' / Month</div>';
+    html += '<button class="row-push-btn" data-plan="' + planKeys[i] + '">';
+    html += '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
+    html += 'Update Deal</button></div>';
+
+    html += '<div class="row ep' + last + '"><div class="period">' + p.label + '</div>';
+    html += p.epSave > 0 ? '<div><span class="save-badge gold">Save ' + fmt(p.epSave) + '</span></div>' : '';
+    html += '<div class="price">' + fmt(p.epT) + ' <span class="suffix">Total</span></div>';
+    html += '<div class="monthly">' + fmtDec(p.epT / p.mo) + ' / Month</div>';
+    html += '<button class="row-push-btn" data-plan="' + epKeys[i] + '">';
+    html += '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
+    html += 'Update Deal</button></div>';
   }
-  h+='</tbody></table></div></div>';
-  $o.innerHTML=h;
+
+  html += '</div>';
+
+  // Per-province breakdown table
+  html += '<div class="breakdown-box"><div class="title">Cost Breakdown by Province</div><div class="tbl-wrap">';
+  html += '<table><thead><tr><th>Province</th><th>Listings</th><th>ELPs</th><th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th><th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th></tr></thead><tbody>';
+
+  for (var i = 0; i < rowCalcs.length; i++) {
+    var rc = rowCalcs[i];
+    if (!rc) continue;
+    var label = rc.loc;
+    if (rc.source) label += ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>';
+    html += '<tr>';
+    html += '<td>' + label + '</td>';
+    html += '<td>' + rc.tier.label + '</td>';
+    html += '<td>' + rc.elps + '</td>';
+    html += '<td>' + fmt(psych(rc.e3r)) + '</td>';
+    html += '<td>' + fmt(psych(rc.e6r)) + '</td>';
+    html += '<td>' + fmt(psych(rc.e12r)) + '</td>';
+    html += '<td>' + fmt(psych(rc.ep3r)) + '</td>';
+    html += '<td>' + fmt(psych(rc.ep6r)) + '</td>';
+    html += '<td>' + fmt(psych(rc.ep12r)) + '</td>';
+    html += '</tr>';
+  }
+
+  if (rowCalcs.filter(function(r){ return r; }).length > 1) {
+    html += '<tr class="total-row">';
+    html += '<td>Total</td><td>' + totalListings + '</td><td>' + totalElps + '</td>';
+    html += '<td>' + fmt(e3)  + '</td><td>' + fmt(e6)  + '</td><td>' + fmt(e12)  + '</td>';
+    html += '<td>' + fmt(ep3) + '</td><td>' + fmt(ep6) + '</td><td>' + fmt(ep12) + '</td>';
+    html += '</tr>';
+  }
+
+  html += '</tbody></table></div></div>';
+
+  // ── HubSpot panel ──────────────────────────────────────────────────────────
+  html += '<div class="hs-panel">';
+
+  html += '<div id="hs-status" class="hs-status"></div>';
+  html += '</div>';
+  // ── end HubSpot panel ──────────────────────────────────────────────────────
+
+  $output.innerHTML = html;
+
+  // Wire up row push buttons
+  var pushBtns = $output.querySelectorAll(".row-push-btn");
+  for (var i = 0; i < pushBtns.length; i++) {
+    pushBtns[i].addEventListener("click", function() {
+      pushToHubSpot(this.getAttribute("data-plan"), this);
+    });
+  }
 }
 
-document.getElementById("btn-add").addEventListener("click",function(){addRow()});
-addRow("__whole__",0,0);
+function pushToHubSpot(planKey, btn) {
+  var dealId  = (document.getElementById("hs-deal-id").value || "").trim();
+  var $status = document.getElementById("hs-status");
+
+  if (!dealId) {
+    $status.className   = "hs-status error";
+    $status.textContent = "Please enter a HubSpot Deal ID first.";
+    document.getElementById("hs-deal-id").focus();
+    return;
+  }
+  if (!lastPricing) {
+    $status.className   = "hs-status error";
+    $status.textContent = "No pricing data available.";
+    return;
+  }
+
+  var planLabels = {
+    elite_3m:  "Elite — 3 Months",
+    elite_6m:  "Elite — 6 Months",
+    elite_12m: "Elite — 12 Months",
+    ep_3m:     "Elite Plus — 3 Months",
+    ep_6m:     "Elite Plus — 6 Months",
+    ep_12m:    "Elite Plus — 12 Months",
+  };
+
+  var subTypes = {
+    elite_3m: "Elite", elite_6m: "Elite", elite_12m: "Elite",
+    ep_3m: "Elite Plus", ep_6m: "Elite Plus", ep_12m: "Elite Plus",
+  };
+
+  var termMonths = {
+    elite_3m: 3, elite_6m: 6, elite_12m: 12,
+    ep_3m: 3,   ep_6m: 6,   ep_12m: 12,
+  };
+
+  var payload = {
+    deal_id:          dealId,
+    plan_label:       planLabels[planKey],
+    amount:           lastPricing[planKey],
+    elite_3m:         lastPricing.elite_3m,
+    elite_6m:         lastPricing.elite_6m,
+    elite_12m:        lastPricing.elite_12m,
+    ep_3m:            lastPricing.ep_3m,
+    ep_6m:            lastPricing.ep_6m,
+    ep_12m:           lastPricing.ep_12m,
+    listing_label:    lastPricing.listingLabel,
+    total_listings:   lastPricing.totalListings,
+    total_elps:       lastPricing.totalElps,
+    province_summary: lastPricing.provinceSummary,
+
+    // Custom HubSpot deal properties
+    price_country:        country,
+    price_sub_type:       subTypes[planKey],
+    price_term_months:    termMonths[planKey],
+    price_listings:       lastPricing.listingLabel,
+    price_additional_elps: lastPricing.totalElps,
+    price_province:       lastPricing.provinceLabel,
+  };
+
+  // Disable all push buttons while in flight
+  var allBtns = document.querySelectorAll(".row-push-btn");
+  for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = true;
+
+  var origHTML = btn.innerHTML;
+  btn.innerHTML = "Sending…";
+  $status.className   = "hs-status loading";
+  $status.textContent = "Updating deal " + dealId + "…";
+
+  fetch(N8N_WEBHOOK_URL, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(payload),
+  })
+  .then(function(res) {
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.json().catch(function() { return {}; });
+  })
+  .then(function() {
+    $status.className   = "hs-status success";
+    $status.textContent = "✓ Deal " + dealId + " updated — " + planLabels[planKey] + " (" + fmt(lastPricing[planKey]) + ") set as Amount, pricing note added.";
+    btn.innerHTML = "✓ Sent";
+    btn.classList.add("sent");
+    setTimeout(function() {
+      btn.innerHTML = origHTML;
+      btn.classList.remove("sent");
+    }, 3000);
+    for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = false;
+  })
+  .catch(function(err) {
+    $status.className   = "hs-status error";
+    $status.textContent = "Error: " + err.message + ". Check the webhook URL and n8n workflow.";
+    btn.innerHTML = origHTML;
+    for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = false;
+  });
+}
+
+document.getElementById("btn-add").addEventListener("click", function() { addRow(); });
+
+// Init with one row
+addRow("__whole__", 0, 0);
 </script>
 </body>
 </html>
