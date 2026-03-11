@@ -106,15 +106,15 @@ var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calcula
 // price_elp_3m   = monthly ELP price (6% take rate × demand multiplier)
 var ALL_DATA = {
   ES: [
-    { district:"Alicante",               price_elite_5:24.50, price_elite_15:19.60, price_elite_30:17.15, price_elite_60:14.70, price_elite_100:12.25, price_elp_3m:121.00 },
-    { district:"Barcelona",              price_elite_5:27.13, price_elite_15:21.70, price_elite_30:18.99, price_elite_60:16.28, price_elite_100:13.56, price_elp_3m:93.00  },
-    { district:"Cádiz",                  price_elite_5:31.16, price_elite_15:24.93, price_elite_30:21.81, price_elite_60:18.69, price_elite_100:15.58, price_elp_3m:123.00 },
-    { district:"Girona",                 price_elite_5:27.13, price_elite_15:21.70, price_elite_30:18.99, price_elite_60:16.28, price_elite_100:13.56, price_elp_3m:93.00  },
-    { district:"Ibiza",                  price_elite_5:63.30, price_elite_15:50.64, price_elite_30:44.31, price_elite_60:37.98, price_elite_100:31.65, price_elp_3m:217.00 },
-    { district:"Madrid",                 price_elite_5:54.18, price_elite_15:43.34, price_elite_30:37.92, price_elite_60:32.51, price_elite_100:27.09, price_elp_3m:259.00 },
-    { district:"Mallorca",               price_elite_5:57.55, price_elite_15:46.04, price_elite_30:40.28, price_elite_60:34.53, price_elite_100:28.77, price_elp_3m:197.00 },
-    { district:"Málaga",                 price_elite_5:53.44, price_elite_15:42.75, price_elite_30:37.40, price_elite_60:32.06, price_elite_100:26.72, price_elp_3m:188.00 },
-    { district:"Santa Cruz De Tenerife", price_elite_5:26.22, price_elite_15:20.98, price_elite_30:18.36, price_elite_60:15.73, price_elite_100:13.11, price_elp_3m:90.00  },
+    { district:"Alicante",               price_elite_5:24.50, price_elite_15:19.60, price_elite_30:17.15, price_elite_60:14.70, price_elite_100:12.25, price_elp_3m:202.00 },
+    { district:"Barcelona",              price_elite_5:27.13, price_elite_15:21.70, price_elite_30:18.99, price_elite_60:16.28, price_elite_100:13.56, price_elp_3m:155.00 },
+    { district:"Cádiz",                  price_elite_5:31.16, price_elite_15:24.93, price_elite_30:21.81, price_elite_60:18.69, price_elite_100:15.58, price_elp_3m:205.00 },
+    { district:"Girona",                 price_elite_5:27.13, price_elite_15:21.70, price_elite_30:18.99, price_elite_60:16.28, price_elite_100:13.56, price_elp_3m:155.00 },
+    { district:"Ibiza",                  price_elite_5:63.30, price_elite_15:50.64, price_elite_30:44.31, price_elite_60:37.98, price_elite_100:31.65, price_elp_3m:361.00 },
+    { district:"Madrid",                 price_elite_5:54.18, price_elite_15:43.34, price_elite_30:37.92, price_elite_60:32.51, price_elite_100:27.09, price_elp_3m:432.00 },
+    { district:"Mallorca",               price_elite_5:57.55, price_elite_15:46.04, price_elite_30:40.28, price_elite_60:34.53, price_elite_100:28.77, price_elp_3m:328.00 },
+    { district:"Málaga",                 price_elite_5:53.44, price_elite_15:42.75, price_elite_30:37.40, price_elite_60:32.06, price_elite_100:26.72, price_elp_3m:313.00 },
+    { district:"Santa Cruz De Tenerife", price_elite_5:26.22, price_elite_15:20.98, price_elite_30:18.36, price_elite_60:15.73, price_elite_100:13.11, price_elp_3m:150.00 },
     { district:"Other",                  price_elite_5:21.38, price_elite_15:17.10, price_elite_30:14.96, price_elite_60:12.83, price_elite_100:10.69, price_elp_3m:96.00  },
   ],
 };
@@ -284,9 +284,9 @@ function render() {
     var e12r = priceElite * 4 * 0.8 * cnt;
 
     // ELP component (same period discounts as listings)
-    var ep_e3r  = elpMo * 3 * rElps;
-    var ep_e6r  = elpMo * 3 * rElps * 2 * 0.9;
-    var ep_e12r = elpMo * 3 * rElps * 4 * 0.8;
+    var ep_e3r  = elpMo * rElps;
+    var ep_e6r  = elpMo * rElps * 2 * 0.9;
+    var ep_e12r = elpMo * rElps * 4 * 0.8;
 
     totalListings += cnt;
     totalElps     += rElps;
