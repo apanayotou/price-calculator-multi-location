@@ -44,15 +44,14 @@
   .monthly { font-size: 13px; color: #999; margin-top: 2px; }
   .breakdown-box { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
   .breakdown-box .title { padding: 16px 24px; border-bottom: 1px solid #E5E5E5; font-size: 14px; font-weight: 600; }
-  table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 12px; }
-  th { text-align: left; padding: 8px 4px; font-weight: 600; color: #444; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #E5E5E5; }
-  td { padding: 8px 4px; border-bottom: 1px solid #F0F0F0; }
+  .calc-table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 12px; }
+  .calc-table th { text-align: left; padding: 8px 4px; font-weight: 600; color: #444; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #E5E5E5; }
+  .calc-table td { padding: 8px 4px; border-bottom: 1px solid #F0F0F0; }
   .tbl-wrap { padding: 0 24px 16px; overflow-x: auto; }
-  tr.total-row td { font-weight: 700; border-top: 2px solid #E5E5E5; border-bottom: none; }
+  .calc-table tr.total-row td { font-weight: 700; border-top: 2px solid #E5E5E5; border-bottom: none; }
   .empty { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; padding: 40px; text-align: center; color: #999; font-size: 14px; }
   .footer { text-align: center; padding: 24px 0 8px; font-size: 11px; color: #999; }
 
-  /* HubSpot panel */
   /* Row-level push buttons */
   .row-push-btn { margin-top: 12px; width: 100%; padding: 7px 12px; background: transparent; border: 1px solid #DDDDDD; border-radius: 4px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.15s, color 0.15s, background 0.15s; }
   .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF5F3; }
@@ -63,12 +62,8 @@
 
   /* HubSpot panel */
   .hs-panel { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
-  .hs-panel-body { padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #F0F0F0; }
-  .hs-deal-label { font-size: 12px; font-weight: 600; color: #444; letter-spacing: 0.03em; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
-  .hs-deal-label svg { flex-shrink: 0; }
   .hs-deal-id-input { padding: 7px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; color: #1A1A1A; outline: none; width: 180px; }
   .hs-deal-id-input:focus { border-color: #FF7A59; }
-  .hs-hint { font-size: 12px; color: #aaa; }
   .hs-status { padding: 10px 24px; font-size: 13px; display: none; }
   .hs-status.success { background: #EAF5F3; color: #1B7B6E; border-top: 1px solid #C3DED9; display: block; }
   .hs-status.error { background: #FEF2F2; color: #B91C1C; border-top: 1px solid #FECACA; display: block; }
@@ -103,25 +98,35 @@
 var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calculator-hs";
 // ─────────────────────────────────────────────────────────────────────────────
 
+// price_elite_5   = per-listing price for 1–5 listings   (10% take rate)
+// price_elite_15  = per-listing price for 6–15 listings  (8%  take rate)
+// price_elite_30 = per-listing price for 16–30 listings (7% take rate)
+// price_elite_60 = per-listing price for 31–100 listings (6% take rate)
+// price_elp_3m   = monthly ELP price (6% take rate × demand multiplier)
 var ALL_DATA = {
   ES: [
-    { district:"Alicante",  price_elite:14.42, price_elite_plus:16.83, price_elp_3m:136.00 },
-    { district:"Barcelona", price_elite:16.19, price_elite_plus:18.89, price_elp_3m:106.00 },
-    { district:"Ibiza",     price_elite:38.75, price_elite_plus:45.21, price_elp_3m:268.00 },
-    { district:"Madrid",    price_elite:32.38, price_elite_plus:37.77, price_elp_3m:273.00 },
-    { district:"Malaga",    price_elite:33.16, price_elite_plus:38.69, price_elp_3m:235.00 },
-    { district:"Mallorca",  price_elite:35.22, price_elite_plus:41.09, price_elp_3m:231.00 },
-    { district:"Other",     price_elite:14.72, price_elite_plus:17.17, price_elp_3m:96.00 },
+    { district:"Alicante",               price_elite_5:24.50, price_elite_15:19.60, price_elite_30:17.15, price_elite_60:14.70, price_elp_3m:121.00 },
+    { district:"Barcelona",              price_elite_5:27.13, price_elite_15:21.71, price_elite_30:18.99, price_elite_60:16.28, price_elp_3m:92.00  },
+    { district:"Cádiz",                  price_elite_5:31.16, price_elite_15:24.93, price_elite_30:21.81, price_elite_60:18.70, price_elp_3m:122.00 },
+    { district:"Girona",                 price_elite_5:27.13, price_elite_15:21.71, price_elite_30:18.99, price_elite_60:16.28, price_elp_3m:92.00  },
+    { district:"Ibiza",                  price_elite_5:63.31, price_elite_15:50.65, price_elite_30:44.32, price_elite_60:37.99, price_elp_3m:216.00 },
+    { district:"Madrid",                 price_elite_5:54.18, price_elite_15:43.35, price_elite_30:37.93, price_elite_60:32.51, price_elp_3m:258.00 },
+    { district:"Mallorca",               price_elite_5:57.55, price_elite_15:46.04, price_elite_30:40.29, price_elite_60:34.53, price_elp_3m:196.00 },
+    { district:"Málaga",                 price_elite_5:53.44, price_elite_15:42.75, price_elite_30:37.41, price_elite_60:32.07, price_elp_3m:187.00 },
+    { district:"Santa Cruz De Tenerife", price_elite_5:26.23, price_elite_15:20.98, price_elite_30:18.36, price_elite_60:15.74, price_elp_3m:89.00  },
+    { district:"Valencia",               price_elite_5:21.38, price_elite_15:17.10, price_elite_30:14.96, price_elite_60:12.83, price_elp_3m:96.00  },
+    { district:"Other",                  price_elite_5:21.38, price_elite_15:17.10, price_elite_30:14.96, price_elite_60:12.83, price_elp_3m:96.00  },
   ],
 };
 
+// priceKey maps each tier to the correct per-listing rate column
 var TIERS = [
-  { label:"0",     count:0,   elps:0 },
-  { label:"1-5",   count:5,   elps:1 },
-  { label:"6-15",  count:15,  elps:2 },
-  { label:"16-30", count:30,  elps:3 },
-  { label:"31-60", count:60,  elps:5 },
-  { label:"61-100",count:100, elps:7 },
+  { label:"0",      count:0,   elps:0, priceKey:"price_elite_60" },
+  { label:"1-5",    count:5,   elps:1, priceKey:"price_elite_5"  },
+  { label:"6-15",   count:15,  elps:2, priceKey:"price_elite_15" },
+  { label:"16-30",  count:30,  elps:3, priceKey:"price_elite_30" },
+  { label:"31-60",  count:60,  elps:5, priceKey:"price_elite_60" },
+  { label:"61-100", count:100, elps:7, priceKey:"price_elite_60" },
 ];
 
 var country   = "ES";
@@ -141,15 +146,24 @@ function psych(v) {
 
 function fmt(v)    { return "\u20AC" + v.toLocaleString("en-US"); }
 function fmtDec(v) { return "\u20AC" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
-function rawNum(v) { return Math.round(v); } // plain integer for HubSpot amount field
 
 function getDistrictData(loc) {
   if (loc === "__whole__") {
     var maxD = districts[0];
     for (var i = 1; i < districts.length; i++) {
-      if (districts[i].price_elite > maxD.price_elite) maxD = districts[i];
+      if (districts[i].price_elite_60 > maxD.price_elite_60) maxD = districts[i];
     }
-    return { data: { district:"Whole Country", price_elite:maxD.price_elite, price_elite_plus:maxD.price_elite_plus, price_elp_3m:maxD.price_elp_3m }, source: maxD.district };
+    return {
+      data: {
+        district:        "Whole Country",
+        price_elite_5:   maxD.price_elite_5,
+        price_elite_15:  maxD.price_elite_15,
+        price_elite_30:  maxD.price_elite_30,
+        price_elite_60:  maxD.price_elite_60,
+        price_elp_3m:    maxD.price_elp_3m,
+      },
+      source: maxD.district,
+    };
   }
   for (var i = 0; i < districts.length; i++) {
     if (districts[i].district === loc) return { data: districts[i], source: null };
@@ -258,14 +272,17 @@ function render() {
     if (tier.count === 0) { rowCalcs.push(null); continue; }
     hasAny = true;
 
-    var cnt    = tier.count;
-    var rElps  = tier.elps + r.addElps;
-    var elpMo  = d.price_elp_3m;
+    var cnt        = tier.count;
+    var rElps      = tier.elps + r.addElps;
+    var elpMo      = d.price_elp_3m;
+    var priceElite = d[tier.priceKey]; // tier-appropriate rate
 
-    var e3r  = d.price_elite * cnt;
-    var e6r  = d.price_elite * 2 * 0.9 * cnt;
-    var e12r = d.price_elite * 4 * 0.8 * cnt;
+    // Elite listing component
+    var e3r  = priceElite * cnt;
+    var e6r  = priceElite * 2 * 0.9 * cnt;
+    var e12r = priceElite * 4 * 0.8 * cnt;
 
+    // ELP component (same period discounts as listings)
     var ep_e3r  = elpMo * 3 * rElps;
     var ep_e6r  = elpMo * 3 * rElps * 2 * 0.9;
     var ep_e12r = elpMo * 3 * rElps * 4 * 0.8;
@@ -274,15 +291,15 @@ function render() {
     totalElps     += rElps;
 
     rowCalcs.push({
-      loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
-      source: info.source,
-      tier: tier,
-      cnt: cnt,
-      elps: rElps,
-      e3r: e3r, e6r: e6r, e12r: e12r,
+      loc:        r.loc === "__whole__" ? "Whole Country" : r.loc,
+      source:     info.source,
+      tier:       tier,
+      cnt:        cnt,
+      elps:       rElps,
+      e3r:  e3r,  e6r:  e6r,  e12r:  e12r,
       ep3r: e3r + ep_e3r, ep6r: e6r + ep_e6r, ep12r: e12r + ep_e12r,
-      elpMo: elpMo,
-      priceElite: d.price_elite,
+      elpMo:      elpMo,
+      priceElite: priceElite,
     });
   }
 
@@ -292,7 +309,7 @@ function render() {
     return;
   }
 
-  // Totals = sum of per-row psych values (matches live file behaviour)
+  // Totals = sum of per-row psych values
   var e3=0, e6=0, e12=0, ep3=0, ep6=0, ep12=0;
   for (var i = 0; i < rowCalcs.length; i++) {
     var rc = rowCalcs[i];
@@ -301,25 +318,31 @@ function render() {
     ep3 += psych(rc.ep3r); ep6 += psych(rc.ep6r); ep12 += psych(rc.ep12r);
   }
 
+  // Price floors: minimum monthly rate × period length
+  // 3m → €50/mo min, 6m → €45/mo min, 12m → €40/mo min
+  e3  = Math.max(e3,   50 * 3);   e6  = Math.max(e6,  45 * 6);   e12  = Math.max(e12,  40 * 12);
+  ep3 = Math.max(ep3,  50 * 3);   ep6 = Math.max(ep6, 45 * 6);   ep12 = Math.max(ep12, 40 * 12);
+
+  // Savings calculated from display (psych) values
   var eSave6   = Math.max(e3  * 2 - e6,   0);
   var eSave12  = Math.max(e3  * 4 - e12,  0);
   var epSave6  = Math.max(ep3 * 2 - ep6,  0);
   var epSave12 = Math.max(ep3 * 4 - ep12, 0);
 
   var periods = [
-    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eSave:0,       epSave:0 },
-    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eSave:eSave6,  epSave:epSave6 },
+    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eSave:0,       epSave:0        },
+    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eSave:eSave6,  epSave:epSave6  },
     { label:"12 Months", mo:12, eT:e12, epT:ep12, eSave:eSave12, epSave:epSave12 },
   ];
 
-  // Build listing label
+  // Build listing label from tier range strings
   var tierLabels = [];
   for (var i = 0; i < rowCalcs.length; i++) {
     if (rowCalcs[i]) tierLabels.push(rowCalcs[i].tier.label);
   }
   var listingLabel = tierLabels.join(" + ") + " Listings";
 
-  // Build province summary for note
+  // Province summary for HubSpot note
   var provinceSummary = [];
   for (var i = 0; i < rowCalcs.length; i++) {
     var rci = rowCalcs[i];
@@ -332,18 +355,21 @@ function render() {
   lastPricing = {
     elite_3m:  e3,  elite_6m:  e6,  elite_12m:  e12,
     ep_3m:     ep3, ep_6m:     ep6, ep_12m:     ep12,
-    totalListings: totalListings,
-    totalElps: totalElps,
-    listingLabel: listingLabel,
+    totalListings:   totalListings,
+    totalElps:       totalElps,
+    listingLabel:    listingLabel,
     provinceSummary: provinceSummary.join("\n"),
-    provinceLabel: provinceSummary.length === 1
-      ? rowCalcs.filter(function(r){return r;})[0].loc
-      : rowCalcs.filter(function(r){return r;}).map(function(r){return r.loc;}).join(", "),
+    provinceLabel:   provinceSummary.length === 1
+      ? rowCalcs.filter(function(r){ return r; })[0].loc
+      : rowCalcs.filter(function(r){ return r; }).map(function(r){ return r.loc; }).join(", "),
     rowCalcs: rowCalcs,
   };
 
+  var hsIcon = '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
+
   var html = '<div class="cards">';
 
+  // Card headers
   html += '<div class="card-head elite"><h2>Elite</h2><div class="sub">' + listingLabel + '</div><div class="sub" style="visibility:hidden">_</div></div>';
   html += '<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">' + listingLabel + '</div><div class="elp-info">' + totalElps + ' Promoted Listing' + (totalElps !== 1 ? 's' : '') + '</div></div>';
 
@@ -354,48 +380,63 @@ function render() {
     var p    = periods[i];
     var last = (i === 2) ? " last" : "";
 
-    html += '<div class="row elite' + last + '"><div class="period">' + p.label + '</div>';
-    html += p.eSave > 0 ? '<div><span class="save-badge green">Save ' + fmt(p.eSave) + '</span></div>' : '';
+    html += '<div class="row elite' + last + '">';
+    html += '<div class="period">' + p.label + '</div>';
+    if (p.eSave > 0) html += '<div><span class="save-badge green">Save ' + fmt(p.eSave) + '</span></div>';
     html += '<div class="price">' + fmt(p.eT) + ' <span class="suffix">Total</span></div>';
     html += '<div class="monthly">' + fmtDec(p.eT / p.mo) + ' / Month</div>';
-    html += '<button class="row-push-btn" data-plan="' + planKeys[i] + '">';
-    html += '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
-    html += 'Update Deal</button></div>';
+    html += '<button class="row-push-btn" data-plan="' + planKeys[i] + '">' + hsIcon + 'Update Deal</button>';
+    html += '</div>';
 
-    html += '<div class="row ep' + last + '"><div class="period">' + p.label + '</div>';
-    html += p.epSave > 0 ? '<div><span class="save-badge gold">Save ' + fmt(p.epSave) + '</span></div>' : '';
+    html += '<div class="row ep' + last + '">';
+    html += '<div class="period">' + p.label + '</div>';
+    if (p.epSave > 0) html += '<div><span class="save-badge gold">Save ' + fmt(p.epSave) + '</span></div>';
     html += '<div class="price">' + fmt(p.epT) + ' <span class="suffix">Total</span></div>';
     html += '<div class="monthly">' + fmtDec(p.epT / p.mo) + ' / Month</div>';
-    html += '<button class="row-push-btn" data-plan="' + epKeys[i] + '">';
-    html += '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
-    html += 'Update Deal</button></div>';
+    html += '<button class="row-push-btn" data-plan="' + epKeys[i] + '">' + hsIcon + 'Update Deal</button>';
+    html += '</div>';
   }
 
   html += '</div>';
 
   // Per-province breakdown table
   html += '<div class="breakdown-box"><div class="title">Cost Breakdown by Province</div><div class="tbl-wrap">';
-  html += '<table><thead><tr><th>Province</th><th>Listings</th><th>ELPs</th><th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th><th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th></tr></thead><tbody>';
+  html += '<table class="calc-table"><thead><tr>';
+  html += '<th>Province</th><th>Listings</th><th>ELPs</th>';
+  html += '<th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th>';
+  html += '<th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th>';
+  html += '</tr></thead><tbody>';
 
+  var activeRows = rowCalcs.filter(function(r){ return r; });
   for (var i = 0; i < rowCalcs.length; i++) {
     var rc = rowCalcs[i];
     if (!rc) continue;
     var label = rc.loc;
     if (rc.source) label += ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>';
+    // For a single-row result, use the floored totals so the table matches the cards.
+    // For multi-row, individual rows show pre-floor psych values; the total row shows floored sums.
+    var td_e3, td_e6, td_e12, td_ep3, td_ep6, td_ep12;
+    if (activeRows.length === 1) {
+      td_e3 = e3; td_e6 = e6; td_e12 = e12;
+      td_ep3 = ep3; td_ep6 = ep6; td_ep12 = ep12;
+    } else {
+      td_e3 = psych(rc.e3r); td_e6 = psych(rc.e6r); td_e12 = psych(rc.e12r);
+      td_ep3 = psych(rc.ep3r); td_ep6 = psych(rc.ep6r); td_ep12 = psych(rc.ep12r);
+    }
     html += '<tr>';
     html += '<td>' + label + '</td>';
     html += '<td>' + rc.tier.label + '</td>';
     html += '<td>' + rc.elps + '</td>';
-    html += '<td>' + fmt(psych(rc.e3r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.e6r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.e12r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.ep3r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.ep6r)) + '</td>';
-    html += '<td>' + fmt(psych(rc.ep12r)) + '</td>';
+    html += '<td>' + fmt(td_e3)  + '</td>';
+    html += '<td>' + fmt(td_e6)  + '</td>';
+    html += '<td>' + fmt(td_e12) + '</td>';
+    html += '<td>' + fmt(td_ep3) + '</td>';
+    html += '<td>' + fmt(td_ep6) + '</td>';
+    html += '<td>' + fmt(td_ep12)+ '</td>';
     html += '</tr>';
   }
 
-  if (rowCalcs.filter(function(r){ return r; }).length > 1) {
+  if (activeRows.length > 1) {
     html += '<tr class="total-row">';
     html += '<td>Total</td><td>' + totalListings + '</td><td>' + totalElps + '</td>';
     html += '<td>' + fmt(e3)  + '</td><td>' + fmt(e6)  + '</td><td>' + fmt(e12)  + '</td>';
@@ -405,16 +446,12 @@ function render() {
 
   html += '</tbody></table></div></div>';
 
-  // ── HubSpot panel ──────────────────────────────────────────────────────────
-  html += '<div class="hs-panel">';
-
-  html += '<div id="hs-status" class="hs-status"></div>';
-  html += '</div>';
-  // ── end HubSpot panel ──────────────────────────────────────────────────────
+  // HubSpot status panel
+  html += '<div class="hs-panel"><div id="hs-status" class="hs-status"></div></div>';
 
   $output.innerHTML = html;
 
-  // Wire up row push buttons
+  // Wire up push buttons
   var pushBtns = $output.querySelectorAll(".row-push-btn");
   for (var i = 0; i < pushBtns.length; i++) {
     pushBtns[i].addEventListener("click", function() {
@@ -440,12 +477,12 @@ function pushToHubSpot(planKey, btn) {
   }
 
   var planLabels = {
-    elite_3m:  "Elite — 3 Months",
-    elite_6m:  "Elite — 6 Months",
-    elite_12m: "Elite — 12 Months",
-    ep_3m:     "Elite Plus — 3 Months",
-    ep_6m:     "Elite Plus — 6 Months",
-    ep_12m:    "Elite Plus — 12 Months",
+    elite_3m:  "Elite \u2014 3 Months",
+    elite_6m:  "Elite \u2014 6 Months",
+    elite_12m: "Elite \u2014 12 Months",
+    ep_3m:     "Elite Plus \u2014 3 Months",
+    ep_6m:     "Elite Plus \u2014 6 Months",
+    ep_12m:    "Elite Plus \u2014 12 Months",
   };
 
   var subTypes = {
@@ -454,42 +491,39 @@ function pushToHubSpot(planKey, btn) {
   };
 
   var termMonths = {
-    elite_3m: 3, elite_6m: 6, elite_12m: 12,
-    ep_3m: 3,   ep_6m: 6,   ep_12m: 12,
+    elite_3m: 3,  elite_6m: 6,  elite_12m: 12,
+    ep_3m:    3,  ep_6m:    6,  ep_12m:    12,
   };
 
   var payload = {
-    deal_id:          dealId,
-    plan_label:       planLabels[planKey],
-    amount:           lastPricing[planKey],
-    elite_3m:         lastPricing.elite_3m,
-    elite_6m:         lastPricing.elite_6m,
-    elite_12m:        lastPricing.elite_12m,
-    ep_3m:            lastPricing.ep_3m,
-    ep_6m:            lastPricing.ep_6m,
-    ep_12m:           lastPricing.ep_12m,
-    listing_label:    lastPricing.listingLabel,
-    total_listings:   lastPricing.totalListings,
-    total_elps:       lastPricing.totalElps,
-    province_summary: lastPricing.provinceSummary,
-
-    // Custom HubSpot deal properties
-    price_country:        country,
-    price_sub_type:       subTypes[planKey],
-    price_term_months:    termMonths[planKey],
-    price_listings:       lastPricing.listingLabel,
+    deal_id:           dealId,
+    plan_label:        planLabels[planKey],
+    amount:            lastPricing[planKey],
+    elite_3m:          lastPricing.elite_3m,
+    elite_6m:          lastPricing.elite_6m,
+    elite_12m:         lastPricing.elite_12m,
+    ep_3m:             lastPricing.ep_3m,
+    ep_6m:             lastPricing.ep_6m,
+    ep_12m:            lastPricing.ep_12m,
+    listing_label:     lastPricing.listingLabel,
+    total_listings:    lastPricing.totalListings,
+    total_elps:        lastPricing.totalElps,
+    province_summary:  lastPricing.provinceSummary,
+    price_country:         country,
+    price_sub_type:        subTypes[planKey],
+    price_term_months:     termMonths[planKey],
+    price_listings:        lastPricing.listingLabel,
     price_additional_elps: lastPricing.totalElps,
-    price_province:       lastPricing.provinceLabel,
+    price_province:        lastPricing.provinceLabel,
   };
 
-  // Disable all push buttons while in flight
   var allBtns = document.querySelectorAll(".row-push-btn");
   for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = true;
 
   var origHTML = btn.innerHTML;
-  btn.innerHTML = "Sending…";
+  btn.innerHTML = "Sending\u2026";
   $status.className   = "hs-status loading";
-  $status.textContent = "Updating deal " + dealId + "…";
+  $status.textContent = "Updating deal " + dealId + "\u2026";
 
   fetch(N8N_WEBHOOK_URL, {
     method:  "POST",
@@ -502,8 +536,8 @@ function pushToHubSpot(planKey, btn) {
   })
   .then(function() {
     $status.className   = "hs-status success";
-    $status.textContent = "✓ Deal " + dealId + " updated — " + planLabels[planKey] + " (" + fmt(lastPricing[planKey]) + ") set as Amount, pricing note added.";
-    btn.innerHTML = "✓ Sent";
+    $status.textContent = "\u2713 Deal " + dealId + " updated \u2014 " + planLabels[planKey] + " (" + fmt(lastPricing[planKey]) + ") set as Amount, pricing note added.";
+    btn.innerHTML = "\u2713 Sent";
     btn.classList.add("sent");
     setTimeout(function() {
       btn.innerHTML = origHTML;
