@@ -141,7 +141,7 @@ function psych(v) {
   if (v <= 0) return 0;
   if (v < 1000)  return Math.round(v / 10)  * 10;
   if (v < 10000) return Math.round(v / 100) * 100;
-  return Math.round(v / 500) * 500 - 1;
+  return Math.round(v / 500) * 500 ;
 }
 
 function fmt(v)    { return "\u20AC" + v.toLocaleString("en-US"); }
