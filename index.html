@@ -3,20 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Price Calculator - Spain 2026</title>
+<title>Price Calculator 2026</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F7F7F5; color: #1A1A1A; }
   .header { background: #fff; border-bottom: 1px solid #E5E5E5; padding: 16px 32px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
   .header h1 { font-size: 20px; font-weight: 700; }
   .header .meta { font-size: 11px; color: #999; margin-left: auto; }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+  .wrap { max-width: 1150px; margin: 0 auto; padding: 32px 24px; }
   .input-box { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 24px; border: 1px solid #E5E5E5; }
-  .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 16px; align-items: end; }
+  .input-row { display: grid; grid-template-columns: 140px 1fr 1fr 1fr 1fr auto; gap: 14px; align-items: end; }
   .input-row + .input-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
-  @media (max-width: 700px) { .input-row { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 800px) { .input-row { grid-template-columns: 1fr 1fr; } }
   .input-row label { font-size: 12px; font-weight: 600; color: #444; margin-bottom: 6px; display: block; letter-spacing: 0.03em; }
   .input-row select { width: 100%; padding: 8px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; background: #fff; color: #1A1A1A; cursor: pointer; outline: none; }
+  .input-row select:focus { border-color: #1B7B6E; }
   .btn-remove { width: 32px; height: 36px; border: 1px solid #E5E5E5; border-radius: 4px; background: #fff; color: #999; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-bottom: 1px; }
   .btn-remove:hover { background: #FEE; color: #C00; border-color: #C00; }
   .btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px dashed #1B7B6E; border-radius: 4px; background: #fff; color: #1B7B6E; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 16px; font-family: inherit; }
@@ -44,23 +45,19 @@
   .monthly { font-size: 13px; color: #999; margin-top: 2px; }
   .breakdown-box { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
   .breakdown-box .title { padding: 16px 24px; border-bottom: 1px solid #E5E5E5; font-size: 14px; font-weight: 600; }
-  .calc-table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 12px; }
+  .calc-table { width: 100%; font-size: 13px; border-collapse: collapse; }
   .calc-table th { text-align: left; padding: 8px 4px; font-weight: 600; color: #444; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #E5E5E5; }
   .calc-table td { padding: 8px 4px; border-bottom: 1px solid #F0F0F0; }
   .tbl-wrap { padding: 0 24px 16px; overflow-x: auto; }
   .calc-table tr.total-row td { font-weight: 700; border-top: 2px solid #E5E5E5; border-bottom: none; }
   .empty { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; padding: 40px; text-align: center; color: #999; font-size: 14px; }
   .footer { text-align: center; padding: 24px 0 8px; font-size: 11px; color: #999; }
-
-  /* Row-level push buttons */
-  .row-push-btn { margin-top: 12px; width: 100%; padding: 7px 12px; background: transparent; border: 1px solid #DDDDDD; border-radius: 4px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .row-push-btn { margin-top: 12px; width: 100%; padding: 7px 12px; background: transparent; border: 1px solid #DDD; border-radius: 4px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.15s, color 0.15s, background 0.15s; }
   .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF5F3; }
   .row-push-btn:disabled { color: #bbb; border-color: #eee; cursor: not-allowed; background: transparent; }
   .row-push-btn.sent { border-color: #1B7B6E; color: #1B7B6E; background: #EAF5F3; }
   .row.ep .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF0EB; }
   .row.ep .row-push-btn.sent { background: #EAF5F3; }
-
-  /* HubSpot panel */
   .hs-panel { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
   .hs-deal-id-input { padding: 7px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; color: #1A1A1A; outline: none; width: 180px; }
   .hs-deal-id-input:focus { border-color: #FF7A59; }
@@ -68,12 +65,19 @@
   .hs-status.success { background: #EAF5F3; color: #1B7B6E; border-top: 1px solid #C3DED9; display: block; }
   .hs-status.error { background: #FEF2F2; color: #B91C1C; border-top: 1px solid #FECACA; display: block; }
   .hs-status.loading { background: #F5F5F5; color: #666; border-top: 1px solid #E5E5E5; display: block; }
+  .country-flag { font-size: 16px; margin-right: 2px; }
+  .tab-bar { display: flex; border-bottom: 1px solid #E5E5E5; padding: 0 24px; background: #fff; gap: 0; }
+  .tab-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; color: #999; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: inherit; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+  .tab-btn.active { color: #1A1A1A; border-bottom-color: #1B7B6E; }
+  .tab-btn:hover:not(.active) { color: #555; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Price Calculator - Spain 2026</h1>
+  <h1>Price Calculator 2026</h1>
   <span class="meta">Data refreshed Mar 2026</span>
 </div>
 
@@ -81,7 +85,7 @@
   <div class="input-box">
     <div id="rows-container"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid #F0F0F0;">
-      <button class="btn-add" id="btn-add" style="margin-top:0">+ Add Province</button>
+      <button class="btn-add" id="btn-add" style="margin-top:0">+ Add Location</button>
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="16" height="16" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
         <label style="font-size:12px;font-weight:600;color:#444;letter-spacing:0.03em;">DEAL ID</label>
@@ -94,77 +98,132 @@
 </div>
 
 <script>
-// ─── Configuration ────────────────────────────────────────────────────────────
 var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calculator-hs";
-// ─────────────────────────────────────────────────────────────────────────────
 
-// price_elite_5   = per-listing price for 1–5 listings   (10% take rate)
-// price_elite_15  = per-listing price for 6–15 listings  (8%  take rate)
-// price_elite_30  = per-listing price for 16–30 listings (7%  take rate)
-// price_elite_60  = per-listing price for 31–60 listings (6%  take rate)
-// price_elite_100 = per-listing price for 61–100 listings (5% take rate)
-// price_elp_3m   = monthly ELP price (6% take rate × demand multiplier)
+var COUNTRY_NAMES = { ES:"Spain 🇪🇸", FR:"France 🇫🇷", GB:"United Kingdom 🇬🇧", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹" };
+
 var ALL_DATA = {
   ES: [
-    { district:"Alicante",               price_elite_5:24.50, price_elite_15:19.60, price_elite_30:17.15, price_elite_60:14.70, price_elite_100:12.25, price_elp_3m:202.00 },
-    { district:"Barcelona",              price_elite_5:27.13, price_elite_15:21.70, price_elite_30:18.99, price_elite_60:16.28, price_elite_100:13.56, price_elp_3m:155.00 },
-    { district:"Cádiz",                  price_elite_5:31.16, price_elite_15:24.93, price_elite_30:21.81, price_elite_60:18.69, price_elite_100:15.58, price_elp_3m:205.00 },
-    { district:"Girona",                 price_elite_5:27.13, price_elite_15:21.70, price_elite_30:18.99, price_elite_60:16.28, price_elite_100:13.56, price_elp_3m:155.00 },
-    { district:"Ibiza",                  price_elite_5:63.30, price_elite_15:50.64, price_elite_30:44.31, price_elite_60:37.98, price_elite_100:31.65, price_elp_3m:361.00 },
-    { district:"Madrid",                 price_elite_5:54.18, price_elite_15:43.34, price_elite_30:37.92, price_elite_60:32.51, price_elite_100:27.09, price_elp_3m:432.00 },
-    { district:"Mallorca",               price_elite_5:57.55, price_elite_15:46.04, price_elite_30:40.28, price_elite_60:34.53, price_elite_100:28.77, price_elp_3m:328.00 },
-    { district:"Málaga",                 price_elite_5:53.44, price_elite_15:42.75, price_elite_30:37.40, price_elite_60:32.06, price_elite_100:26.72, price_elp_3m:313.00 },
-    { district:"Santa Cruz De Tenerife", price_elite_5:26.22, price_elite_15:20.98, price_elite_30:18.36, price_elite_60:15.73, price_elite_100:13.11, price_elp_3m:150.00 },
-    { district:"Other",                  price_elite_5:21.38, price_elite_15:17.10, price_elite_30:14.96, price_elite_60:12.83, price_elite_100:10.69, price_elp_3m:96.00  },
+    { district:"Alicante",  price_elite_5:19.59, price_elite_15:15.67, price_elite_30:13.71, price_elite_60:11.75, price_elite_100:9.79,  price_elp_3m:182.00 },
+    { district:"Barcelona", price_elite_5:22.09, price_elite_15:17.67, price_elite_30:15.46, price_elite_60:13.25, price_elite_100:11.04, price_elp_3m:142.00 },
+    { district:"Cádiz",     price_elite_5:34.04, price_elite_15:27.23, price_elite_30:23.82, price_elite_60:20.42, price_elite_100:17.02, price_elp_3m:219.00 },
+    { district:"Ibiza",     price_elite_5:48.41, price_elite_15:38.72, price_elite_30:33.88, price_elite_60:29.04, price_elite_100:24.20, price_elp_3m:311.00 },
+    { district:"Madrid",    price_elite_5:40.84, price_elite_15:32.67, price_elite_30:28.59, price_elite_60:24.51, price_elite_100:20.42, price_elp_3m:352.00 },
+    { district:"Mallorca",  price_elite_5:42.36, price_elite_15:33.88, price_elite_30:29.65, price_elite_60:25.41, price_elite_100:21.18, price_elp_3m:272.00 },
+    { district:"Málaga",    price_elite_5:40.09, price_elite_15:32.07, price_elite_30:28.06, price_elite_60:24.05, price_elite_100:20.04, price_elp_3m:274.00 },
+    { district:"Other",     price_elite_5:22.39, price_elite_15:17.91, price_elite_30:15.67, price_elite_60:13.43, price_elite_100:11.19, price_elp_3m:159.00 },
   ],
-};
-
-// priceKey maps each tier to the correct per-listing rate column
+  FR: [
+    { district:"Alpes-Maritimes", price_elite_5:65.19, price_elite_15:52.15, price_elite_30:45.63, price_elite_60:39.11, price_elite_100:32.59, price_elp_3m:521.00 },
+    { district:"Paris",           price_elite_5:62.31, price_elite_15:49.85, price_elite_30:43.61, price_elite_60:37.38, price_elite_100:31.15, price_elp_3m:498.00 },
+    { district:"Var",             price_elite_5:78.41, price_elite_15:62.73, price_elite_30:54.88, price_elite_60:47.04, price_elite_100:39.20, price_elp_3m:627.00 },
+    { district:"Other",           price_elite_5:42.15, price_elite_15:33.72, price_elite_30:29.51, price_elite_60:25.29, price_elite_100:21.08, price_elp_3m:339.00 },
+  ],
+  GB: [
+    { district:"Greater London", price_elite_5:53.55, price_elite_15:42.84, price_elite_30:37.48, price_elite_60:32.13, price_elite_100:26.77, price_elp_3m:537.00 },
+    { district:"Other",          price_elite_5:19.33, price_elite_15:15.47, price_elite_30:13.53, price_elite_60:11.60, price_elite_100:9.67,  price_elp_3m:194.00 },
+  ],
+  GR: [
+    { district:"Attica",          price_elite_5:19.22, price_elite_15:15.38, price_elite_30:13.46, price_elite_60:11.53, price_elite_100:9.61,  price_elp_3m:201.00 },
+    { district:"Ionian Islands",  price_elite_5:24.99, price_elite_15:19.99, price_elite_30:17.49, price_elite_60:14.99, price_elite_100:12.49, price_elp_3m:204.00 },
+    { district:"Southern Aegean", price_elite_5:23.71, price_elite_15:18.97, price_elite_30:16.60, price_elite_60:14.22, price_elite_100:11.85, price_elp_3m:214.00 },
+    { district:"Other",           price_elite_5:17.91, price_elite_15:14.33, price_elite_30:12.54, price_elite_60:10.75, price_elite_100:8.96,  price_elp_3m:187.00 },
+  ],
+  IT: [
+    { district:"Metropolitan City Of Florence", price_elite_5:98.51,  price_elite_15:78.81, price_elite_30:68.96, price_elite_60:59.10, price_elite_100:49.25, price_elp_3m:361.00 },
+    { district:"Metropolitan City Of Milan",    price_elite_5:95.85,  price_elite_15:76.68, price_elite_30:67.09, price_elite_60:57.51, price_elite_100:47.92, price_elp_3m:449.00 },
+    { district:"Metropolitan City Of Rome",     price_elite_5:90.64,  price_elite_15:72.51, price_elite_30:63.45, price_elite_60:54.38, price_elite_100:45.32, price_elp_3m:295.00 },
+    { district:"Province Of Arezzo",            price_elite_5:62.54,  price_elite_15:50.04, price_elite_30:43.78, price_elite_60:37.53, price_elite_100:31.27, price_elp_3m:262.00 },
+    { district:"Province Of Como",              price_elite_5:74.53,  price_elite_15:59.63, price_elite_30:52.17, price_elite_60:44.72, price_elite_100:37.27, price_elp_3m:242.00 },
+    { district:"Province Of Grosseto",          price_elite_5:88.61,  price_elite_15:70.88, price_elite_30:62.02, price_elite_60:53.16, price_elite_100:44.30, price_elp_3m:293.00 },
+    { district:"Province Of Lucca",             price_elite_5:104.24, price_elite_15:83.39, price_elite_30:72.97, price_elite_60:62.54, price_elite_100:52.12, price_elp_3m:404.00 },
+    { district:"Province Of Perugia",           price_elite_5:65.15,  price_elite_15:52.12, price_elite_30:45.61, price_elite_60:39.09, price_elite_100:32.58, price_elp_3m:212.00 },
+    { district:"Province Of Sassari",           price_elite_5:81.83,  price_elite_15:65.46, price_elite_30:57.28, price_elite_60:49.10, price_elite_100:40.91, price_elp_3m:266.00 },
+    { district:"Provincia Di Siena",            price_elite_5:88.61,  price_elite_15:70.88, price_elite_30:62.02, price_elite_60:53.16, price_elite_100:44.30, price_elp_3m:288.00 },
+    { district:"Other",                         price_elite_5:68.04,  price_elite_15:54.44, price_elite_30:47.63, price_elite_60:40.83, price_elite_100:34.02, price_elp_3m:225.00 },
+  ],
+  PT: [
+    { district:"Cascais", price_elite_5:35.02, price_elite_15:28.01, price_elite_30:24.51, price_elite_60:21.01, price_elite_100:17.51, price_elp_3m:215.00 },
+    { district:"Lisbon",  price_elite_5:21.96, price_elite_15:17.57, price_elite_30:15.38, price_elite_60:13.18, price_elite_100:10.98, price_elp_3m:157.00 },
+    { district:"Other",   price_elite_5:20.56, price_elite_15:16.44, price_elite_30:14.39, price_elite_60:12.33, price_elite_100:10.28, price_elp_3m:131.00 },
+  ],
+}
+var COMPONENTS_DATA = {
+  ES: {
+    "Alicante":  { median:1295000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:1.3,   commission:0.03,  conversion:0.03 },
+    "Barcelona": { median:1460000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
+    "Cádiz":     { median:2250000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
+    "Ibiza":     { median:3200000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
+    "Madrid":    { median:2700000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:1.205, commission:0.03,  conversion:0.03 },
+    "Mallorca":  { median:2800000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
+    "Málaga":    { median:2650000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.958, commission:0.03,  conversion:0.03 },
+    "Other":     { median:1480077, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.991, commission:0.03,  conversion:0.03 },
+  },
+  FR: {
+    "Alpes-Maritimes": { median:2490000, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Paris":           { median:2380000, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Var":             { median:2995000, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Other":           { median:1610194, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.905, commission:0.03, conversion:0.03 },
+  },
+  GB: {
+    "Greater London": { median:5102331, leads_per_listing:0.2691, lead_per_elp_3m:3.0, demand_multiplier:0.9, commission:0.013, conversion:0.03 },
+    "Other":          { median:1842253, leads_per_listing:0.2691, lead_per_elp_3m:3.0, demand_multiplier:0.9, commission:0.013, conversion:0.03 },
+  },
+  GR: {
+    "Attica":          { median:1500000, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.3,   commission:0.03, conversion:0.03 },
+    "Ionian Islands":  { median:1950000, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.018, commission:0.03, conversion:0.03 },
+    "Southern Aegean": { median:1850000, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.127, commission:0.03, conversion:0.03 },
+    "Other":           { median:1397942, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.3,   commission:0.03, conversion:0.03 },
+  },
+  IT: {
+    "Metropolitan City Of Florence": { median:1890000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.015, commission:0.03, conversion:0.03 },
+    "Metropolitan City Of Milan":    { median:1839000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.296, commission:0.03, conversion:0.03 },
+    "Metropolitan City Of Rome":     { median:1739000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Province Of Arezzo":            { median:1200000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.162, commission:0.03, conversion:0.03 },
+    "Province Of Como":              { median:1430000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Province Of Grosseto":          { median:1700000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.915, commission:0.03, conversion:0.03 },
+    "Province Of Lucca":             { median:2000000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.072, commission:0.03, conversion:0.03 },
+    "Province Of Perugia":           { median:1250000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Province Of Sassari":           { median:1570000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Provincia Di Siena":            { median:1700000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
+    "Other":                         { median:1305507, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.914, commission:0.03, conversion:0.03 },
+  },
+  PT: {
+    "Cascais": { median:2200000, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:0.9,  commission:0.03, conversion:0.03 },
+    "Lisbon":  { median:1380000, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:1.05, commission:0.03, conversion:0.03 },
+    "Other":   { median:1291487, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:0.93, commission:0.03, conversion:0.03 },
+  },
+}
 var TIERS = [
-  { label:"0",      count:0,   elps:0, priceKey:"price_elite_60" },
-  { label:"1-5",    count:5,   elps:1, priceKey:"price_elite_5"  },
-  { label:"6-15",   count:15,  elps:2, priceKey:"price_elite_15" },
-  { label:"16-30",  count:30,  elps:3, priceKey:"price_elite_30" },
-  { label:"31-60",  count:60,  elps:5, priceKey:"price_elite_60" },
+  { label:"0",      count:0,   elps:0, priceKey:"price_elite_60"  },
+  { label:"1-5",    count:5,   elps:1, priceKey:"price_elite_5"   },
+  { label:"6-15",   count:15,  elps:2, priceKey:"price_elite_15"  },
+  { label:"16-30",  count:30,  elps:3, priceKey:"price_elite_30"  },
+  { label:"31-60",  count:60,  elps:5, priceKey:"price_elite_60"  },
   { label:"61-100", count:100, elps:7, priceKey:"price_elite_100" },
 ];
 
-var country   = "ES";
-var districts = ALL_DATA[country];
-var rows      = [];
-var nextId    = 0;
-
-// Last computed pricing snapshot — updated on every render()
+var rows   = [];
+var nextId = 0;
 var lastPricing = null;
 
 function psych(v) {
-  if (v <= 0) return 0;
+  if (v <= 0)    return 0;
   if (v < 1000)  return Math.round(v / 10)  * 10;
   if (v < 10000) return Math.round(v / 100) * 100;
-  return Math.round(v / 500) * 500 ;
+  return Math.round(v / 500) * 500;
 }
-
 function fmt(v)    { return "\u20AC" + v.toLocaleString("en-US"); }
-function fmtDec(v) { return "\u20AC" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+function fmtDec(v) { return "\u20AC" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,","); }
 
-function getDistrictData(loc) {
+function getDistrictData(countryCode, loc) {
+  var districts = ALL_DATA[countryCode] || [];
   if (loc === "__whole__") {
     var maxD = districts[0];
     for (var i = 1; i < districts.length; i++) {
-      if (districts[i].price_elite_60 > maxD.price_elite_60) maxD = districts[i];
+      if (districts[i].district !== "Other" && districts[i].price_elite_60 > maxD.price_elite_60) maxD = districts[i];
     }
-    return {
-      data: {
-        district:        "Whole Country",
-        price_elite_5:   maxD.price_elite_5,
-        price_elite_15:  maxD.price_elite_15,
-        price_elite_30:  maxD.price_elite_30,
-        price_elite_60:  maxD.price_elite_60,
-        price_elite_100: maxD.price_elite_100,
-        price_elp_3m:    maxD.price_elp_3m,
-      },
-      source: maxD.district,
-    };
+    return { data: maxD, source: maxD.district };
   }
   for (var i = 0; i < districts.length; i++) {
     if (districts[i].district === loc) return { data: districts[i], source: null };
@@ -172,17 +231,28 @@ function getDistrictData(loc) {
   return { data: districts[0], source: null };
 }
 
-function addRow(loc, tierIdx, addElps) {
+function addRow(countryCode, loc, tierIdx, elps) {
   var id = nextId++;
-  rows.push({ id: id, loc: loc || "__whole__", tierIdx: tierIdx || 0, addElps: addElps || 0 });
+  var ti = tierIdx || 0;
+  var defaultElps = (elps != null) ? elps : Math.max(1, TIERS[ti].elps);
+  rows.push({ id: id, country: countryCode || "ES", loc: loc || "__whole__", tierIdx: ti, elps: defaultElps });
   renderRows();
   render();
 }
 
 function removeRow(id) {
-  rows = rows.filter(function(r) { return r.id !== id; });
+  rows = rows.filter(function(r){ return r.id !== id; });
   renderRows();
   render();
+}
+
+function buildDistrictOptions(countryCode, selectedLoc) {
+  var districts = ALL_DATA[countryCode] || [];
+  var html = '<option value="__whole__"' + (selectedLoc === "__whole__" ? " selected" : "") + '>Whole Country</option>';
+  for (var j = 0; j < districts.length; j++) {
+    html += '<option value="' + districts[j].district + '"' + (selectedLoc === districts[j].district ? " selected" : "") + '>' + districts[j].district + '</option>';
+  }
+  return html;
 }
 
 function renderRows() {
@@ -194,26 +264,27 @@ function renderRows() {
     var div = document.createElement("div");
     div.className = "input-row";
     div.setAttribute("data-id", r.id);
-
     var showRemove = rows.length > 1;
-    var html = '<div><label>Country</label><select disabled><option>ES</option></select></div>';
 
-    html += '<div><label>Province</label><select class="sel-loc" data-id="' + r.id + '">';
-    html += '<option value="__whole__"' + (r.loc === "__whole__" ? " selected" : "") + '>Whole Country</option>';
-    for (var j = 0; j < districts.length; j++) {
-      html += '<option value="' + districts[j].district + '"' + (r.loc === districts[j].district ? " selected" : "") + '>' + districts[j].district + '</option>';
+    var html = '<div><label>Country</label><select class="sel-country" data-id="' + r.id + '">';
+    var countries = Object.keys(COUNTRY_NAMES).sort();
+    for (var k = 0; k < countries.length; k++) {
+      html += '<option value="' + countries[k] + '"' + (r.country === countries[k] ? " selected" : "") + '>' + COUNTRY_NAMES[countries[k]] + '</option>';
     }
     html += '</select></div>';
 
+    html += '<div><label>Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
+
     html += '<div><label>Listings</label><select class="sel-tier" data-id="' + r.id + '">';
     for (var j = 0; j < TIERS.length; j++) {
+      if (TIERS[j].label === '61-100' && (r.country === 'IT' || r.country === 'FR')) continue;
       html += '<option value="' + j + '"' + (r.tierIdx === j ? " selected" : "") + '>' + TIERS[j].label + '</option>';
     }
     html += '</select></div>';
 
-    html += '<div><label>Additional ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
-    for (var j = 0; j <= 10; j++) {
-      html += '<option value="' + j + '"' + (r.addElps === j ? " selected" : "") + '>' + j + '</option>';
+    html += '<div><label>ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
+    for (var j = 1; j <= 20; j++) {
+      html += '<option value="' + j + '"' + (r.elps === j ? " selected" : "") + '>' + j + '</option>';
     }
     html += '</select></div>';
 
@@ -225,82 +296,97 @@ function renderRows() {
     container.appendChild(div);
   }
 
-  var locs = container.querySelectorAll(".sel-loc");
-  for (var i = 0; i < locs.length; i++) {
-    locs[i].addEventListener("change", function() {
+  // Attach events
+  var container = document.getElementById("rows-container");
+
+  container.querySelectorAll(".sel-country").forEach(function(el) {
+    el.addEventListener("change", function() {
+      var id = parseInt(this.getAttribute("data-id"));
+      for (var j = 0; j < rows.length; j++) {
+        if (rows[j].id === id) {
+          rows[j].country = this.value;
+          rows[j].loc = "__whole__";
+          // Reset 61-100 tier if switching to IT or FR
+          if ((this.value === 'IT' || this.value === 'FR') && rows[j].tierIdx === 5) {
+            rows[j].tierIdx = 4;
+            rows[j].elps = Math.max(1, TIERS[4].elps);
+          }
+        }
+      }
+      renderRows(); render();
+    });
+  });
+  container.querySelectorAll(".sel-loc").forEach(function(el) {
+    el.addEventListener("change", function() {
       var id = parseInt(this.getAttribute("data-id"));
       for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].loc = this.value; }
       render();
     });
-  }
-  var tiers = container.querySelectorAll(".sel-tier");
-  for (var i = 0; i < tiers.length; i++) {
-    tiers[i].addEventListener("change", function() {
+  });
+  container.querySelectorAll(".sel-tier").forEach(function(el) {
+    el.addEventListener("change", function() {
       var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].tierIdx = parseInt(this.value); }
+      var newTier = parseInt(this.value);
+      for (var j = 0; j < rows.length; j++) {
+        if (rows[j].id === id) {
+          rows[j].tierIdx = newTier;
+          rows[j].elps = Math.max(1, TIERS[newTier].elps);
+        }
+      }
+      renderRows(); render();
+    });
+  });
+  container.querySelectorAll(".sel-elps").forEach(function(el) {
+    el.addEventListener("change", function() {
+      var id = parseInt(this.getAttribute("data-id"));
+      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].elps = parseInt(this.value); }
       render();
     });
-  }
-  var elps = container.querySelectorAll(".sel-elps");
-  for (var i = 0; i < elps.length; i++) {
-    elps[i].addEventListener("change", function() {
-      var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].addElps = parseInt(this.value); }
-      render();
-    });
-  }
-  var removes = container.querySelectorAll(".btn-remove");
-  for (var i = 0; i < removes.length; i++) {
-    removes[i].addEventListener("click", function() {
-      removeRow(parseInt(this.getAttribute("data-id")));
-    });
-  }
+  });
+  container.querySelectorAll(".btn-remove").forEach(function(el) {
+    el.addEventListener("click", function() { removeRow(parseInt(this.getAttribute("data-id"))); });
+  });
 }
 
 function render() {
   var $output = document.getElementById("output");
-
   var rowCalcs = [];
-  var totalListings = 0, totalElps = 0;
-  var hasAny = false;
+  var totalListings = 0, totalElps = 0, hasAny = false;
 
   for (var i = 0; i < rows.length; i++) {
     var r    = rows[i];
     var tier = TIERS[r.tierIdx];
-    var info = getDistrictData(r.loc);
+    var info = getDistrictData(r.country, r.loc);
     var d    = info.data;
 
-    if (tier.count === 0) { rowCalcs.push(null); continue; }
+    if (!d || tier.count === 0) { rowCalcs.push(null); continue; }
     hasAny = true;
 
     var cnt        = tier.count;
-    var rElps      = tier.elps + r.addElps;
+    var rElps      = r.elps;
     var elpMo      = d.price_elp_3m;
-    var priceElite = d[tier.priceKey]; // tier-appropriate rate
+    var priceElite = d[tier.priceKey];
 
-    // Elite listing component
     var e3r  = priceElite * cnt;
     var e6r  = priceElite * 2 * 0.9 * cnt;
     var e12r = priceElite * 4 * 0.8 * cnt;
-
-    // ELP component (same period discounts as listings)
     var ep_e3r  = elpMo * rElps;
-    var ep_e6r  = elpMo * rElps * 2 * 0.9;
-    var ep_e12r = elpMo * rElps * 4 * 0.8;
+    var ep_e6r  = elpMo * 2 * 0.9 * rElps;
+    var ep_e12r = elpMo * 4 * 0.8 * rElps;
 
     totalListings += cnt;
     totalElps     += rElps;
 
     rowCalcs.push({
+      country:    r.country,
       loc:        r.loc === "__whole__" ? "Whole Country" : r.loc,
       source:     info.source,
       tier:       tier,
       cnt:        cnt,
       elps:       rElps,
-      e3r:  e3r,  e6r:  e6r,  e12r:  e12r,
-      ep3r: e3r + ep_e3r, ep6r: e6r + ep_e6r, ep12r: e12r + ep_e12r,
-      elpMo:      elpMo,
-      priceElite: priceElite,
+      elpPrice:   elpMo,
+      e3r:e3r, e6r:e6r, e12r:e12r,
+      elp3r:ep_e3r, elp6r:ep_e6r, elp12r:ep_e12r,
     });
   }
 
@@ -310,82 +396,60 @@ function render() {
     return;
   }
 
-  // Totals = sum of per-row psych values
-  var e3=0, e6=0, e12=0, ep3=0, ep6=0, ep12=0;
+  // Elite: sum psych per row, then floor
+  var e3=0, e6=0, e12=0;
+  var elp3=0, elp6=0, elp12=0;
   for (var i = 0; i < rowCalcs.length; i++) {
-    var rc = rowCalcs[i];
-    if (!rc) continue;
-    e3  += psych(rc.e3r);  e6  += psych(rc.e6r);  e12  += psych(rc.e12r);
-    ep3 += psych(rc.ep3r); ep6 += psych(rc.ep6r); ep12 += psych(rc.ep12r);
+    var rc = rowCalcs[i]; if (!rc) continue;
+    e3   += psych(rc.e3r);   e6   += psych(rc.e6r);   e12   += psych(rc.e12r);
+    elp3 += psych(rc.elp3r); elp6 += psych(rc.elp6r); elp12 += psych(rc.elp12r);
   }
+  e3  = Math.max(e3,  300); e6  = Math.max(e6,  570); e12  = Math.max(e12,  1080);
 
-  // Price floors: minimum monthly rate × period length
-  // 3m → €50/mo min, 6m → €45/mo min, 12m → €40/mo min
-  e3  = Math.max(e3,   50 * 3);   e6  = Math.max(e6,  45 * 6);   e12  = Math.max(e12,  40 * 12);
-  ep3 = Math.max(ep3,  50 * 3);   ep6 = Math.max(ep6, 45 * 6);   ep12 = Math.max(ep12, 40 * 12);
+  // Elite Plus: floored Elite + ELP component (ELP always added after floor)
+  var ep3  = e3  + elp3;
+  var ep6  = e6  + elp6;
+  var ep12 = e12 + elp12;
 
-  // Savings calculated from display (psych) values
-  var eSave6   = Math.max(e3  * 2 - e6,   0);
-  var eSave12  = Math.max(e3  * 4 - e12,  0);
-  var epSave6  = Math.max(ep3 * 2 - ep6,  0);
-  var epSave12 = Math.max(ep3 * 4 - ep12, 0);
+  var eSave6=Math.max(e3*2-e6,0), eSave12=Math.max(e3*4-e12,0);
+  var epSave6=Math.max(ep3*2-ep6,0), epSave12=Math.max(ep3*4-ep12,0);
+
+  var activeRows = rowCalcs.filter(function(r){ return r; });
+  var tierLabels = activeRows.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
+
+  var provinceSummary = activeRows.map(function(rc) {
+    return (COUNTRY_NAMES[rc.country] || rc.country) + " \u2014 " + rc.loc + (rc.source?" ("+rc.source+")":"") + ": " + rc.tier.label + " listings, " + rc.elps + " ELPs";
+  }).join("\n");
+  var provinceLabel = activeRows.map(function(rc){ return rc.loc; }).join(", ");
+  var countryLabel  = activeRows.map(function(rc){ return rc.country; }).join(", ");
+
+  lastPricing = {
+    elite_3m:e3, elite_6m:e6, elite_12m:e12, ep_3m:ep3, ep_6m:ep6, ep_12m:ep12,
+    totalListings:totalListings, totalElps:totalElps,
+    listingLabel:tierLabels, provinceSummary:provinceSummary, provinceLabel:provinceLabel, countryLabel:countryLabel,
+  };
+
+  var hsIcon = '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
 
   var periods = [
     { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eSave:0,       epSave:0        },
     { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eSave:eSave6,  epSave:epSave6  },
     { label:"12 Months", mo:12, eT:e12, epT:ep12, eSave:eSave12, epSave:epSave12 },
   ];
-
-  // Build listing label from tier range strings
-  var tierLabels = [];
-  for (var i = 0; i < rowCalcs.length; i++) {
-    if (rowCalcs[i]) tierLabels.push(rowCalcs[i].tier.label);
-  }
-  var listingLabel = tierLabels.join(" + ") + " Listings";
-
-  // Province summary for HubSpot note
-  var provinceSummary = [];
-  for (var i = 0; i < rowCalcs.length; i++) {
-    var rci = rowCalcs[i];
-    if (!rci) continue;
-    var pname = rci.loc + (rci.source ? " (" + rci.source + ")" : "");
-    provinceSummary.push(pname + ": " + rci.tier.label + " listings, " + rci.elps + " ELPs");
-  }
-
-  // Store snapshot for HubSpot push
-  lastPricing = {
-    elite_3m:  e3,  elite_6m:  e6,  elite_12m:  e12,
-    ep_3m:     ep3, ep_6m:     ep6, ep_12m:     ep12,
-    totalListings:   totalListings,
-    totalElps:       totalElps,
-    listingLabel:    listingLabel,
-    provinceSummary: provinceSummary.join("\n"),
-    provinceLabel:   provinceSummary.length === 1
-      ? rowCalcs.filter(function(r){ return r; })[0].loc
-      : rowCalcs.filter(function(r){ return r; }).map(function(r){ return r.loc; }).join(", "),
-    rowCalcs: rowCalcs,
-  };
-
-  var hsIcon = '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  var planKeys = ["elite_3m","elite_6m","elite_12m"];
+  var epKeys   = ["ep_3m","ep_6m","ep_12m"];
 
   var html = '<div class="cards">';
-
-  // Card headers
-  html += '<div class="card-head elite"><h2>Elite</h2><div class="sub">' + listingLabel + '</div><div class="sub" style="visibility:hidden">_</div></div>';
-  html += '<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">' + listingLabel + '</div><div class="elp-info">' + totalElps + ' Promoted Listing' + (totalElps !== 1 ? 's' : '') + '</div></div>';
-
-  var planKeys = ["elite_3m", "elite_6m", "elite_12m"];
-  var epKeys   = ["ep_3m",    "ep_6m",    "ep_12m"];
+  html += '<div class="card-head elite"><h2>Elite</h2><div class="sub">' + tierLabels + '</div><div class="sub" style="visibility:hidden">_</div></div>';
+  html += '<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">' + tierLabels + '</div><div class="elp-info">' + totalElps + ' Promoted Listing' + (totalElps!==1?'s':'') + '</div></div>';
 
   for (var i = 0; i < periods.length; i++) {
-    var p    = periods[i];
-    var last = (i === 2) ? " last" : "";
-
+    var p = periods[i], last = (i===2) ? " last" : "";
     html += '<div class="row elite' + last + '">';
     html += '<div class="period">' + p.label + '</div>';
     if (p.eSave > 0) html += '<div><span class="save-badge green">Save ' + fmt(p.eSave) + '</span></div>';
     html += '<div class="price">' + fmt(p.eT) + ' <span class="suffix">Total</span></div>';
-    html += '<div class="monthly">' + fmtDec(p.eT / p.mo) + ' / Month</div>';
+    html += '<div class="monthly">' + fmtDec(p.eT/p.mo) + ' / Month</div>';
     html += '<button class="row-push-btn" data-plan="' + planKeys[i] + '">' + hsIcon + 'Update Deal</button>';
     html += '</div>';
 
@@ -393,171 +457,164 @@ function render() {
     html += '<div class="period">' + p.label + '</div>';
     if (p.epSave > 0) html += '<div><span class="save-badge gold">Save ' + fmt(p.epSave) + '</span></div>';
     html += '<div class="price">' + fmt(p.epT) + ' <span class="suffix">Total</span></div>';
-    html += '<div class="monthly">' + fmtDec(p.epT / p.mo) + ' / Month</div>';
+    html += '<div class="monthly">' + fmtDec(p.epT/p.mo) + ' / Month</div>';
     html += '<button class="row-push-btn" data-plan="' + epKeys[i] + '">' + hsIcon + 'Update Deal</button>';
     html += '</div>';
   }
-
   html += '</div>';
 
-  // Per-province breakdown table
-  html += '<div class="breakdown-box"><div class="title">Cost Breakdown by Province</div><div class="tbl-wrap">';
-  html += '<table class="calc-table"><thead><tr>';
-  html += '<th>Province</th><th>Listings</th><th>ELPs</th>';
+  // Breakdown table (tabbed)
+  html += '<div class="breakdown-box">';
+  html += '<div class="tab-bar">';
+  html += '<button class="tab-btn active" onclick="showTab(this,\'tab-prices\')">Prices</button>';
+  html += '<button class="tab-btn" onclick="showTab(this,\'tab-components\')">Components</button>';
+  html += '</div>';
+
+  // --- Tab 1: Prices ---
+  html += '<div id="tab-prices" class="tab-pane active"><div class="tbl-wrap">';
+  html += '<table class="calc-table"><thead><tr><th>Country</th><th>Region</th><th>Listings</th><th>ELPs</th>';
   html += '<th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th>';
   html += '<th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th>';
   html += '</tr></thead><tbody>';
 
-  var activeRows = rowCalcs.filter(function(r){ return r; });
   for (var i = 0; i < rowCalcs.length; i++) {
-    var rc = rowCalcs[i];
-    if (!rc) continue;
-    var label = rc.loc;
-    if (rc.source) label += ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>';
-    // For a single-row result, use the floored totals so the table matches the cards.
-    // For multi-row, individual rows show pre-floor psych values; the total row shows floored sums.
+    var rc = rowCalcs[i]; if (!rc) continue;
+    var regionLabel = rc.loc + (rc.source ? ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>' : '');
     var td_e3, td_e6, td_e12, td_ep3, td_ep6, td_ep12;
     if (activeRows.length === 1) {
-      td_e3 = e3; td_e6 = e6; td_e12 = e12;
-      td_ep3 = ep3; td_ep6 = ep6; td_ep12 = ep12;
+      td_e3=e3; td_e6=e6; td_e12=e12; td_ep3=ep3; td_ep6=ep6; td_ep12=ep12;
     } else {
-      td_e3 = psych(rc.e3r); td_e6 = psych(rc.e6r); td_e12 = psych(rc.e12r);
-      td_ep3 = psych(rc.ep3r); td_ep6 = psych(rc.ep6r); td_ep12 = psych(rc.ep12r);
+      td_e3=psych(rc.e3r); td_e6=psych(rc.e6r); td_e12=psych(rc.e12r);
+      td_ep3=td_e3+psych(rc.elp3r); td_ep6=td_e6+psych(rc.elp6r); td_ep12=td_e12+psych(rc.elp12r);
     }
     html += '<tr>';
-    html += '<td>' + label + '</td>';
-    html += '<td>' + rc.tier.label + '</td>';
-    html += '<td>' + rc.elps + '</td>';
-    html += '<td>' + fmt(td_e3)  + '</td>';
-    html += '<td>' + fmt(td_e6)  + '</td>';
-    html += '<td>' + fmt(td_e12) + '</td>';
-    html += '<td>' + fmt(td_ep3) + '</td>';
-    html += '<td>' + fmt(td_ep6) + '</td>';
-    html += '<td>' + fmt(td_ep12)+ '</td>';
+    html += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
+    html += '<td>' + regionLabel + '</td>';
+    html += '<td>' + rc.tier.label + '</td><td>' + rc.elps + '</td>';
+    html += '<td>'+fmt(td_e3)+'</td><td>'+fmt(td_e6)+'</td><td>'+fmt(td_e12)+'</td>';
+    html += '<td>'+fmt(td_ep3)+'</td><td>'+fmt(td_ep6)+'</td><td>'+fmt(td_ep12)+'</td>';
     html += '</tr>';
   }
-
   if (activeRows.length > 1) {
-    html += '<tr class="total-row">';
-    html += '<td>Total</td><td>' + totalListings + '</td><td>' + totalElps + '</td>';
-    html += '<td>' + fmt(e3)  + '</td><td>' + fmt(e6)  + '</td><td>' + fmt(e12)  + '</td>';
-    html += '<td>' + fmt(ep3) + '</td><td>' + fmt(ep6) + '</td><td>' + fmt(ep12) + '</td>';
+    html += '<tr class="total-row"><td colspan="2">Total</td><td>'+totalListings+'</td><td>'+totalElps+'</td>';
+    html += '<td>'+fmt(e3)+'</td><td>'+fmt(e6)+'</td><td>'+fmt(e12)+'</td>';
+    html += '<td>'+fmt(ep3)+'</td><td>'+fmt(ep6)+'</td><td>'+fmt(ep12)+'</td>';
     html += '</tr>';
   }
-
   html += '</tbody></table></div></div>';
 
-  // HubSpot status panel
+  // --- Tab 2: Components ---
+  html += '<div id="tab-components" class="tab-pane"><div class="tbl-wrap">';
+  html += '<table class="calc-table"><thead><tr>';
+  html += '<th>Country</th><th>Region</th>';
+  html += '<th>Median Lead Value</th><th>Commission</th><th>Conversion</th>';
+  html += '<th>Leads / Listing (3m)</th><th>Lead / ELP (3m)</th><th>Demand Mult.</th>';
+  html += '<th>Take Rate (Elite)</th><th>Take Rate (ELP)</th><th>Listings w/ Leads</th>';
+  html += '</tr></thead><tbody>';
+
+  var seenDistricts = {};
+  for (var i = 0; i < rowCalcs.length; i++) {
+    var rc = rowCalcs[i]; if (!rc) continue;
+    var distKey = rc.country + '::' + rc.loc;
+    if (seenDistricts[distKey]) continue;
+    seenDistricts[distKey] = true;
+    var regionLabel2 = rc.loc + (rc.source ? ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>' : '');
+    var cdata = (COMPONENTS_DATA[rc.country] || {})[rc.loc === 'Whole Country' ? (rc.source || rc.loc) : rc.loc] || {};
+    var median = cdata.median ? '€' + Math.round(cdata.median).toLocaleString('en-US') : '—';
+    var commPct = cdata.commission ? cdata.commission * 100 : null;
+    var commission = commPct !== null ? (Number.isInteger(commPct) ? commPct : commPct.toFixed(1)) + '%' : '—';
+    var conversion = cdata.conversion ? (cdata.conversion * 100).toFixed(0) + '%' : '—';
+    var lpl = cdata.leads_per_listing !== undefined ? cdata.leads_per_listing : '—';
+    var lepelp = cdata.lead_per_elp_3m !== undefined ? cdata.lead_per_elp_3m : '—';
+    var dmult = cdata.demand_multiplier !== undefined ? cdata.demand_multiplier + '×' : '—';
+    var lwl = cdata.listings_with_leads !== null && cdata.listings_with_leads !== undefined ? cdata.listings_with_leads : '—';
+    html += '<tr>';
+    html += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
+    html += '<td>' + regionLabel2 + '</td>';
+    html += '<td>' + median + '</td>';
+    html += '<td>' + commission + '</td>';
+    html += '<td>' + conversion + '</td>';
+    html += '<td>' + lpl + '</td>';
+    html += '<td>' + lepelp + '</td>';
+    html += '<td>' + dmult + '</td>';
+    html += '<td>10% / 8% / 7% / 6% / 5%</td>';
+    html += '<td>10%</td>';
+    html += '<td>' + lwl + '</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table></div></div>';
+
+  html += '</div>'; // end breakdown-box
   html += '<div class="hs-panel"><div id="hs-status" class="hs-status"></div></div>';
 
   $output.innerHTML = html;
 
-  // Wire up push buttons
-  var pushBtns = $output.querySelectorAll(".row-push-btn");
-  for (var i = 0; i < pushBtns.length; i++) {
-    pushBtns[i].addEventListener("click", function() {
-      pushToHubSpot(this.getAttribute("data-plan"), this);
-    });
-  }
-}
-
-function pushToHubSpot(planKey, btn) {
-  var dealId  = (document.getElementById("hs-deal-id").value || "").trim();
-  var $status = document.getElementById("hs-status");
-
-  if (!dealId) {
-    $status.className   = "hs-status error";
-    $status.textContent = "Please enter a HubSpot Deal ID first.";
-    document.getElementById("hs-deal-id").focus();
-    return;
-  }
-  if (!lastPricing) {
-    $status.className   = "hs-status error";
-    $status.textContent = "No pricing data available.";
-    return;
-  }
-
-  var planLabels = {
-    elite_3m:  "Elite \u2014 3 Months",
-    elite_6m:  "Elite \u2014 6 Months",
-    elite_12m: "Elite \u2014 12 Months",
-    ep_3m:     "Elite Plus \u2014 3 Months",
-    ep_6m:     "Elite Plus \u2014 6 Months",
-    ep_12m:    "Elite Plus \u2014 12 Months",
-  };
-
-  var subTypes = {
-    elite_3m: "Elite", elite_6m: "Elite", elite_12m: "Elite",
-    ep_3m: "Elite Plus", ep_6m: "Elite Plus", ep_12m: "Elite Plus",
-  };
-
-  var termMonths = {
-    elite_3m: 3,  elite_6m: 6,  elite_12m: 12,
-    ep_3m:    3,  ep_6m:    6,  ep_12m:    12,
-  };
-
-  var payload = {
-    deal_id:           dealId,
-    plan_label:        planLabels[planKey],
-    amount:            lastPricing[planKey],
-    elite_3m:          lastPricing.elite_3m,
-    elite_6m:          lastPricing.elite_6m,
-    elite_12m:         lastPricing.elite_12m,
-    ep_3m:             lastPricing.ep_3m,
-    ep_6m:             lastPricing.ep_6m,
-    ep_12m:            lastPricing.ep_12m,
-    listing_label:     lastPricing.listingLabel,
-    total_listings:    lastPricing.totalListings,
-    total_elps:        lastPricing.totalElps,
-    province_summary:  lastPricing.provinceSummary,
-    price_country:         country,
-    price_sub_type:        subTypes[planKey],
-    price_term_months:     termMonths[planKey],
-    price_listings:        lastPricing.listingLabel,
-    price_additional_elps: lastPricing.totalElps,
-    price_province:        lastPricing.provinceLabel,
-  };
-
-  var allBtns = document.querySelectorAll(".row-push-btn");
-  for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = true;
-
-  var origHTML = btn.innerHTML;
-  btn.innerHTML = "Sending\u2026";
-  $status.className   = "hs-status loading";
-  $status.textContent = "Updating deal " + dealId + "\u2026";
-
-  fetch(N8N_WEBHOOK_URL, {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(payload),
-  })
-  .then(function(res) {
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    return res.json().catch(function() { return {}; });
-  })
-  .then(function() {
-    $status.className   = "hs-status success";
-    $status.textContent = "\u2713 Deal " + dealId + " updated \u2014 " + planLabels[planKey] + " (" + fmt(lastPricing[planKey]) + ") set as Amount, pricing note added.";
-    btn.innerHTML = "\u2713 Sent";
-    btn.classList.add("sent");
-    setTimeout(function() {
-      btn.innerHTML = origHTML;
-      btn.classList.remove("sent");
-    }, 3000);
-    for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = false;
-  })
-  .catch(function(err) {
-    $status.className   = "hs-status error";
-    $status.textContent = "Error: " + err.message + ". Check the webhook URL and n8n workflow.";
-    btn.innerHTML = origHTML;
-    for (var i = 0; i < allBtns.length; i++) allBtns[i].disabled = false;
+  $output.querySelectorAll(".row-push-btn").forEach(function(btn) {
+    btn.addEventListener("click", function(){ pushToHubSpot(this.getAttribute("data-plan"), this); });
   });
 }
 
-document.getElementById("btn-add").addEventListener("click", function() { addRow(); });
+function pushToHubSpot(planKey, btn) {
+  var dealId  = (document.getElementById("hs-deal-id").value||"").trim();
+  var $status = document.getElementById("hs-status");
+  if (!dealId) { $status.className="hs-status error"; $status.textContent="Please enter a HubSpot Deal ID first."; document.getElementById("hs-deal-id").focus(); return; }
+  if (!lastPricing) { $status.className="hs-status error"; $status.textContent="No pricing data available."; return; }
 
-// Init with one row
-addRow("__whole__", 0, 0);
+  var planLabels = { elite_3m:"Elite \u2014 3 Months", elite_6m:"Elite \u2014 6 Months", elite_12m:"Elite \u2014 12 Months", ep_3m:"Elite Plus \u2014 3 Months", ep_6m:"Elite Plus \u2014 6 Months", ep_12m:"Elite Plus \u2014 12 Months" };
+  var subTypes   = { elite_3m:"Elite", elite_6m:"Elite", elite_12m:"Elite", ep_3m:"Elite Plus", ep_6m:"Elite Plus", ep_12m:"Elite Plus" };
+  var termMonths = { elite_3m:3, elite_6m:6, elite_12m:12, ep_3m:3, ep_6m:6, ep_12m:12 };
+
+  var payload = {
+    deal_id: dealId,
+    plan_label: planLabels[planKey],
+    amount: lastPricing[planKey],
+    elite_3m: lastPricing.elite_3m, elite_6m: lastPricing.elite_6m, elite_12m: lastPricing.elite_12m,
+    ep_3m: lastPricing.ep_3m, ep_6m: lastPricing.ep_6m, ep_12m: lastPricing.ep_12m,
+    listing_label: lastPricing.listingLabel,
+    total_listings: lastPricing.totalListings,
+    total_elps: lastPricing.totalElps,
+    province_summary: lastPricing.provinceSummary,
+    price_country: lastPricing.countryLabel,
+    price_sub_type: subTypes[planKey],
+    price_term_months: termMonths[planKey],
+    price_listings: lastPricing.listingLabel,
+    price_additional_elps: lastPricing.totalElps,
+    price_province: lastPricing.provinceLabel,
+  };
+
+  var allBtns = document.querySelectorAll(".row-push-btn");
+  allBtns.forEach(function(b){ b.disabled=true; });
+  var origHTML = btn.innerHTML;
+  btn.innerHTML = "Sending\u2026";
+  $status.className="hs-status loading"; $status.textContent="Updating deal "+dealId+"\u2026";
+
+  fetch(N8N_WEBHOOK_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) })
+    .then(function(res){ if(!res.ok) throw new Error("HTTP "+res.status); return res.json().catch(function(){ return {}; }); })
+    .then(function(){
+      $status.className="hs-status success";
+      $status.textContent="\u2713 Deal "+dealId+" updated \u2014 "+planLabels[planKey]+" ("+fmt(lastPricing[planKey])+") set as Amount, pricing note added.";
+      btn.innerHTML="\u2713 Sent"; btn.classList.add("sent");
+      setTimeout(function(){ btn.innerHTML=origHTML; btn.classList.remove("sent"); }, 3000);
+      allBtns.forEach(function(b){ b.disabled=false; });
+    })
+    .catch(function(err){
+      $status.className="hs-status error"; $status.textContent="Error: "+err.message;
+      btn.innerHTML=origHTML; allBtns.forEach(function(b){ b.disabled=false; });
+    });
+}
+
+document.getElementById("btn-add").addEventListener("click", function(){ addRow(); });
+
+function showTab(btn, tabId) {
+  var box = btn.closest('.breakdown-box');
+  box.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  box.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// Init
+addRow("ES", "__whole__", 0, 0);
 </script>
 </body>
 </html>
