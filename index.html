@@ -467,7 +467,7 @@ function render() {
   html += '<div class="breakdown-box">';
   html += '<div class="tab-bar">';
   html += '<button class="tab-btn active" onclick="showTab(this,\'tab-prices\')">Prices</button>';
-  html += '<button class="tab-btn" onclick="showTab(this,\'tab-components\')">Components</button>';
+  
   html += '</div>';
 
   // --- Tab 1: Prices ---
@@ -503,46 +503,7 @@ function render() {
   }
   html += '</tbody></table></div></div>';
 
-  // --- Tab 2: Components ---
-  html += '<div id="tab-components" class="tab-pane"><div class="tbl-wrap">';
-  html += '<table class="calc-table"><thead><tr>';
-  html += '<th>Country</th><th>Region</th>';
-  html += '<th>Median Lead Value</th><th>Commission</th><th>Conversion</th>';
-  html += '<th>Leads / Listing (3m)</th><th>Lead / ELP (3m)</th><th>Demand Mult.</th>';
-  html += '<th>Take Rate (Elite)</th><th>Take Rate (ELP)</th><th>Listings w/ Leads</th>';
-  html += '</tr></thead><tbody>';
 
-  var seenDistricts = {};
-  for (var i = 0; i < rowCalcs.length; i++) {
-    var rc = rowCalcs[i]; if (!rc) continue;
-    var distKey = rc.country + '::' + rc.loc;
-    if (seenDistricts[distKey]) continue;
-    seenDistricts[distKey] = true;
-    var regionLabel2 = rc.loc + (rc.source ? ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>' : '');
-    var cdata = (COMPONENTS_DATA[rc.country] || {})[rc.loc === 'Whole Country' ? (rc.source || rc.loc) : rc.loc] || {};
-    var median = cdata.median ? '€' + Math.round(cdata.median).toLocaleString('en-US') : '—';
-    var commPct = cdata.commission ? cdata.commission * 100 : null;
-    var commission = commPct !== null ? (Number.isInteger(commPct) ? commPct : commPct.toFixed(1)) + '%' : '—';
-    var conversion = cdata.conversion ? (cdata.conversion * 100).toFixed(0) + '%' : '—';
-    var lpl = cdata.leads_per_listing !== undefined ? cdata.leads_per_listing : '—';
-    var lepelp = cdata.lead_per_elp_3m !== undefined ? cdata.lead_per_elp_3m : '—';
-    var dmult = cdata.demand_multiplier !== undefined ? cdata.demand_multiplier + '×' : '—';
-    var lwl = cdata.listings_with_leads !== null && cdata.listings_with_leads !== undefined ? cdata.listings_with_leads : '—';
-    html += '<tr>';
-    html += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
-    html += '<td>' + regionLabel2 + '</td>';
-    html += '<td>' + median + '</td>';
-    html += '<td>' + commission + '</td>';
-    html += '<td>' + conversion + '</td>';
-    html += '<td>' + lpl + '</td>';
-    html += '<td>' + lepelp + '</td>';
-    html += '<td>' + dmult + '</td>';
-    html += '<td>10% / 8% / 7% / 6% / 5%</td>';
-    html += '<td>10%</td>';
-    html += '<td>' + lwl + '</td>';
-    html += '</tr>';
-  }
-  html += '</tbody></table></div></div>';
 
   html += '</div>'; // end breakdown-box
   html += '<div class="hs-panel"><div id="hs-status" class="hs-status"></div></div>';
