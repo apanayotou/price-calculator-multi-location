@@ -277,7 +277,7 @@ function renderRows() {
 
     html += '<div><label>Listings</label><select class="sel-tier" data-id="' + r.id + '">';
     for (var j = 0; j < TIERS.length; j++) {
-      if (TIERS[j].label === '61-100' && (r.country === 'IT' || r.country === 'FR')) continue;
+      if (TIERS[j].label === '61-100' && r.country === 'FR') continue;
       html += '<option value="' + j + '"' + (r.tierIdx === j ? " selected" : "") + '>' + TIERS[j].label + '</option>';
     }
     html += '</select></div>';
@@ -306,8 +306,8 @@ function renderRows() {
         if (rows[j].id === id) {
           rows[j].country = this.value;
           rows[j].loc = "__whole__";
-          // Reset 61-100 tier if switching to IT or FR
-          if ((this.value === 'IT' || this.value === 'FR') && rows[j].tierIdx === 5) {
+          // Reset 61-100 tier if switching to FR (IT now supports 61-100)
+          if (this.value === 'FR' && rows[j].tierIdx === 5) {
             rows[j].tierIdx = 4;
             rows[j].elps = Math.max(1, TIERS[4].elps);
           }
