@@ -4,109 +4,498 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Price Calculator 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #F7F7F5; color: #1A1A1A; }
-  .header { background: #fff; border-bottom: 1px solid #E5E5E5; padding: 16px 32px; display: flex; align-items: center; position: sticky; top: 0; z-index: 10; }
-  .header h1 { font-size: 20px; font-weight: 700; }
-  .header .meta { font-size: 11px; color: #999; margin-left: auto; }
-  .wrap { max-width: 1150px; margin: 0 auto; padding: 32px 24px; }
-  .input-box { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 24px; border: 1px solid #E5E5E5; }
-  .input-row { display: grid; grid-template-columns: 140px 1fr 1fr 1fr 1fr auto; gap: 14px; align-items: end; }
-  .input-row + .input-row { margin-top: 16px; padding-top: 16px; border-top: 1px solid #F0F0F0; }
-  @media (max-width: 800px) { .input-row { grid-template-columns: 1fr 1fr; } }
-  .input-row label { font-size: 12px; font-weight: 600; color: #444; margin-bottom: 6px; display: block; letter-spacing: 0.03em; }
-  .input-row select { width: 100%; padding: 8px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; background: #fff; color: #1A1A1A; cursor: pointer; outline: none; }
-  .input-row select:focus { border-color: #1B7B6E; }
-  .btn-remove { width: 32px; height: 36px; border: 1px solid #E5E5E5; border-radius: 4px; background: #fff; color: #999; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-bottom: 1px; }
-  .btn-remove:hover { background: #FEE; color: #C00; border-color: #C00; }
-  .btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px dashed #1B7B6E; border-radius: 4px; background: #fff; color: #1B7B6E; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 16px; font-family: inherit; }
-  .btn-add:hover { background: #F0F7F6; }
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
-  @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } }
-  .card-head { background: #fff; border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 20px 24px; }
-  .card-head.elite { border: 1px solid #E5E5E5; }
-  .card-head.ep { border: 1px solid #E5E5E5; position: relative; background: #FFFDF5; }
-  .card-head h2 { font-size: 22px; font-weight: 700; }
-  .card-head .sub { font-size: 13px; color: #999; margin-top: 4px; }
-  .card-head .elp-info { font-size: 13px; color: #1B7B6E; font-weight: 600; margin-top: 2px; }
-  .badge-rec { position: absolute; top: 12px; right: 12px; background: #E8B54D; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 3px; letter-spacing: 0.05em; }
-  .row { padding: 18px 24px; background: #fff; }
-  .row.elite { border-left: 1px solid #E5E5E5; border-right: 1px solid #E5E5E5; border-bottom: 1px solid #F0F0F0; }
-  .row.elite.last { border-bottom: 1px solid #E5E5E5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
-  .row.ep { border-left: 1px solid #E5E5E5; border-right: 1px solid #E5E5E5; border-bottom: 1px solid #F0F0F0; background: #FFFDF5; }
-  .row.ep.last { border-bottom: 1px solid #E5E5E5; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; background: #FFFDF5; }
-  .row .period { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 4px; }
-  .save-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 3px; color: #fff; }
-  .save-badge.green { background: #1B7B6E; }
-  .save-badge.gold { background: #E8B54D; }
-  .price { font-size: 26px; font-weight: 700; margin-top: 4px; }
-  .price .suffix { font-size: 13px; font-weight: 400; color: #999; }
-  .monthly { font-size: 13px; color: #999; margin-top: 2px; }
-  .breakdown-box { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
-  .breakdown-box .title { padding: 16px 24px; border-bottom: 1px solid #E5E5E5; font-size: 14px; font-weight: 600; }
-  .calc-table { width: 100%; font-size: 13px; border-collapse: collapse; }
-  .calc-table th { text-align: left; padding: 8px 4px; font-weight: 600; color: #444; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid #E5E5E5; }
-  .calc-table td { padding: 8px 4px; border-bottom: 1px solid #F0F0F0; }
-  .tbl-wrap { padding: 0 24px 16px; overflow-x: auto; }
-  .calc-table tr.total-row td { font-weight: 700; border-top: 2px solid #E5E5E5; border-bottom: none; }
-  .empty { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; padding: 40px; text-align: center; color: #999; font-size: 14px; }
-  .footer { text-align: center; padding: 24px 0 8px; font-size: 11px; color: #999; }
-  .row-push-btn { margin-top: 12px; width: 100%; padding: 7px 12px; background: transparent; border: 1px solid #DDD; border-radius: 4px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.15s, color 0.15s, background 0.15s; }
-  .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF5F3; }
-  .row-push-btn:disabled { color: #bbb; border-color: #eee; cursor: not-allowed; background: transparent; }
-  .row-push-btn.sent { border-color: #1B7B6E; color: #1B7B6E; background: #EAF5F3; }
-  .row.ep .row-push-btn:hover { border-color: #FF7A59; color: #FF7A59; background: #FFF0EB; }
-  .row.ep .row-push-btn.sent { background: #EAF5F3; }
-  .hs-panel { background: #fff; border-radius: 8px; border: 1px solid #E5E5E5; margin-top: 24px; overflow: hidden; }
-  .hs-deal-id-input { padding: 7px 12px; border: 1px solid #E5E5E5; border-radius: 4px; font-size: 14px; font-family: inherit; color: #1A1A1A; outline: none; width: 180px; }
-  .hs-deal-id-input:focus { border-color: #FF7A59; }
-  .hs-status { padding: 10px 24px; font-size: 13px; display: none; }
-  .hs-status.success { background: #EAF5F3; color: #1B7B6E; border-top: 1px solid #C3DED9; display: block; }
-  .hs-status.error { background: #FEF2F2; color: #B91C1C; border-top: 1px solid #FECACA; display: block; }
-  .hs-status.loading { background: #F5F5F5; color: #666; border-top: 1px solid #E5E5E5; display: block; }
-  .country-flag { font-size: 16px; margin-right: 2px; }
-  .tab-bar { display: flex; border-bottom: 1px solid #E5E5E5; padding: 0 24px; background: #fff; gap: 0; }
-  .tab-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; color: #999; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: inherit; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
-  .tab-btn.active { color: #1A1A1A; border-bottom-color: #1B7B6E; }
-  .tab-btn:hover:not(.active) { color: #555; }
-  .tab-pane { display: none; }
-  .tab-pane.active { display: block; }
+/* ── JE Design System tokens ─────────────────────────── */
+:root {
+  --je-teal-deep: #006C75;
+  --je-teal-deep-hover: #19818A;
+  --je-green: #178475;
+  --je-gold-dark: #b9a16f;
+  --je-gold-light: #dfd5c0;
+  --je-black: #151515;
+  --je-mid-gray: #606060;
+  --je-light-gray: #878787;
+  --je-muted-gray: #ADADAD;
+  --je-border: #E0E0E0;
+  --je-divider: #ececec;
+  --je-disabled-bg: #F0F0F0;
+  --je-off-white: #F5F5F5;
+  --je-near-white: #F7F7F7;
+  --je-white: #FFFFFF;
+  --je-error: #E63232;
+  --font-sans: 'Inter', Arial, sans-serif;
+  --font-serif: 'Prata', serif;
+  --radius: 4px;
+  --shadow-border: 0 0 0 1px #ececec;
+  --shadow-subtle: 0 3px 13px 0 rgba(107,107,107,0.2);
+}
+
+/* ── Reset & base ─────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--je-black);
+  background: var(--je-near-white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+.header {
+  background: var(--je-white);
+  border-bottom: 1px solid var(--je-divider);
+  padding: 0 40px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--je-black);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-logo svg { width: 16px; height: 16px; }
+.header-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--je-black);
+  letter-spacing: -0.01em;
+}
+.header-meta {
+  font-size: 11px;
+  color: var(--je-light-gray);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Page wrap ────────────────────────────────────────── */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px 64px;
+}
+
+/* ── Section label ────────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 12px;
+}
+
+/* ── Config card ──────────────────────────────────────── */
+.config-card {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.config-rows { display: flex; flex-direction: column; gap: 0; }
+.config-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr 1fr 1fr 36px;
+  gap: 12px;
+  align-items: end;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--je-near-white);
+}
+.config-row:first-child { padding-top: 0; }
+.config-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 6px;
+}
+select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--je-black);
+  background: var(--je-white);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23878787' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+select:focus { border-color: var(--je-mid-gray); }
+
+.btn-remove {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  background: var(--je-white);
+  color: var(--je-muted-gray);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+  align-self: end;
+}
+.btn-remove:hover { border-color: var(--je-error); color: var(--je-error); background: #fff5f5; }
+
+/* ── Config footer ────────────────────────────────────── */
+.config-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--je-divider);
+}
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px dashed var(--je-teal-deep);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--je-teal-deep);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+.btn-add:hover { background: #f0f9fa; }
+
+.deal-id-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.deal-id-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+}
+.deal-id-input {
+  padding: 8px 12px;
+  width: 180px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--je-black);
+  outline: none;
+  transition: border-color 200ms ease;
+}
+.deal-id-input:focus { border-color: var(--je-mid-gray); }
+.deal-id-input::placeholder { color: var(--je-muted-gray); }
+
+/* ── Pricing grid ─────────────────────────────────────── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 700px) { .pricing-grid { grid-template-columns: 1fr; } }
+
+/* ── Pricing card ─────────────────────────────────────── */
+.pricing-card {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pricing-card.elite-plus {
+  border-color: var(--je-gold-dark);
+}
+
+.card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--je-divider);
+  position: relative;
+}
+.card-header.elite-plus-header {
+  background: #fdfaf5;
+  border-bottom-color: var(--je-gold-light);
+}
+.card-type {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 4px;
+}
+.card-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--je-black);
+  letter-spacing: -0.02em;
+}
+.card-sub {
+  font-size: 13px;
+  color: var(--je-mid-gray);
+  margin-top: 3px;
+}
+.card-elp {
+  font-size: 13px;
+  color: var(--je-teal-deep);
+  font-weight: 500;
+  margin-top: 2px;
+}
+.badge-rec {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--je-gold-dark);
+  color: var(--je-white);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 30px;
+}
+
+/* ── Period row ───────────────────────────────────────── */
+.period-row {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--je-near-white);
+}
+.period-row:last-child { border-bottom: none; }
+.period-row.elite-plus-row { background: #fdfaf5; }
+
+.period-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 6px;
+}
+.save-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 30px;
+  margin-bottom: 6px;
+}
+.save-badge.teal { background: var(--je-teal-deep); color: var(--je-white); }
+.save-badge.gold { background: var(--je-gold-dark); color: var(--je-white); }
+
+.price-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--je-black);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.price-period {
+  font-size: 13px;
+  color: var(--je-light-gray);
+  font-weight: 400;
+}
+.price-monthly {
+  font-size: 12px;
+  color: var(--je-light-gray);
+  margin-top: 2px;
+}
+
+/* ── Update deal button ───────────────────────────────── */
+.btn-update {
+  margin-top: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--je-mid-gray);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 200ms ease;
+}
+.btn-update:hover { border-color: var(--je-teal-deep); color: var(--je-teal-deep); background: #f0f9fa; }
+.btn-update:disabled { color: var(--je-muted-gray); border-color: var(--je-divider); cursor: not-allowed; background: transparent; }
+.btn-update.sent { border-color: var(--je-teal-deep); color: var(--je-teal-deep); background: #eaf6f6; }
+.elite-plus-row .btn-update:hover { border-color: var(--je-gold-dark); color: var(--je-gold-dark); background: #fdf7ef; }
+.elite-plus-row .btn-update.sent { border-color: var(--je-gold-dark); color: var(--je-gold-dark); background: #fdf7ef; }
+
+/* ── Breakdown table ──────────────────────────────────── */
+.breakdown-card {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.breakdown-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--je-divider);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+}
+.tab-bar { display: flex; border-bottom: 1px solid var(--je-divider); padding: 0 24px; background: var(--je-white); }
+.tab-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--je-muted-gray); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: var(--font-sans); margin-bottom: -1px; transition: color 200ms, border-color 200ms; }
+.tab-btn.active { color: var(--je-black); border-bottom-color: var(--je-teal-deep); }
+.tab-btn:hover:not(.active) { color: var(--je-mid-gray); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  border-bottom: 1px solid var(--je-divider);
+  white-space: nowrap;
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--je-near-white);
+  color: var(--je-black);
+}
+tr.total-row td {
+  font-weight: 600;
+  border-top: 1px solid var(--je-divider);
+  border-bottom: none;
+  background: var(--je-near-white);
+}
+tr:last-child td { border-bottom: none; }
+.region-hint { font-size: 11px; color: var(--je-teal-deep); font-weight: 500; }
+
+/* ── Status / Toast ───────────────────────────────────── */
+.hs-status {
+  padding: 12px 24px;
+  font-size: 13px;
+  border-top: 1px solid var(--je-divider);
+  display: none;
+}
+.hs-status.success { background: #eaf6f5; color: var(--je-teal-deep); display: block; }
+.hs-status.error   { background: #fef2f2; color: var(--je-error); display: block; }
+.hs-status.loading { background: var(--je-near-white); color: var(--je-mid-gray); display: block; }
+
+/* ── Empty ────────────────────────────────────────────── */
+.empty {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  padding: 56px 32px;
+  text-align: center;
+  color: var(--je-light-gray);
+  font-size: 14px;
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 32px 0 0;
+  font-size: 11px;
+  color: var(--je-muted-gray);
+  letter-spacing: 0.04em;
+}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1>Price Calculator 2026</h1>
-  <span class="meta">Data refreshed Mar 2026</span>
-</div>
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="5" height="5" fill="white"/>
+        <rect x="9" y="2" width="5" height="5" fill="white"/>
+        <rect x="2" y="9" width="5" height="5" fill="white"/>
+        <rect x="9" y="9" width="5" height="5" fill="white" opacity="0.4"/>
+      </svg>
+    </div>
+    <span class="header-title">Price Calculator</span>
+  </div>
+  <span class="header-meta">Data refreshed Apr 2026</span>
+</header>
 
 <div class="wrap">
-  <div class="input-box">
-    <div id="rows-container"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid #F0F0F0;">
-      <button class="btn-add" id="btn-add" style="margin-top:0">+ Add Location</button>
-      <div style="display:flex;align-items:center;gap:10px;">
+
+  <!-- Config -->
+  <div class="config-card">
+    <div class="config-rows" id="rows-container"></div>
+    <div class="config-footer">
+      <button class="btn-add" id="btn-add">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add Location
+      </button>
+      <div class="deal-id-wrap">
         <svg width="16" height="16" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
-        <label style="font-size:12px;font-weight:600;color:#444;letter-spacing:0.03em;">DEAL ID</label>
-        <input type="text" id="hs-deal-id" class="hs-deal-id-input" placeholder="e.g. 12345678" />
+        <span class="deal-id-label">Deal ID</span>
+        <input type="text" id="hs-deal-id" class="deal-id-input" placeholder="e.g. 12345678">
       </div>
     </div>
   </div>
+
   <div id="output"></div>
-  <div class="footer">Source: JamesEdition BigQuery · 12-month rolling window · Real Estate (excl. rentals)</div>
+
+  <div class="footer">JamesEdition · BigQuery · 12-month rolling window · Real estate, excl. rentals</div>
 </div>
 
 <script>
 var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calculator-hs";
 
-var COUNTRY_NAMES = { ES:"Spain 🇪🇸", FR:"France 🇫🇷", GB:"United Kingdom 🇬🇧", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹" };
+var COUNTRY_NAMES = { FR:"France 🇫🇷", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹", ES:"Spain 🇪🇸", CH:"Switzerland 🇨🇭", AE:"UAE 🇦🇪", GB:"United Kingdom 🇬🇧", US:"United States 🇺🇸", Other:"Rest of the World 🌍" };
 
 var ALL_DATA = {
+  AE: [
+    { district:"Other", price_elite_5:80.59,  price_elite_15:64.47,  price_elite_30:56.41,  price_elite_60:48.35,  price_elite_100:40.30, price_elp_3m:240.00 },
+  ],
+  CH: [
+    { district:"Other", price_elite_5:82.73,  price_elite_15:66.18,  price_elite_30:57.91,  price_elite_60:49.64,  price_elite_100:41.36, price_elp_3m:298.00 },
+  ],
   ES: [
     { district:"Alicante",  price_elite_5:19.59, price_elite_15:15.67, price_elite_30:13.71, price_elite_60:11.75, price_elite_100:9.79,  price_elp_3m:182.00 },
     { district:"Barcelona", price_elite_5:22.09, price_elite_15:17.67, price_elite_30:15.46, price_elite_60:13.25, price_elite_100:11.04, price_elp_3m:142.00 },
     { district:"Cádiz",     price_elite_5:34.04, price_elite_15:27.23, price_elite_30:23.82, price_elite_60:20.42, price_elite_100:17.02, price_elp_3m:219.00 },
+    { district:"Girona",    price_elite_5:22.31, price_elite_15:17.85, price_elite_30:15.62, price_elite_60:13.39, price_elite_100:11.16, price_elp_3m:155.00 },
     { district:"Ibiza",     price_elite_5:48.41, price_elite_15:38.72, price_elite_30:33.88, price_elite_60:29.04, price_elite_100:24.20, price_elp_3m:311.00 },
     { district:"Madrid",    price_elite_5:40.84, price_elite_15:32.67, price_elite_30:28.59, price_elite_60:24.51, price_elite_100:20.42, price_elp_3m:352.00 },
     { district:"Mallorca",  price_elite_5:42.36, price_elite_15:33.88, price_elite_30:29.65, price_elite_60:25.41, price_elite_100:21.18, price_elp_3m:272.00 },
@@ -114,314 +503,274 @@ var ALL_DATA = {
     { district:"Other",     price_elite_5:22.39, price_elite_15:17.91, price_elite_30:15.67, price_elite_60:13.43, price_elite_100:11.19, price_elp_3m:159.00 },
   ],
   FR: [
-    { district:"Alpes-Maritimes", price_elite_5:65.19, price_elite_15:52.15, price_elite_30:45.63, price_elite_60:39.11, price_elite_100:32.59, price_elp_3m:521.00 },
-    { district:"Paris",           price_elite_5:62.31, price_elite_15:49.85, price_elite_30:43.61, price_elite_60:37.38, price_elite_100:31.15, price_elp_3m:498.00 },
-    { district:"Var",             price_elite_5:78.41, price_elite_15:62.73, price_elite_30:54.88, price_elite_60:47.04, price_elite_100:39.20, price_elp_3m:627.00 },
-    { district:"Other",           price_elite_5:42.15, price_elite_15:33.72, price_elite_30:29.51, price_elite_60:25.29, price_elite_100:21.08, price_elp_3m:339.00 },
+    { district:"Alpes-Maritimes (Nice, Cannes)", price_elite_5:59.62,  price_elite_15:47.69,  price_elite_30:41.73,  price_elite_60:35.77,  price_elite_100:29.81,  price_elp_3m:369.00 },
+    { district:"Paris",           price_elite_5:45.52,  price_elite_15:36.42,  price_elite_30:31.87,  price_elite_60:27.31,  price_elite_100:22.76,  price_elp_3m:282.00 },
+    { district:"Var (Saint-Tropez)",             price_elite_5:59.62,  price_elite_15:47.69,  price_elite_30:41.73,  price_elite_60:35.77,  price_elite_100:29.81,  price_elp_3m:369.00 },
+    { district:"Other",           price_elite_5:32.29,  price_elite_15:25.84,  price_elite_30:22.61,  price_elite_60:19.38,  price_elite_100:16.15,  price_elp_3m:201.00 },
   ],
   GB: [
-    { district:"Greater London", price_elite_5:53.55, price_elite_15:42.84, price_elite_30:37.48, price_elite_60:32.13, price_elite_100:26.77, price_elp_3m:537.00 },
-    { district:"Other",          price_elite_5:19.33, price_elite_15:15.47, price_elite_30:13.53, price_elite_60:11.60, price_elite_100:9.67,  price_elp_3m:194.00 },
+    { district:"Greater London", price_elite_5:56.34, price_elite_15:45.07, price_elite_30:39.44, price_elite_60:33.80, price_elite_100:28.17, price_elp_3m:358.00 },
+    { district:"Other",          price_elite_5:20.49, price_elite_15:16.39, price_elite_30:14.34, price_elite_60:12.29, price_elite_100:10.24, price_elp_3m:130.00 },
   ],
   GR: [
     { district:"Attica",          price_elite_5:19.22, price_elite_15:15.38, price_elite_30:13.46, price_elite_60:11.53, price_elite_100:9.61,  price_elp_3m:201.00 },
+    { district:"Crete",           price_elite_5:18.40, price_elite_15:14.72, price_elite_30:12.88, price_elite_60:11.04, price_elite_100:9.20,  price_elp_3m:233.00 },
     { district:"Ionian Islands",  price_elite_5:24.99, price_elite_15:19.99, price_elite_30:17.49, price_elite_60:14.99, price_elite_100:12.49, price_elp_3m:204.00 },
     { district:"Southern Aegean", price_elite_5:23.71, price_elite_15:18.97, price_elite_30:16.60, price_elite_60:14.22, price_elite_100:11.85, price_elp_3m:214.00 },
     { district:"Other",           price_elite_5:17.91, price_elite_15:14.33, price_elite_30:12.54, price_elite_60:10.75, price_elite_100:8.96,  price_elp_3m:187.00 },
   ],
   IT: [
-    { district:"Metropolitan City Of Florence", price_elite_5:98.51,  price_elite_15:78.81, price_elite_30:68.96, price_elite_60:59.10, price_elite_100:49.25, price_elp_3m:361.00 },
-    { district:"Metropolitan City Of Milan",    price_elite_5:95.85,  price_elite_15:76.68, price_elite_30:67.09, price_elite_60:57.51, price_elite_100:47.92, price_elp_3m:449.00 },
-    { district:"Metropolitan City Of Rome",     price_elite_5:90.64,  price_elite_15:72.51, price_elite_30:63.45, price_elite_60:54.38, price_elite_100:45.32, price_elp_3m:295.00 },
-    { district:"Province Of Arezzo",            price_elite_5:62.54,  price_elite_15:50.04, price_elite_30:43.78, price_elite_60:37.53, price_elite_100:31.27, price_elp_3m:262.00 },
-    { district:"Province Of Como",              price_elite_5:74.53,  price_elite_15:59.63, price_elite_30:52.17, price_elite_60:44.72, price_elite_100:37.27, price_elp_3m:242.00 },
-    { district:"Province Of Grosseto",          price_elite_5:88.61,  price_elite_15:70.88, price_elite_30:62.02, price_elite_60:53.16, price_elite_100:44.30, price_elp_3m:293.00 },
-    { district:"Province Of Lucca",             price_elite_5:104.24, price_elite_15:83.39, price_elite_30:72.97, price_elite_60:62.54, price_elite_100:52.12, price_elp_3m:404.00 },
-    { district:"Province Of Perugia",           price_elite_5:65.15,  price_elite_15:52.12, price_elite_30:45.61, price_elite_60:39.09, price_elite_100:32.58, price_elp_3m:212.00 },
-    { district:"Province Of Sassari",           price_elite_5:81.83,  price_elite_15:65.46, price_elite_30:57.28, price_elite_60:49.10, price_elite_100:40.91, price_elp_3m:266.00 },
-    { district:"Provincia Di Siena",            price_elite_5:88.61,  price_elite_15:70.88, price_elite_30:62.02, price_elite_60:53.16, price_elite_100:44.30, price_elp_3m:288.00 },
-    { district:"Other",                         price_elite_5:68.04,  price_elite_15:54.44, price_elite_30:47.63, price_elite_60:40.83, price_elite_100:34.02, price_elp_3m:225.00 },
+    { district:"Metropolitan City Of Florence",   price_elite_5:98.51,  price_elite_15:78.81, price_elite_30:68.96, price_elite_60:59.10, price_elite_100:49.25, price_elp_3m:361.00 },
+    { district:"Metropolitan City Of Milan",      price_elite_5:95.85,  price_elite_15:76.68, price_elite_30:67.09, price_elite_60:57.51, price_elite_100:47.92, price_elp_3m:449.00 },
+    { district:"Metropolitan City Of Rome",       price_elite_5:90.64,  price_elite_15:72.51, price_elite_30:63.45, price_elite_60:54.38, price_elite_100:45.32, price_elp_3m:295.00 },
+    { district:"Province Of Arezzo",              price_elite_5:62.54,  price_elite_15:50.04, price_elite_30:43.78, price_elite_60:37.53, price_elite_100:31.27, price_elp_3m:262.00 },
+    { district:"Province Of Brescia",             price_elite_5:72.00,  price_elite_15:57.60, price_elite_30:50.40, price_elite_60:43.20, price_elite_100:36.00, price_elp_3m:250.00 },
+    { district:"Province Of Como",                price_elite_5:74.53,  price_elite_15:59.63, price_elite_30:52.17, price_elite_60:44.72, price_elite_100:37.27, price_elp_3m:242.00 },
+    { district:"Province Of Grosseto",            price_elite_5:88.61,  price_elite_15:70.88, price_elite_30:62.02, price_elite_60:53.16, price_elite_100:44.30, price_elp_3m:293.00 },
+    { district:"Province Of Imperia",             price_elite_5:74.25,  price_elite_15:59.40, price_elite_30:51.98, price_elite_60:44.55, price_elite_100:37.13, price_elp_3m:322.00 },
+    { district:"Province Of Lucca",               price_elite_5:104.24, price_elite_15:83.39, price_elite_30:72.97, price_elite_60:62.54, price_elite_100:52.12, price_elp_3m:404.00 },
+    { district:"Province Of Perugia",             price_elite_5:65.15,  price_elite_15:52.12, price_elite_30:45.61, price_elite_60:39.09, price_elite_100:32.58, price_elp_3m:212.00 },
+    { district:"Province Of Sassari",             price_elite_5:81.83,  price_elite_15:65.46, price_elite_30:57.28, price_elite_60:49.10, price_elite_100:40.91, price_elp_3m:266.00 },
+    { district:"Province Of Verbano-Cusio-Ossola",price_elite_5:99.00,  price_elite_15:79.20, price_elite_30:69.30, price_elite_60:59.40, price_elite_100:49.50, price_elp_3m:496.00 },
+    { district:"Provincia Di Siena",              price_elite_5:88.61,  price_elite_15:70.88, price_elite_30:62.02, price_elite_60:53.16, price_elite_100:44.30, price_elp_3m:288.00 },
+    { district:"Other",                           price_elite_5:68.04,  price_elite_15:54.44, price_elite_30:47.63, price_elite_60:40.83, price_elite_100:34.02, price_elp_3m:225.00 },
+  ],
+  Other: [
+    { district:"Rest of the World", price_elite_5:48.42, price_elite_15:38.74, price_elite_30:33.89, price_elite_60:29.05, price_elite_100:24.21, price_elp_3m:205.00 },
   ],
   PT: [
     { district:"Cascais", price_elite_5:35.02, price_elite_15:28.01, price_elite_30:24.51, price_elite_60:21.01, price_elite_100:17.51, price_elp_3m:215.00 },
     { district:"Lisbon",  price_elite_5:21.96, price_elite_15:17.57, price_elite_30:15.38, price_elite_60:13.18, price_elite_100:10.98, price_elp_3m:157.00 },
     { district:"Other",   price_elite_5:20.56, price_elite_15:16.44, price_elite_30:14.39, price_elite_60:12.33, price_elite_100:10.28, price_elp_3m:131.00 },
   ],
+  US: [
+    { district:"Los Angeles County", price_elite_5:93.95,  price_elite_15:75.16,  price_elite_30:65.76, price_elite_60:56.37, price_elite_100:46.97, price_elp_3m:986.00  },
+    { district:"Miami-Dade County",  price_elite_5:39.15,  price_elite_15:31.32,  price_elite_30:27.40, price_elite_60:23.49, price_elite_100:19.57, price_elp_3m:411.00  },
+    { district:"New York County",    price_elite_5:50.10,  price_elite_15:40.08,  price_elite_30:35.07, price_elite_60:30.06, price_elite_100:25.05, price_elp_3m:584.00  },
+    { district:"Other",              price_elite_5:52.70,  price_elite_15:42.16,  price_elite_30:36.89, price_elite_60:31.62, price_elite_100:26.35, price_elp_3m:562.00  },
+  ],
+
 }
 var COMPONENTS_DATA = {
+  AE:    { "Other": { median:5537741,  commission:0.015, leads_per_listing:0.4620, lead_per_elp_3m:1.4922, demand_multiplier:0.914, market_condition_factor:0.70 } },
+  CH:    { "Other": { median:3939329,  commission:0.020, leads_per_listing:0.5000, lead_per_elp_3m:2.0000, demand_multiplier:0.900, market_condition_factor:0.70 } },
   ES: {
-    "Alicante":  { median:1295000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:1.3,   commission:0.03,  conversion:0.03 },
-    "Barcelona": { median:1460000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
-    "Cádiz":     { median:2250000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
-    "Ibiza":     { median:3200000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
-    "Madrid":    { median:2700000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:1.205, commission:0.03,  conversion:0.03 },
-    "Mallorca":  { median:2800000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.9,   commission:0.03,  conversion:0.03 },
-    "Málaga":    { median:2650000, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.958, commission:0.03,  conversion:0.03 },
-    "Other":     { median:1480077, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.991, commission:0.03,  conversion:0.03 },
+    "Alicante":  { median:1295000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:1.300 },
+    "Barcelona": { median:1460000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.900 },
+    "Cádiz":     { median:2250000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.900 },
+    "Girona":    { median:1495000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.900 },
+    "Ibiza":     { median:3200000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.900 },
+    "Madrid":    { median:2700000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:1.205 },
+    "Mallorca":  { median:2800000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.900 },
+    "Málaga":    { median:2650000, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.958 },
+    "Other":     { median:1480077, commission:0.03, leads_per_listing:0.1681, lead_per_elp_3m:1.2006, demand_multiplier:0.991 },
   },
   FR: {
-    "Alpes-Maritimes": { median:2490000, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Paris":           { median:2380000, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Var":             { median:2995000, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Other":           { median:1610194, leads_per_listing:0.2909, lead_per_elp_3m:2.5848, demand_multiplier:0.905, commission:0.03, conversion:0.03 },
+    "Alpes-Maritimes (Nice, Cannes)": { median:2999000,  commission:0.03, leads_per_listing:0.2209, lead_per_elp_3m:1.5200, demand_multiplier:0.900 },
+    "Paris":           { median:2290000,  commission:0.03, leads_per_listing:0.2209, lead_per_elp_3m:1.5200, demand_multiplier:0.900 },
+    "Var (Saint-Tropez)":             { median:2999000,  commission:0.03, leads_per_listing:0.2209, lead_per_elp_3m:1.5200, demand_multiplier:0.900 },
+    "Other":           { median:1624507,  commission:0.03, leads_per_listing:0.2209, lead_per_elp_3m:1.5200, demand_multiplier:0.905 },
   },
   GB: {
-    "Greater London": { median:5102331, leads_per_listing:0.2691, lead_per_elp_3m:3.0, demand_multiplier:0.9, commission:0.013, conversion:0.03 },
-    "Other":          { median:1842253, leads_per_listing:0.2691, lead_per_elp_3m:3.0, demand_multiplier:0.9, commission:0.013, conversion:0.03 },
+    "Greater London": { median:5096533,  commission:0.013, leads_per_listing:0.2834, lead_per_elp_3m:2.0000, demand_multiplier:0.900 },
+    "Other":          { median:1853464,  commission:0.013, leads_per_listing:0.2834, lead_per_elp_3m:2.0000, demand_multiplier:0.900 },
   },
   GR: {
-    "Attica":          { median:1500000, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.3,   commission:0.03, conversion:0.03 },
-    "Ionian Islands":  { median:1950000, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.018, commission:0.03, conversion:0.03 },
-    "Southern Aegean": { median:1850000, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.127, commission:0.03, conversion:0.03 },
-    "Other":           { median:1397942, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.3,   commission:0.03, conversion:0.03 },
+    "Attica":          { median:1500000, commission:0.03, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.300 },
+    "Crete":           { median:1500000, commission:0.03, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.300 },
+    "Ionian Islands":  { median:1950000, commission:0.03, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.018 },
+    "Southern Aegean": { median:1850000, commission:0.03, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.127 },
+    "Other":           { median:1397942, commission:0.03, leads_per_listing:0.1424, lead_per_elp_3m:1.1429, demand_multiplier:1.300 },
   },
   IT: {
-    "Metropolitan City Of Florence": { median:1890000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.015, commission:0.03, conversion:0.03 },
-    "Metropolitan City Of Milan":    { median:1839000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.296, commission:0.03, conversion:0.03 },
-    "Metropolitan City Of Rome":     { median:1739000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Province Of Arezzo":            { median:1200000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.162, commission:0.03, conversion:0.03 },
-    "Province Of Como":              { median:1430000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Province Of Grosseto":          { median:1700000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.915, commission:0.03, conversion:0.03 },
-    "Province Of Lucca":             { median:2000000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.072, commission:0.03, conversion:0.03 },
-    "Province Of Perugia":           { median:1250000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Province Of Sassari":           { median:1570000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Provincia Di Siena":            { median:1700000, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.9,   commission:0.03, conversion:0.03 },
-    "Other":                         { median:1305507, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.914, commission:0.03, conversion:0.03 },
+    "Metropolitan City Of Florence":   { median:1890000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.015 },
+    "Metropolitan City Of Milan":      { median:1839000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.296 },
+    "Metropolitan City Of Rome":       { median:1739000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Province Of Arezzo":              { median:1200000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.162 },
+    "Province Of Brescia":             { median:1600000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Province Of Como":                { median:1430000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Province Of Grosseto":            { median:1700000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.915 },
+    "Province Of Imperia":             { median:1650000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Province Of Lucca":               { median:2000000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:1.072 },
+    "Province Of Perugia":             { median:1250000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Province Of Sassari":             { median:1570000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Province Of Verbano-Cusio-Ossola":{ median:2200000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Provincia Di Siena":              { median:1700000, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.900 },
+    "Other":                           { median:1305507, commission:0.03, leads_per_listing:0.5791, lead_per_elp_3m:2.0913, demand_multiplier:0.914 },
   },
+  Other: { "Rest of the World": { median:2027876, commission:0.02, leads_per_listing:0.3980, lead_per_elp_3m:1.8051, demand_multiplier:0.934 } },
   PT: {
-    "Cascais": { median:2200000, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:0.9,  commission:0.03, conversion:0.03 },
-    "Lisbon":  { median:1380000, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:1.05, commission:0.03, conversion:0.03 },
-    "Other":   { median:1291487, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:0.93, commission:0.03, conversion:0.03 },
+    "Cascais": { median:2200000, commission:0.03, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:0.900 },
+    "Lisbon":  { median:1380000, commission:0.03, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:1.050 },
+    "Other":   { median:1291487, commission:0.03, leads_per_listing:0.1769, lead_per_elp_3m:1.2073, demand_multiplier:0.930 },
   },
-}
+  US: {
+    "Los Angeles County": { median:8694480,  commission:0.03, leads_per_listing:0.1715, lead_per_elp_3m:2.0000, demand_multiplier:0.900, market_condition_factor:0.70 },
+    "Miami-Dade County":  { median:3622925,  commission:0.03, leads_per_listing:0.1715, lead_per_elp_3m:2.0000, demand_multiplier:0.900, market_condition_factor:0.70 },
+    "New York County":    { median:4637024,  commission:0.03, leads_per_listing:0.1715, lead_per_elp_3m:2.0000, demand_multiplier:1.000, market_condition_factor:0.70 },
+    "Other":              { median:4877174,  commission:0.03, leads_per_listing:0.1715, lead_per_elp_3m:2.0000, demand_multiplier:0.914, market_condition_factor:0.70 },
+  },
+
+};
 var TIERS = [
   { label:"0",      count:0,   elps:0, priceKey:"price_elite_60"  },
-  { label:"1-5",    count:5,   elps:1, priceKey:"price_elite_5"   },
-  { label:"6-15",   count:15,  elps:2, priceKey:"price_elite_15"  },
-  { label:"16-30",  count:30,  elps:3, priceKey:"price_elite_30"  },
-  { label:"31-60",  count:60,  elps:5, priceKey:"price_elite_60"  },
-  { label:"61-100", count:100, elps:7, priceKey:"price_elite_100" },
+  { label:"1–5",    count:5,   elps:1, priceKey:"price_elite_5"   },
+  { label:"6–15",   count:15,  elps:2, priceKey:"price_elite_15"  },
+  { label:"16–30",  count:30,  elps:3, priceKey:"price_elite_30"  },
+  { label:"31–60",  count:60,  elps:5, priceKey:"price_elite_60"  },
+  { label:"61–100", count:100, elps:7, priceKey:"price_elite_100" },
 ];
 
-var rows   = [];
-var nextId = 0;
-var lastPricing = null;
+var rows = [], nextId = 0, lastPricing = null;
 
 function psych(v) {
-  if (v <= 0)    return 0;
-  if (v < 1000)  return Math.round(v / 10)  * 10;
+  if (v <= 0) return 0;
+  if (v < 1000)  return Math.round(v / 10) * 10;
   if (v < 10000) return Math.round(v / 100) * 100;
   return Math.round(v / 500) * 500;
 }
-function fmt(v)    { return "\u20AC" + v.toLocaleString("en-US"); }
-function fmtDec(v) { return "\u20AC" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,","); }
+function fmt(v) { return "€" + v.toLocaleString("en-US"); }
+function fmtDec(v) { return "€" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
-function getDistrictData(countryCode, loc) {
-  var districts = ALL_DATA[countryCode] || [];
+function getDistrictData(cc, loc) {
+  var ds = ALL_DATA[cc] || [];
   if (loc === "__whole__") {
-    var maxD = districts[0];
-    for (var i = 1; i < districts.length; i++) {
-      if (districts[i].district !== "Other" && districts[i].price_elite_60 > maxD.price_elite_60) maxD = districts[i];
+    // Single-district countries — just return that district, no source label
+    if (ds.length === 1) return { data: ds[0], source: null };
+    var excludeFromWhole = ["Province Of Verbano-Cusio-Ossola", "Province Of Imperia"];
+    var best = ds[0];
+    for (var i = 1; i < ds.length; i++) {
+      if (ds[i].district !== "Other" && excludeFromWhole.indexOf(ds[i].district) === -1 && ds[i].price_elite_60 > best.price_elite_60) best = ds[i];
     }
-    return { data: maxD, source: maxD.district };
+    return { data: best, source: best.district };
   }
-  for (var i = 0; i < districts.length; i++) {
-    if (districts[i].district === loc) return { data: districts[i], source: null };
-  }
-  return { data: districts[0], source: null };
+  for (var i = 0; i < ds.length; i++) { if (ds[i].district === loc) return { data: ds[i], source: null }; }
+  return { data: ds[0], source: null };
 }
 
-function addRow(countryCode, loc, tierIdx, elps) {
+function addRow(cc, loc, ti, elps) {
   var id = nextId++;
-  var ti = tierIdx || 0;
-  var defaultElps = (elps != null) ? elps : Math.max(1, TIERS[ti].elps);
-  rows.push({ id: id, country: countryCode || "ES", loc: loc || "__whole__", tierIdx: ti, elps: defaultElps });
-  renderRows();
-  render();
+  ti = ti || 0;
+  rows.push({ id: id, country: cc || "ES", loc: loc || "__whole__", tierIdx: ti, elps: elps != null ? elps : Math.max(1, TIERS[ti].elps) });
+  renderRows(); render();
 }
 
 function removeRow(id) {
   rows = rows.filter(function(r){ return r.id !== id; });
-  renderRows();
-  render();
+  renderRows(); render();
 }
 
-function buildDistrictOptions(countryCode, selectedLoc) {
-  var districts = ALL_DATA[countryCode] || [];
-  var html = '<option value="__whole__"' + (selectedLoc === "__whole__" ? " selected" : "") + '>Whole Country</option>';
-  for (var j = 0; j < districts.length; j++) {
-    html += '<option value="' + districts[j].district + '"' + (selectedLoc === districts[j].district ? " selected" : "") + '>' + districts[j].district + '</option>';
+function buildDistrictOptions(cc, sel) {
+  var ds = ALL_DATA[cc] || [];
+  // Single-district countries — just show Whole Country, skip the district
+  if (ds.length === 1 && (ds[0].district === 'Other' || ds[0].district === 'Rest of the World')) {
+    return '<option value="__whole__" selected>Whole Country</option>';
   }
-  return html;
+  var h = '';
+  if (cc !== 'Other') {
+    h += '<option value="__whole__"' + (sel === "__whole__" ? " selected" : "") + '>Whole Country</option>';
+  }
+  ds.forEach(function(d){ h += '<option value="' + d.district + '"' + (sel === d.district ? " selected" : "") + '>' + d.district + '</option>'; });
+  return h;
 }
 
 function renderRows() {
-  var container = document.getElementById("rows-container");
-  container.innerHTML = "";
-
-  for (var i = 0; i < rows.length; i++) {
-    var r   = rows[i];
+  var c = document.getElementById("rows-container");
+  c.innerHTML = "";
+  rows.forEach(function(r) {
     var div = document.createElement("div");
-    div.className = "input-row";
-    div.setAttribute("data-id", r.id);
-    var showRemove = rows.length > 1;
+    div.className = "config-row";
+    var showX = rows.length > 1;
+    var h = '<div><label class="field-label">Country</label><select class="sel-country" data-id="' + r.id + '">';
+    ['FR','GR','IT','PT','ES','CH','AE','GB','US','Other'].forEach(function(k){ if(!COUNTRY_NAMES[k]) return; h += '<option value="' + k + '"' + (r.country===k?" selected":"") + '>' + COUNTRY_NAMES[k] + '</option>'; });
+    h += '</select></div>';
+    h += '<div><label class="field-label">Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
+    h += '<div><label class="field-label">Listings</label><select class="sel-tier" data-id="' + r.id + '">';
+    TIERS.forEach(function(t, j){
+      
+      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + '>' + t.label + '</option>';
+    });
+    h += '</select></div>';
+    h += '<div><label class="field-label">ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
+    for (var j = 1; j <= 20; j++) h += '<option value="' + j + '"' + (r.elps===j?" selected":"") + '>' + j + '</option>';
+    h += '</select></div>';
+    h += showX ? '<button class="btn-remove" data-id="' + r.id + '" style="align-self:end">×</button>' : '<div></div>';
+    div.innerHTML = h;
+    c.appendChild(div);
+  });
 
-    var html = '<div><label>Country</label><select class="sel-country" data-id="' + r.id + '">';
-    var countries = Object.keys(COUNTRY_NAMES).sort();
-    for (var k = 0; k < countries.length; k++) {
-      html += '<option value="' + countries[k] + '"' + (r.country === countries[k] ? " selected" : "") + '>' + COUNTRY_NAMES[countries[k]] + '</option>';
-    }
-    html += '</select></div>';
-
-    html += '<div><label>Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
-
-    html += '<div><label>Listings</label><select class="sel-tier" data-id="' + r.id + '">';
-    for (var j = 0; j < TIERS.length; j++) {
-      // 61-100 enabled for all countries
-      html += '<option value="' + j + '"' + (r.tierIdx === j ? " selected" : "") + '>' + TIERS[j].label + '</option>';
-    }
-    html += '</select></div>';
-
-    html += '<div><label>ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
-    for (var j = 1; j <= 20; j++) {
-      html += '<option value="' + j + '"' + (r.elps === j ? " selected" : "") + '>' + j + '</option>';
-    }
-    html += '</select></div>';
-
-    html += showRemove
-      ? '<button class="btn-remove" data-id="' + r.id + '">&times;</button>'
-      : '<div style="width:32px"></div>';
-
-    div.innerHTML = html;
-    container.appendChild(div);
-  }
-
-  // Attach events
-  var container = document.getElementById("rows-container");
-
-  container.querySelectorAll(".sel-country").forEach(function(el) {
-    el.addEventListener("change", function() {
+  c.querySelectorAll(".sel-country").forEach(function(el){
+    el.addEventListener("change", function(){
       var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) {
-        if (rows[j].id === id) {
-          rows[j].country = this.value;
-          rows[j].loc = "__whole__";
-          // Reset 61-100 tier if switching to FR (IT now supports 61-100)
-          if (false && rows[j].tierIdx === 5) { // 61-100 enabled for all countries
-            rows[j].tierIdx = 4;
-            rows[j].elps = Math.max(1, TIERS[4].elps);
-          }
-        }
-      }
+      rows.forEach(function(r){ if(r.id===id){ r.country=el.value; r.loc='__whole__'; } });
       renderRows(); render();
     });
   });
-  container.querySelectorAll(".sel-loc").forEach(function(el) {
-    el.addEventListener("change", function() {
+  c.querySelectorAll(".sel-loc").forEach(function(el){
+    el.addEventListener("change", function(){
       var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].loc = this.value; }
+      rows.forEach(function(r){ if(r.id===id) r.loc=el.value; });
       render();
     });
   });
-  container.querySelectorAll(".sel-tier").forEach(function(el) {
-    el.addEventListener("change", function() {
-      var id = parseInt(this.getAttribute("data-id"));
-      var newTier = parseInt(this.value);
-      for (var j = 0; j < rows.length; j++) {
-        if (rows[j].id === id) {
-          rows[j].tierIdx = newTier;
-          rows[j].elps = Math.max(1, TIERS[newTier].elps);
-        }
-      }
+  c.querySelectorAll(".sel-tier").forEach(function(el){
+    el.addEventListener("change", function(){
+      var id = parseInt(this.getAttribute("data-id")), nt = parseInt(el.value);
+      rows.forEach(function(r){ if(r.id===id){ r.tierIdx=nt; r.elps=Math.max(1,TIERS[nt].elps); } });
       renderRows(); render();
     });
   });
-  container.querySelectorAll(".sel-elps").forEach(function(el) {
-    el.addEventListener("change", function() {
+  c.querySelectorAll(".sel-elps").forEach(function(el){
+    el.addEventListener("change", function(){
       var id = parseInt(this.getAttribute("data-id"));
-      for (var j = 0; j < rows.length; j++) { if (rows[j].id === id) rows[j].elps = parseInt(this.value); }
+      rows.forEach(function(r){ if(r.id===id) r.elps=parseInt(el.value); });
       render();
     });
   });
-  container.querySelectorAll(".btn-remove").forEach(function(el) {
-    el.addEventListener("click", function() { removeRow(parseInt(this.getAttribute("data-id"))); });
+  c.querySelectorAll(".btn-remove").forEach(function(el){
+    el.addEventListener("click", function(){ removeRow(parseInt(this.getAttribute("data-id"))); });
   });
 }
 
 function render() {
-  var $output = document.getElementById("output");
-  var rowCalcs = [];
-  var totalListings = 0, totalElps = 0, hasAny = false;
+  var $o = document.getElementById("output");
+  var rowCalcs = [], totalListings = 0, totalElps = 0, hasAny = false;
 
-  for (var i = 0; i < rows.length; i++) {
-    var r    = rows[i];
-    var tier = TIERS[r.tierIdx];
-    var info = getDistrictData(r.country, r.loc);
-    var d    = info.data;
-
-    if (!d || tier.count === 0) { rowCalcs.push(null); continue; }
+  rows.forEach(function(r){
+    var tier = TIERS[r.tierIdx], info = getDistrictData(r.country, r.loc), d = info.data;
+    if (!d || tier.count === 0) { rowCalcs.push(null); return; }
     hasAny = true;
-
-    var cnt        = tier.count;
-    var rElps      = r.elps;
-    var elpMo      = d.price_elp_3m;
-    var priceElite = d[tier.priceKey];
-
-    var e3r  = priceElite * cnt;
-    var e6r  = priceElite * 2 * 0.9 * cnt;
-    var e12r = priceElite * 4 * 0.8 * cnt;
-    var ep_e3r  = elpMo * rElps;
-    var ep_e6r  = elpMo * 2 * 0.9 * rElps;
-    var ep_e12r = elpMo * 4 * 0.8 * rElps;
-
-    totalListings += cnt;
-    totalElps     += rElps;
-
+    var cnt = tier.count, re = r.elps, pe = d[tier.priceKey];
+    totalListings += cnt; totalElps += re;
     rowCalcs.push({
-      country:    r.country,
-      loc:        r.loc === "__whole__" ? "Whole Country" : r.loc,
-      source:     info.source,
-      tier:       tier,
-      cnt:        cnt,
-      elps:       rElps,
-      elpPrice:   elpMo,
-      e3r:e3r, e6r:e6r, e12r:e12r,
-      elp3r:ep_e3r, elp6r:ep_e6r, elp12r:ep_e12r,
+      country: r.country, loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
+      source: info.source, tier: tier, cnt: cnt, elps: re,
+      e3r: pe*cnt, e6r: pe*2*0.9*cnt, e12r: pe*4*0.8*cnt,
+      elp3r: d.price_elp_3m*re, elp6r: d.price_elp_3m*2*0.9*re, elp12r: d.price_elp_3m*4*0.8*re,
     });
-  }
+  });
 
   if (!hasAny) {
     lastPricing = null;
-    $output.innerHTML = '<div class="empty">Select a listing tier to see pricing.</div>';
+    $o.innerHTML = '<div class="empty">Select a listing tier to see pricing.</div>';
     return;
   }
 
-  // Elite: sum psych per row, then floor
-  var e3=0, e6=0, e12=0;
-  var elp3=0, elp6=0, elp12=0;
-  for (var i = 0; i < rowCalcs.length; i++) {
-    var rc = rowCalcs[i]; if (!rc) continue;
-    e3   += psych(rc.e3r);   e6   += psych(rc.e6r);   e12   += psych(rc.e12r);
-    elp3 += psych(rc.elp3r); elp6 += psych(rc.elp6r); elp12 += psych(rc.elp12r);
-  }
-  e3  = Math.max(e3,  300); e6  = Math.max(e6,  570); e12  = Math.max(e12,  1080);
+  var e3=0,e6=0,e12=0,elp3=0,elp6=0,elp12=0;
+  rowCalcs.forEach(function(rc){ if(!rc) return;
+    e3+=psych(rc.e3r); e6+=psych(rc.e6r); e12+=psych(rc.e12r);
+    elp3+=psych(rc.elp3r); elp6+=psych(rc.elp6r); elp12+=psych(rc.elp12r);
+  });
+  e3=Math.max(e3,300); e6=Math.max(e6,570); e12=Math.max(e12,1080);
+  var ep3=e3+elp3, ep6=e6+elp6, ep12=e12+elp12;
+  var eS6=Math.max(e3*2-e6,0), eS12=Math.max(e3*4-e12,0);
+  var epS6=Math.max(ep3*2-ep6,0), epS12=Math.max(ep3*4-ep12,0);
 
-  // Elite Plus: floored Elite + ELP component (ELP always added after floor)
-  var ep3  = e3  + elp3;
-  var ep6  = e6  + elp6;
-  var ep12 = e12 + elp12;
-
-  var eSave6=Math.max(e3*2-e6,0), eSave12=Math.max(e3*4-e12,0);
-  var epSave6=Math.max(ep3*2-ep6,0), epSave12=Math.max(ep3*4-ep12,0);
-
-  var activeRows = rowCalcs.filter(function(r){ return r; });
-  var tierLabels = activeRows.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
-
-  var provinceSummary = activeRows.map(function(rc) {
-    return (COUNTRY_NAMES[rc.country] || rc.country) + " \u2014 " + rc.loc + (rc.source?" ("+rc.source+")":"") + ": " + rc.tier.label + " listings, " + rc.elps + " ELPs";
-  }).join("\n");
-  var provinceLabel = activeRows.map(function(rc){ return rc.loc; }).join(", ");
-  var countryLabel  = activeRows.map(function(rc){ return rc.country; }).join(", ");
+  var active = rowCalcs.filter(function(r){ return r; });
+  var tierLabels = active.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
+  var provinceSummary = active.map(function(rc){ return (COUNTRY_NAMES[rc.country]||rc.country) + " — " + rc.loc + (rc.source?" ("+rc.source+")":"") + ": " + rc.tier.label + " listings, " + rc.elps + " ELPs"; }).join("\n");
+  var provinceLabel = active.map(function(rc){ return rc.loc; }).join(", ");
+  var countryLabel  = active.map(function(rc){ return rc.country; }).join(", ");
 
   lastPricing = {
     elite_3m:e3, elite_6m:e6, elite_12m:e12, ep_3m:ep3, ep_6m:ep6, ep_12m:ep12,
@@ -432,149 +781,169 @@ function render() {
   var hsIcon = '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
 
   var periods = [
-    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eSave:0,       epSave:0        },
-    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eSave:eSave6,  epSave:epSave6  },
-    { label:"12 Months", mo:12, eT:e12, epT:ep12, eSave:eSave12, epSave:epSave12 },
+    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eS:0,    epS:0    },
+    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eS:eS6,  epS:epS6  },
+    { label:"12 Months", mo:12, eT:e12, epT:ep12, eS:eS12, epS:epS12 },
   ];
   var planKeys = ["elite_3m","elite_6m","elite_12m"];
   var epKeys   = ["ep_3m","ep_6m","ep_12m"];
 
-  var html = '<div class="cards">';
-  html += '<div class="card-head elite"><h2>Elite</h2><div class="sub">' + tierLabels + '</div><div class="sub" style="visibility:hidden">_</div></div>';
-  html += '<div class="card-head ep"><div class="badge-rec">Recommended</div><h2>Elite Plus</h2><div class="sub">' + tierLabels + '</div><div class="elp-info">' + totalElps + ' Promoted Listing' + (totalElps!==1?'s':'') + '</div></div>';
+  // ── Pricing cards ──
+  var h = '<div class="pricing-grid">';
 
-  for (var i = 0; i < periods.length; i++) {
-    var p = periods[i], last = (i===2) ? " last" : "";
-    html += '<div class="row elite' + last + '">';
-    html += '<div class="period">' + p.label + '</div>';
-    if (p.eSave > 0) html += '<div><span class="save-badge green">Save ' + fmt(p.eSave) + '</span></div>';
-    html += '<div class="price">' + fmt(p.eT) + ' <span class="suffix">Total</span></div>';
-    html += '<div class="monthly">' + fmtDec(p.eT/p.mo) + ' / Month</div>';
-    html += '<button class="row-push-btn" data-plan="' + planKeys[i] + '">' + hsIcon + 'Update Deal</button>';
-    html += '</div>';
+  // Elite card
+  h += '<div class="pricing-card">';
+  h += '<div class="card-header"><div class="card-type">Subscription</div><div class="card-name">Elite</div><div class="card-sub">' + tierLabels + '</div><div class="card-sub" style="visibility:hidden">_</div></div>';
+  periods.forEach(function(p, i){
+    h += '<div class="period-row"><div class="period-name">' + p.label + '</div>';
+    if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmt(p.eS) + '</span></div>';
+    h += '<div class="price-amount">' + fmt(p.eT) + '</div>';
+    h += '<div class="price-monthly">' + fmtDec(p.eT/p.mo) + ' / month</div>';
+    h += '<button class="btn-update" data-plan="' + planKeys[i] + '">' + hsIcon + 'Update Deal</button>';
+    h += '</div>';
+  });
+  h += '</div>';
 
-    html += '<div class="row ep' + last + '">';
-    html += '<div class="period">' + p.label + '</div>';
-    if (p.epSave > 0) html += '<div><span class="save-badge gold">Save ' + fmt(p.epSave) + '</span></div>';
-    html += '<div class="price">' + fmt(p.epT) + ' <span class="suffix">Total</span></div>';
-    html += '<div class="monthly">' + fmtDec(p.epT/p.mo) + ' / Month</div>';
-    html += '<button class="row-push-btn" data-plan="' + epKeys[i] + '">' + hsIcon + 'Update Deal</button>';
-    html += '</div>';
-  }
-  html += '</div>';
+  // Elite Plus card
+  h += '<div class="pricing-card elite-plus">';
+  h += '<div class="card-header elite-plus-header"><span class="badge-rec">Recommended</span><div class="card-type">Subscription + Promoted Listings</div><div class="card-name">Elite Plus</div><div class="card-sub">' + tierLabels + '</div><div class="card-elp">' + totalElps + ' Promoted Listing' + (totalElps!==1?'s':'') + '</div></div>';
+  periods.forEach(function(p, i){
+    h += '<div class="period-row elite-plus-row"><div class="period-name">' + p.label + '</div>';
+    if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmt(p.epS) + '</span></div>';
+    h += '<div class="price-amount">' + fmt(p.epT) + '</div>';
+    h += '<div class="price-monthly">' + fmtDec(p.epT/p.mo) + ' / month</div>';
+    h += '<button class="btn-update" data-plan="' + epKeys[i] + '">' + hsIcon + 'Update Deal</button>';
+    h += '</div>';
+  });
+  h += '</div>';
 
-  // Breakdown table (tabbed)
-  html += '<div class="breakdown-box">';
-  html += '<div class="tab-bar">';
-  html += '<button class="tab-btn active" onclick="showTab(this,\'tab-prices\')">Prices</button>';
-  
-  html += '</div>';
+  h += '</div>'; // end pricing-grid
 
-  // --- Tab 1: Prices ---
-  html += '<div id="tab-prices" class="tab-pane active"><div class="tbl-wrap">';
-  html += '<table class="calc-table"><thead><tr><th>Country</th><th>Region</th><th>Listings</th><th>ELPs</th>';
-  html += '<th>Elite (3m)</th><th>Elite (6m)</th><th>Elite (12m)</th>';
-  html += '<th>Elite+ (3m)</th><th>Elite+ (6m)</th><th>Elite+ (12m)</th>';
-  html += '</tr></thead><tbody>';
+  // ── Breakdown table ──
+  h += '<div class="breakdown-card">';
+  h += '<div class="tab-bar">';
+  h += '<button class="tab-btn active" onclick="showTab(this,\'tab-prices\')">Prices</button>';
+  h += '<button class="tab-btn" onclick="showTab(this,\'tab-components\')">Components</button>';
+  h += '</div>';
 
-  for (var i = 0; i < rowCalcs.length; i++) {
-    var rc = rowCalcs[i]; if (!rc) continue;
-    var regionLabel = rc.loc + (rc.source ? ' <span style="font-size:11px;color:#1B7B6E">(' + rc.source + ')</span>' : '');
-    var td_e3, td_e6, td_e12, td_ep3, td_ep6, td_ep12;
-    if (activeRows.length === 1) {
-      td_e3=e3; td_e6=e6; td_e12=e12; td_ep3=ep3; td_ep6=ep6; td_ep12=ep12;
+  // Tab 1: Prices
+  h += '<div id="tab-prices" class="tab-pane active"><div class="tbl-wrap"><table><thead><tr>';
+  h += '<th>Country</th><th>Region</th><th>Listings</th><th>ELPs</th>';
+  h += '<th>Elite 3m</th><th>Elite 6m</th><th>Elite 12m</th>';
+  h += '<th>Elite+ 3m</th><th>Elite+ 6m</th><th>Elite+ 12m</th>';
+  h += '</tr></thead><tbody>';
+
+  active.forEach(function(rc){
+    var rl = rc.loc + (rc.source ? ' <span class="region-hint">(' + rc.source + ')</span>' : '');
+    var te3,te6,te12,tep3,tep6,tep12;
+    if (active.length === 1) {
+      te3=e3; te6=e6; te12=e12; tep3=ep3; tep6=ep6; tep12=ep12;
     } else {
-      td_e3=psych(rc.e3r); td_e6=psych(rc.e6r); td_e12=psych(rc.e12r);
-      td_ep3=td_e3+psych(rc.elp3r); td_ep6=td_e6+psych(rc.elp6r); td_ep12=td_e12+psych(rc.elp12r);
+      te3=psych(rc.e3r); te6=psych(rc.e6r); te12=psych(rc.e12r);
+      tep3=te3+psych(rc.elp3r); tep6=te6+psych(rc.elp6r); tep12=te12+psych(rc.elp12r);
     }
-    html += '<tr>';
-    html += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
-    html += '<td>' + regionLabel + '</td>';
-    html += '<td>' + rc.tier.label + '</td><td>' + rc.elps + '</td>';
-    html += '<td>'+fmt(td_e3)+'</td><td>'+fmt(td_e6)+'</td><td>'+fmt(td_e12)+'</td>';
-    html += '<td>'+fmt(td_ep3)+'</td><td>'+fmt(td_ep6)+'</td><td>'+fmt(td_ep12)+'</td>';
-    html += '</tr>';
+    h += '<tr>';
+    h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
+    h += '<td>' + rl + '</td>';
+    h += '<td>' + rc.tier.label + '</td><td>' + rc.elps + '</td>';
+    h += '<td>'+fmt(te3)+'</td><td>'+fmt(te6)+'</td><td>'+fmt(te12)+'</td>';
+    h += '<td>'+fmt(tep3)+'</td><td>'+fmt(tep6)+'</td><td>'+fmt(tep12)+'</td>';
+    h += '</tr>';
+  });
+  if (active.length > 1) {
+    h += '<tr class="total-row"><td colspan="2">Total</td><td>'+totalListings+'</td><td>'+totalElps+'</td>';
+    h += '<td>'+fmt(e3)+'</td><td>'+fmt(e6)+'</td><td>'+fmt(e12)+'</td>';
+    h += '<td>'+fmt(ep3)+'</td><td>'+fmt(ep6)+'</td><td>'+fmt(ep12)+'</td>';
+    h += '</tr>';
   }
-  if (activeRows.length > 1) {
-    html += '<tr class="total-row"><td colspan="2">Total</td><td>'+totalListings+'</td><td>'+totalElps+'</td>';
-    html += '<td>'+fmt(e3)+'</td><td>'+fmt(e6)+'</td><td>'+fmt(e12)+'</td>';
-    html += '<td>'+fmt(ep3)+'</td><td>'+fmt(ep6)+'</td><td>'+fmt(ep12)+'</td>';
-    html += '</tr>';
-  }
-  html += '</tbody></table></div></div>';
+  h += '</tbody></table></div></div>';
 
+  // Tab 2: Components
+  h += '<div id="tab-components" class="tab-pane"><div class="tbl-wrap"><table><thead><tr>';
+  h += '<th>Country</th><th>Region</th><th>Median Lead Value</th><th>Commission</th>';
+  h += '<th>Leads / Listing</th><th>Lead / ELP (3m)</th><th>Demand Mult.</th>';
+  h += '</tr></thead><tbody>';
+  var seen = {};
+  active.forEach(function(rc) {
+    var distKey = rc.country + '::' + rc.loc;
+    if (seen[distKey]) return;
+    seen[distKey] = true;
+    var lookupLoc = rc.source || (rc.loc === 'Whole Country' ? Object.keys((COMPONENTS_DATA[rc.country]||{}))[0] : rc.loc);
+    var cdata = (COMPONENTS_DATA[rc.country] || {})[lookupLoc] || {};
+    var median = cdata.median ? '€' + Math.round(cdata.median).toLocaleString('en-US') : '—';
+    var commPct = cdata.commission ? cdata.commission * 100 : null;
+    var comm = commPct !== null ? (Number.isInteger(commPct) ? commPct : commPct.toFixed(1)) + '%' : '—';
+    var lpl   = cdata.leads_per_listing !== undefined ? cdata.leads_per_listing : '—';
+    var lelp  = cdata.lead_per_elp_3m   !== undefined ? cdata.lead_per_elp_3m   : '—';
+    var dmult = cdata.demand_multiplier  !== undefined ? cdata.demand_multiplier + '×' : '—';
+    var mcf   = cdata.market_condition_factor !== undefined ? cdata.market_condition_factor : 1.0;
+    var mcfStr = mcf !== 1.0 ? '<span style="color:var(--je-gold-dark);font-weight:600">' + mcf + '</span>' : mcf;
+    var rl = rc.loc + (rc.source ? ' <span class="region-hint">(' + rc.source + ')</span>' : '');
+    h += '<tr>';
+    h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
+    h += '<td>' + rl + '</td>';
+    h += '<td>' + median + '</td><td>' + comm + '</td>';
+    h += '<td>' + lpl + '</td><td>' + lelp + '</td><td>' + dmult + '</td><td>' + mcfStr + '</td>';
+    h += '</tr>';
+  });
+  h += '</tbody></table></div></div>';
 
+  h += '<div id="hs-status" class="hs-status"></div>';
+  h += '</div>';
 
-  html += '</div>'; // end breakdown-box
-  html += '<div class="hs-panel"><div id="hs-status" class="hs-status"></div></div>';
-
-  $output.innerHTML = html;
-
-  $output.querySelectorAll(".row-push-btn").forEach(function(btn) {
+  $o.innerHTML = h;
+  $o.querySelectorAll(".btn-update").forEach(function(btn){
     btn.addEventListener("click", function(){ pushToHubSpot(this.getAttribute("data-plan"), this); });
   });
 }
 
 function pushToHubSpot(planKey, btn) {
-  var dealId  = (document.getElementById("hs-deal-id").value||"").trim();
-  var $status = document.getElementById("hs-status");
-  if (!dealId) { $status.className="hs-status error"; $status.textContent="Please enter a HubSpot Deal ID first."; document.getElementById("hs-deal-id").focus(); return; }
-  if (!lastPricing) { $status.className="hs-status error"; $status.textContent="No pricing data available."; return; }
-
-  var planLabels = { elite_3m:"Elite \u2014 3 Months", elite_6m:"Elite \u2014 6 Months", elite_12m:"Elite \u2014 12 Months", ep_3m:"Elite Plus \u2014 3 Months", ep_6m:"Elite Plus \u2014 6 Months", ep_12m:"Elite Plus \u2014 12 Months" };
+  var dealId = (document.getElementById("hs-deal-id").value||"").trim();
+  var $st = document.getElementById("hs-status");
+  if (!dealId) { $st.className="hs-status error"; $st.textContent="Please enter a HubSpot Deal ID first."; document.getElementById("hs-deal-id").focus(); return; }
+  if (!lastPricing) { $st.className="hs-status error"; $st.textContent="No pricing data."; return; }
+  var planLabels = { elite_3m:"Elite — 3 Months", elite_6m:"Elite — 6 Months", elite_12m:"Elite — 12 Months", ep_3m:"Elite Plus — 3 Months", ep_6m:"Elite Plus — 6 Months", ep_12m:"Elite Plus — 12 Months" };
   var subTypes   = { elite_3m:"Elite", elite_6m:"Elite", elite_12m:"Elite", ep_3m:"Elite Plus", ep_6m:"Elite Plus", ep_12m:"Elite Plus" };
   var termMonths = { elite_3m:3, elite_6m:6, elite_12m:12, ep_3m:3, ep_6m:6, ep_12m:12 };
-
   var payload = {
-    deal_id: dealId,
-    plan_label: planLabels[planKey],
-    amount: lastPricing[planKey],
+    deal_id: dealId, plan_label: planLabels[planKey], amount: lastPricing[planKey],
     elite_3m: lastPricing.elite_3m, elite_6m: lastPricing.elite_6m, elite_12m: lastPricing.elite_12m,
     ep_3m: lastPricing.ep_3m, ep_6m: lastPricing.ep_6m, ep_12m: lastPricing.ep_12m,
-    listing_label: lastPricing.listingLabel,
-    total_listings: lastPricing.totalListings,
-    total_elps: lastPricing.totalElps,
-    province_summary: lastPricing.provinceSummary,
-    price_country: lastPricing.countryLabel,
-    price_sub_type: subTypes[planKey],
-    price_term_months: termMonths[planKey],
-    price_listings: lastPricing.listingLabel,
-    price_additional_elps: lastPricing.totalElps,
+    listing_label: lastPricing.listingLabel, total_listings: lastPricing.totalListings, total_elps: lastPricing.totalElps,
+    province_summary: lastPricing.provinceSummary, price_country: lastPricing.countryLabel,
+    price_sub_type: subTypes[planKey], price_term_months: termMonths[planKey],
+    price_listings: lastPricing.listingLabel, price_additional_elps: lastPricing.totalElps,
     price_province: lastPricing.provinceLabel,
   };
-
-  var allBtns = document.querySelectorAll(".row-push-btn");
+  var allBtns = document.querySelectorAll(".btn-update");
   allBtns.forEach(function(b){ b.disabled=true; });
-  var origHTML = btn.innerHTML;
-  btn.innerHTML = "Sending\u2026";
-  $status.className="hs-status loading"; $status.textContent="Updating deal "+dealId+"\u2026";
-
+  var orig = btn.innerHTML;
+  btn.innerHTML = "Sending…";
+  $st.className="hs-status loading"; $st.textContent="Updating deal " + dealId + "…";
   fetch(N8N_WEBHOOK_URL, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) })
-    .then(function(res){ if(!res.ok) throw new Error("HTTP "+res.status); return res.json().catch(function(){ return {}; }); })
+    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json().catch(function(){ return {}; }); })
     .then(function(){
-      $status.className="hs-status success";
-      $status.textContent="\u2713 Deal "+dealId+" updated \u2014 "+planLabels[planKey]+" ("+fmt(lastPricing[planKey])+") set as Amount, pricing note added.";
-      btn.innerHTML="\u2713 Sent"; btn.classList.add("sent");
-      setTimeout(function(){ btn.innerHTML=origHTML; btn.classList.remove("sent"); }, 3000);
+      $st.className="hs-status success";
+      $st.textContent="✓ Deal "+dealId+" updated — "+planLabels[planKey]+" ("+fmt(lastPricing[planKey])+") set as amount.";
+      btn.innerHTML="✓ Sent"; btn.classList.add("sent");
+      setTimeout(function(){ btn.innerHTML=orig; btn.classList.remove("sent"); }, 3000);
       allBtns.forEach(function(b){ b.disabled=false; });
     })
     .catch(function(err){
-      $status.className="hs-status error"; $status.textContent="Error: "+err.message;
-      btn.innerHTML=origHTML; allBtns.forEach(function(b){ b.disabled=false; });
+      $st.className="hs-status error"; $st.textContent="Error: "+err.message;
+      btn.innerHTML=orig; allBtns.forEach(function(b){ b.disabled=false; });
     });
 }
 
-document.getElementById("btn-add").addEventListener("click", function(){ addRow(); });
-
 function showTab(btn, tabId) {
-  var box = btn.closest('.breakdown-box');
+  var box = btn.closest('.breakdown-card');
   box.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   box.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
   btn.classList.add('active');
   document.getElementById(tabId).classList.add('active');
 }
 
-// Init
+document.getElementById("btn-add").addEventListener("click", function(){ addRow(); });
 addRow("ES", "__whole__", 0, 0);
 </script>
 </body>
