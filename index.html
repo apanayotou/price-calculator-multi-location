@@ -759,6 +759,10 @@ function render() {
   var epS6=Math.max(ep3*2-ep6,0), epS12=Math.max(ep3*4-ep12,0);
 
   var active = rowCalcs.filter(function(r){ return r; });
+  var allUS = active.length > 0 && active.every(function(rc){ return rc.country === 'US'; });
+  var sym = allUS ? '$' : '€';
+  var fmtC = function(v) { return sym + v.toLocaleString("en-US"); };
+  var fmtDecC = function(v) { return sym + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); };
   var tierLabels = active.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
   var provinceSummary = active.map(function(rc){ return (COUNTRY_NAMES[rc.country]||rc.country) + " — " + rc.loc + (rc.source?" ("+rc.source+")":"") + ": " + rc.tier.label + " listings, " + rc.elps + " ELPs"; }).join("\n");
   var provinceLabel = active.map(function(rc){ return rc.loc; }).join(", ");
@@ -788,9 +792,9 @@ function render() {
   h += '<div class="card-header"><div class="card-type">Subscription</div><div class="card-name">Elite</div><div class="card-sub">' + tierLabels + '</div><div class="card-sub" style="visibility:hidden">_</div></div>';
   periods.forEach(function(p, i){
     h += '<div class="period-row"><div class="period-name">' + p.label + '</div>';
-    if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmt(p.eS) + '</span></div>';
-    h += '<div class="price-amount">' + fmt(p.eT) + '</div>';
-    h += '<div class="price-monthly">' + fmtDec(p.eT/p.mo) + ' / month</div>';
+    if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(p.eS) + '</span></div>';
+    h += '<div class="price-amount">' + fmtC(p.eT) + '</div>';
+    h += '<div class="price-monthly">' + fmtDecC(p.eT/p.mo) + ' / month</div>';
     h += '<button class="btn-update" data-plan="' + planKeys[i] + '">' + hsIcon + 'Update Deal</button>';
     h += '</div>';
   });
@@ -801,9 +805,9 @@ function render() {
   h += '<div class="card-header elite-plus-header"><span class="badge-rec">Recommended</span><div class="card-type">Subscription + Promoted Listings</div><div class="card-name">Elite Plus</div><div class="card-sub">' + tierLabels + '</div><div class="card-elp">' + totalElps + ' Promoted Listing' + (totalElps!==1?'s':'') + '</div></div>';
   periods.forEach(function(p, i){
     h += '<div class="period-row elite-plus-row"><div class="period-name">' + p.label + '</div>';
-    if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmt(p.epS) + '</span></div>';
-    h += '<div class="price-amount">' + fmt(p.epT) + '</div>';
-    h += '<div class="price-monthly">' + fmtDec(p.epT/p.mo) + ' / month</div>';
+    if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmtC(p.epS) + '</span></div>';
+    h += '<div class="price-amount">' + fmtC(p.epT) + '</div>';
+    h += '<div class="price-monthly">' + fmtDecC(p.epT/p.mo) + ' / month</div>';
     h += '<button class="btn-update" data-plan="' + epKeys[i] + '">' + hsIcon + 'Update Deal</button>';
     h += '</div>';
   });
@@ -837,14 +841,14 @@ function render() {
     h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
     h += '<td>' + rl + '</td>';
     h += '<td>' + rc.tier.label + '</td><td>' + rc.elps + '</td>';
-    h += '<td>'+fmt(te3)+'</td><td>'+fmt(te6)+'</td><td>'+fmt(te12)+'</td>';
-    h += '<td>'+fmt(tep3)+'</td><td>'+fmt(tep6)+'</td><td>'+fmt(tep12)+'</td>';
+    h += '<td>'+fmtC(te3)+'</td><td>'+fmtC(te6)+'</td><td>'+fmtC(te12)+'</td>';
+    h += '<td>'+fmtC(tep3)+'</td><td>'+fmtC(tep6)+'</td><td>'+fmtC(tep12)+'</td>';
     h += '</tr>';
   });
   if (active.length > 1) {
     h += '<tr class="total-row"><td colspan="2">Total</td><td>'+totalListings+'</td><td>'+totalElps+'</td>';
-    h += '<td>'+fmt(e3)+'</td><td>'+fmt(e6)+'</td><td>'+fmt(e12)+'</td>';
-    h += '<td>'+fmt(ep3)+'</td><td>'+fmt(ep6)+'</td><td>'+fmt(ep12)+'</td>';
+    h += '<td>'+fmtC(e3)+'</td><td>'+fmtC(e6)+'</td><td>'+fmtC(e12)+'</td>';
+    h += '<td>'+fmtC(ep3)+'</td><td>'+fmtC(ep6)+'</td><td>'+fmtC(ep12)+'</td>';
     h += '</tr>';
   }
   h += '</tbody></table></div></div>';
