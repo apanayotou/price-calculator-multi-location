@@ -3,1335 +3,869 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deal Creator — JamesEdition Admin</title>
+<title>Price Calculator 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prata&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --teal: #006C75; --teal-hover: #19818A; --teal-light: #0ebab4;
-    --black: #151515; --mid-gray: #606060; --light-gray: #878787;
-    --muted-gray: #ababab; --border-gray: #E0E0E0; --divider: #ececec;
-    --off-white: #F5F5F5; --near-white: #F8F8F8; --error: #E63232; --success: #178475;
-    --amber: #b9a16f; --amber-light: #fff8ed; --amber-border: #f0d9a8;
-  }
-  body { font-family: Inter, Arial, sans-serif; font-size: 14px; color: var(--black); background: var(--near-white); min-height: 100vh; }
+/* ── JE Design System tokens ─────────────────────────── */
+:root {
+  --je-teal-deep: #006C75;
+  --je-teal-deep-hover: #19818A;
+  --je-green: #178475;
+  --je-gold-dark: #b9a16f;
+  --je-gold-light: #dfd5c0;
+  --je-black: #151515;
+  --je-mid-gray: #606060;
+  --je-light-gray: #878787;
+  --je-muted-gray: #ADADAD;
+  --je-border: #E0E0E0;
+  --je-divider: #ececec;
+  --je-disabled-bg: #F0F0F0;
+  --je-off-white: #F5F5F5;
+  --je-near-white: #F7F7F7;
+  --je-white: #FFFFFF;
+  --je-error: #E63232;
+  --font-sans: 'Inter', Arial, sans-serif;
+  --font-serif: 'Prata', serif;
+  --radius: 4px;
+  --shadow-border: 0 0 0 1px #ececec;
+  --shadow-subtle: 0 3px 13px 0 rgba(107,107,107,0.2);
+}
 
-  .nav { background: var(--black); height: 52px; display: flex; align-items: center; padding: 0 32px; gap: 32px; position: sticky; top: 0; z-index: 100; }
-  .nav-logo { font-family: Prata, serif; font-size: 16px; color: #fff; letter-spacing: 0.02em; }
-  .nav-logo span { color: var(--teal-light); }
-  .nav-links { display: flex; gap: 24px; margin-left: 16px; }
-  .nav-link { font-size: 12px; font-weight: 500; color: var(--muted-gray); text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: color 0.15s; }
-  .nav-link.active { color: var(--teal-light); }
-  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
-  .nav-user { font-size: 12px; color: var(--muted-gray); font-weight: 500; }
-  .nav-badge { background: var(--teal); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em; text-transform: uppercase; }
+/* ── Reset & base ─────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--je-black);
+  background: var(--je-near-white);
+  -webkit-font-smoothing: antialiased;
+}
 
-  .page { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+/* ── Header ───────────────────────────────────────────── */
+.header {
+  background: var(--je-white);
+  border-bottom: 1px solid var(--je-divider);
+  padding: 0 40px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--je-black);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-logo svg { width: 16px; height: 16px; }
+.header-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--je-black);
+  letter-spacing: -0.01em;
+}
+.header-meta {
+  font-size: 11px;
+  color: var(--je-light-gray);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
-  /* ── MODE TOGGLE ── */
-  .mode-toggle-bar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 32px;
-  }
-  .mode-toggle-label {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--mid-gray);
-    flex-shrink: 0;
-  }
-  .toggle-pills {
-    display: flex;
-    background: var(--off-white);
-    border: 1px solid var(--border-gray);
-    border-radius: 6px;
-    padding: 3px;
-    gap: 2px;
-  }
-  .toggle-pill {
-    padding: 7px 20px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--mid-gray);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .toggle-pill.active {
-    background: #fff;
-    color: var(--black);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  }
-  .toggle-pill.renewal-active {
-    background: var(--amber);
-    color: #fff;
-    box-shadow: 0 1px 4px rgba(185,161,111,0.3);
-  }
-  .toggle-pill.midsub-active {
-    background: #5046e5;
-    color: #fff;
-    box-shadow: 0 1px 4px rgba(80,70,229,0.3);
-  }
-  .sub-type-toggle {
-    display: flex; background: var(--off-white); border: 1px solid var(--border-gray);
-    border-radius: 6px; padding: 3px; gap: 2px; margin-bottom: 20px;
-  }
-  .sub-type-pill {
-    flex: 1; padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--mid-gray);
-    border-radius: 4px; cursor: pointer; transition: all 0.15s; text-align: center; user-select: none;
-  }
-  .sub-type-pill.active { background: #fff; color: var(--black); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-  .midsub-banner {
-    background: #eef0fe; border: 1px solid #c7caf9; border-radius: 4px;
-    padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 12px;
-  }
-  .midsub-banner-icon {
-    width: 28px; height: 28px; border-radius: 50%; background: #c7caf9; color: #5046e5;
-    font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
-  }
-  .midsub-banner-text { font-size: 13px; color: #312e81; line-height: 1.6; }
-  .midsub-banner-text strong { font-weight: 600; }
+/* ── Page wrap ────────────────────────────────────────── */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 32px 64px;
+}
 
-  .page-header { margin-bottom: 28px; }
-  .page-header h1 { font-family: Prata, serif; font-size: 32px; font-weight: 300; color: var(--black); margin-bottom: 8px; letter-spacing: -0.01em; }
-  .page-header p { font-size: 14px; color: var(--mid-gray); line-height: 1.6; }
+/* ── Section label ────────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 12px;
+}
 
-  /* ── RENEWAL BANNER ── */
-  .renewal-banner {
-    background: var(--amber-light);
-    border: 1px solid var(--amber-border);
-    border-radius: 4px;
-    padding: 14px 20px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .renewal-icon {
-    width: 28px; height: 28px; border-radius: 50%;
-    background: var(--amber-border);
-    color: var(--amber);
-    font-size: 14px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 1px;
-  }
-  .renewal-banner-text { font-size: 13px; color: #7a5a1a; line-height: 1.6; }
-  .renewal-banner-text strong { font-weight: 600; }
+/* ── Config card ──────────────────────────────────────── */
+.config-card {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+.config-rows { display: flex; flex-direction: column; gap: 0; }
+.config-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 1fr 1fr 1fr 36px;
+  gap: 12px;
+  align-items: end;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--je-near-white);
+}
+.config-row:first-child { padding-top: 0; }
+.config-row:last-child { border-bottom: none; padding-bottom: 0; }
 
-  .form-card { background: #fff; border: 1px solid var(--divider); border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
-  .form-section-header { padding: 20px 28px 16px; border-bottom: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; }
-  .form-section-header h2 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--black); }
-  .step-badge { width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
-  .step-badge.amber { background: var(--amber); }
-  .form-body { padding: 24px 28px; }
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 6px;
+}
+select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--je-black);
+  background: var(--je-white);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23878787' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+select:focus { border-color: var(--je-mid-gray); }
 
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-  .form-row.single { grid-template-columns: 1fr; }
-  .form-row:last-child { margin-bottom: 0; }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label { font-size: 12px; font-weight: 500; color: var(--mid-gray); letter-spacing: 0.04em; text-transform: uppercase; }
-  .form-group label .req { color: var(--teal); margin-left: 2px; }
-  .form-group label .opt { color: var(--muted-gray); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; margin-left: 4px; }
+.btn-remove {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  background: var(--je-white);
+  color: var(--je-muted-gray);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+  align-self: end;
+}
+.btn-remove:hover { border-color: var(--je-error); color: var(--je-error); background: #fff5f5; }
 
-  input[type="text"], input[type="number"], select, textarea {
-    font-family: Inter, Arial, sans-serif; font-size: 14px; color: var(--black); background: #fff;
-    border: 1px solid var(--border-gray); border-radius: 4px; padding: 10px 14px; width: 100%;
-    outline: none; transition: border-color 0.15s; appearance: none;
-  }
-  input::placeholder, textarea::placeholder { color: var(--muted-gray); }
-  input:focus, select:focus, textarea:focus { border-color: var(--mid-gray); }
-  select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23606060' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
-  }
-  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+/* ── Config footer ────────────────────────────────────── */
+.config-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--je-divider);
+}
+.btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px dashed var(--je-teal-deep);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--je-teal-deep);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 200ms ease;
+}
+.btn-add:hover { background: #f0f9fa; }
 
-  /* subscription ID highlight for renewal */
-  input.renewal-field {
-    border-color: var(--amber-border);
-    background: var(--amber-light);
-  }
-  input.renewal-field:focus { border-color: var(--amber); }
+/* ── Pricing grid ───────────────────────────────────── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+@media (max-width: 700px) { .pricing-grid { grid-template-columns: 1fr; } }
 
-  .radio-group { display: flex; gap: 12px; }
-  .radio-card { flex: 1; border: 1px solid var(--border-gray); border-radius: 4px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; display: flex; align-items: flex-start; gap: 12px; }
-  .radio-card.selected { border-color: var(--teal); background: #f0fafa; }
-  .radio-card:hover:not(.selected) { border-color: var(--mid-gray); }
-  .radio-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border-gray); margin-top: 1px; flex-shrink: 0; transition: all 0.15s; }
-  .radio-card.selected .radio-dot { border-color: var(--teal); background: var(--teal); box-shadow: inset 0 0 0 3px #fff; }
-  .radio-label { font-size: 14px; font-weight: 500; color: var(--black); }
-  .radio-desc { font-size: 12px; color: var(--mid-gray); margin-top: 2px; }
+/* ── Pricing card ─────────────────────────────────────── */
+.pricing-card {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pricing-card.elite-plus {
+  border-color: var(--je-gold-dark);
+}
 
-  .search-wrapper { position: relative; }
-  .search-wrapper input { padding-left: 38px; }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted-gray); font-size: 15px; }
-  .search-result { margin-top: 6px; border: 1px solid var(--border-gray); border-radius: 4px; overflow: hidden; }
-  .search-result-item { padding: 10px 14px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--divider); transition: background 0.1s; }
-  .search-result-item:last-child { border-bottom: none; }
-  .search-result-item:hover { background: var(--near-white); }
-  .result-name { font-weight: 500; color: var(--black); }
-  .result-meta { font-size: 11px; color: var(--light-gray); }
-  .result-id { font-family: monospace; font-size: 11px; color: var(--teal); }
+.card-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--je-divider);
+  position: relative;
+}
+.card-header.elite-plus-header {
+  background: #fdfaf5;
+  border-bottom-color: var(--je-gold-light);
+}
+.card-type {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 4px;
+}
+.card-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--je-black);
+  letter-spacing: -0.02em;
+}
+.card-sub {
+  font-size: 13px;
+  color: var(--je-mid-gray);
+  margin-top: 3px;
+}
+.card-elp {
+  font-size: 13px;
+  color: var(--je-teal-deep);
+  font-weight: 500;
+  margin-top: 2px;
+}
+.badge-rec {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--je-gold-dark);
+  color: var(--je-white);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 30px;
+}
 
-  .customer-selected { border: 1px solid var(--teal); border-radius: 4px; padding: 12px 16px; background: #f0fafa; display: flex; justify-content: space-between; align-items: center; }
-  .customer-selected .cs-name { font-size: 14px; font-weight: 500; color: var(--black); }
-  .customer-selected .cs-meta { font-size: 12px; color: var(--mid-gray); margin-top: 2px; }
-  .change-link { font-size: 12px; color: var(--teal); cursor: pointer; font-weight: 500; flex-shrink: 0; }
+/* ── Period row ───────────────────────────────────────── */
+.period-row {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--je-near-white);
+}
+.period-row:last-child { border-bottom: none; }
+.period-row.elite-plus-row { background: #fdfaf5; }
 
-  .product-selected { border: 1px solid var(--teal); border-radius: 4px; padding: 12px 16px; background: #f0fafa; display: flex; justify-content: space-between; align-items: center; }
-  .product-selected .name { font-size: 14px; font-weight: 500; color: var(--black); }
-  .product-selected .meta { font-size: 12px; color: var(--mid-gray); margin-top: 2px; }
+.period-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  margin-bottom: 6px;
+}
+.save-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 30px;
+  margin-bottom: 6px;
+}
+.save-badge.teal { background: var(--je-teal-deep); color: var(--je-white); }
+.save-badge.gold { background: var(--je-gold-dark); color: var(--je-white); }
 
-  .form-hint { font-size: 11px; color: var(--light-gray); margin-top: 5px; line-height: 1.5; }
+.price-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--je-black);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 3px;
+}
+.price-period {
+  font-size: 13px;
+  color: var(--je-light-gray);
+  font-weight: 400;
+}
+.price-monthly {
+  font-size: 12px;
+  color: var(--je-light-gray);
+  margin-top: 2px;
+}
 
-  .tag-input-wrapper { border: 1px solid var(--border-gray); border-radius: 4px; padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 6px; min-height: 44px; cursor: text; transition: border-color 0.15s; }
-  .tag-input-wrapper:focus-within { border-color: var(--mid-gray); }
-  .tag { display: flex; align-items: center; gap: 6px; background: var(--off-white); border: 1px solid var(--divider); border-radius: 3px; padding: 3px 8px; font-size: 12px; font-weight: 500; color: var(--black); }
-  .tag-id { color: var(--teal); font-family: monospace; }
-  .tag-remove { color: var(--muted-gray); cursor: pointer; font-size: 14px; line-height: 1; }
-  .tag-remove:hover { color: var(--error); }
-  .tag-input-inner { border: none !important; padding: 3px 4px !important; width: 140px; font-size: 13px; outline: none; background: transparent; }
+/* ── Update deal button ───────────────────────────────── */
+.btn-update {
+  margin-top: 12px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--je-border);
+  border-radius: var(--radius);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--je-mid-gray);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 200ms ease;
+}
+.btn-update:hover { border-color: var(--je-teal-deep); color: var(--je-teal-deep); background: #f0f9fa; }
+.btn-update:disabled { color: var(--je-muted-gray); border-color: var(--je-divider); cursor: not-allowed; background: transparent; }
+.btn-update.sent { border-color: var(--je-teal-deep); color: var(--je-teal-deep); background: #eaf6f6; }
+.elite-plus-row .btn-update:hover { border-color: var(--je-gold-dark); color: var(--je-gold-dark); background: #fdf7ef; }
+.elite-plus-row .btn-update.sent { border-color: var(--je-gold-dark); color: var(--je-gold-dark); background: #fdf7ef; }
 
-  .office-block { margin-top: 24px; border-top: 1px solid var(--divider); padding-top: 24px; }
-  .office-block-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-  .count-badge { background: var(--teal); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
+/* ── Breakdown table ──────────────────────────────────── */
+.breakdown-card {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.breakdown-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--je-divider);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+}
+.tab-bar { display: flex; border-bottom: 1px solid var(--je-divider); padding: 0 24px; background: var(--je-white); }
+.tab-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--je-muted-gray); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: var(--font-sans); margin-bottom: -1px; transition: color 200ms, border-color 200ms; }
+.tab-btn.active { color: var(--je-black); border-bottom-color: var(--je-teal-deep); }
+.tab-btn:hover:not(.active) { color: var(--je-mid-gray); }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-light-gray);
+  border-bottom: 1px solid var(--je-divider);
+  white-space: nowrap;
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--je-near-white);
+  color: var(--je-black);
+}
+tr.total-row td {
+  font-weight: 600;
+  border-top: 1px solid var(--je-divider);
+  border-bottom: none;
+  background: var(--je-near-white);
+}
+tr:last-child td { border-bottom: none; }
+.region-hint { font-size: 11px; color: var(--je-teal-deep); font-weight: 500; }
 
-  .addon-section { margin-bottom: 16px; }
-  .addon-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; background: var(--off-white); border: 1px solid var(--divider); border-radius: 4px; cursor: pointer; transition: background 0.15s; user-select: none; }
-  .addon-header.open { border-radius: 4px 4px 0 0; }
-  .addon-header:hover { background: #eeeee8; }
-  .addon-title { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); }
-  .addon-optional { font-size: 11px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--muted-gray); }
-  .addon-item-count { background: var(--teal); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px; }
-  .addon-chevron { color: var(--muted-gray); font-size: 11px; transition: transform 0.2s; }
-  .addon-chevron.open { transform: rotate(180deg); }
-  .addon-body { background: #fff; border: 1px solid var(--divider); border-top: none; border-radius: 0 0 4px 4px; padding: 24px 28px; display: none; }
-  .addon-body.open { display: block; }
-  .addon-desc { font-size: 12px; color: var(--mid-gray); margin-bottom: 16px; line-height: 1.6; }
-  .addon-col-headers { display: grid; grid-template-columns: 1fr 80px 80px 36px; gap: 8px; margin-bottom: 8px; }
-  .addon-col-header { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-gray); }
-  .addon-row { display: grid; grid-template-columns: 1fr 80px 80px 36px; gap: 12px; align-items: center; margin-bottom: 10px; }
-  .btn-remove { width: 36px; height: 36px; border: 1px solid var(--border-gray); border-radius: 4px; background: #fff; color: var(--muted-gray); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
-  .btn-remove:hover { border-color: var(--error); color: var(--error); }
-  .btn-add-row { margin-top: 4px; font-family: Inter, Arial, sans-serif; font-size: 12px; font-weight: 500; color: var(--teal); background: transparent; border: 1px dashed var(--teal); border-radius: 4px; padding: 8px 16px; cursor: pointer; width: 100%; transition: all 0.15s; }
-  .btn-add-row:hover { background: #f0fafa; }
+/* ── Status / Toast ───────────────────────────────────── */
 
-  .summary-panel { background: var(--off-white); border: 1px solid var(--divider); border-radius: 4px; padding: 20px 24px; margin-bottom: 16px; }
-  .summary-panel h3 { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 14px; }
-  .summary-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 1px solid var(--divider); font-size: 13px; }
-  .summary-row:last-child { border-bottom: none; }
-  .summary-key { color: var(--mid-gray); }
-  .summary-val { font-weight: 500; color: var(--black); }
-  .summary-val.mono { color: var(--teal); font-family: monospace; font-size: 12px; }
 
-  /* view tabs */
-  .view-tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--divider); margin-bottom: 24px; }
-  .view-tab { padding: 12px 24px; font-size: 14px; font-weight: 600; color: var(--mid-gray); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
-  .view-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
-  .view-tab:hover:not(.active) { color: var(--black); }
-  /* subscriptions table */
-  .subs-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--divider); border-radius: 4px; overflow: hidden; }
-  .subs-table th { background: var(--off-white); text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); border-bottom: 1px solid var(--divider); }
-  .subs-table td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--divider); vertical-align: middle; }
-  .subs-table tr:last-child td { border-bottom: none; }
-  .subs-table tr.expandable { cursor: pointer; }
-  .subs-table tr.expandable:hover { background: var(--near-white); }
-  .sub-id-mono { font-family: 'SF Mono', Monaco, monospace; font-size: 13px; color: var(--black); }
-  .sub-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
-  .sub-status.active { background: #E8F5E9; color: #1B5E20; }
-  .sub-status.past_due { background: #FFF3E0; color: #E65100; }
-  .office-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .office-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--off-white); border: 1px solid var(--border-gray); border-radius: 4px; padding: 4px 8px; font-size: 13px; }
-  .office-chip .chip-remove { color: var(--mid-gray); cursor: pointer; font-weight: 600; }
-  .office-chip .chip-remove:hover { color: var(--error); }
-  .sub-detail-row td { background: var(--near-white); padding: 20px 24px; }
-  .sub-detail-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 10px; }
-  .form-actions { display: flex; justify-content: flex-end; gap: 12px; padding: 20px 28px; border-top: 1px solid var(--divider); background: var(--near-white); align-items: center; }
-  .btn { font-family: Inter, Arial, sans-serif; font-size: 13px; font-weight: 500; padding: 10px 24px; border-radius: 3px; border: none; cursor: pointer; transition: all 0.15s; }
-  .btn-ghost { background: transparent; color: var(--mid-gray); border: 1px solid var(--border-gray); }
-  .btn-ghost:hover { border-color: var(--mid-gray); color: var(--black); }
-  .btn-primary { background: var(--teal); color: #fff; }
-  .btn-primary:hover { background: var(--teal-hover); }
-  .btn-warning { background: transparent; color: #b45309; border: 1px solid #f59e0b; }
-  .btn-warning:hover { background: #fffbeb; border-color: #b45309; }
-  .inline-notice { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--light-gray); margin-right: auto; }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-  .hs-mismatch { color: var(--error); font-size: 12px; font-weight: 500; }
-  .hs-match { color: var(--success); font-size: 12px; font-weight: 500; }
-  .coupon-applied { display:flex; align-items:center; justify-content:space-between; border:1px solid #2E7D32; border-radius:4px; padding:10px 14px; background:#E8F5E9; }
-  .coupon-applied .coupon-name { font-size:14px; font-weight:500; color:#1B5E20; }
-  .coupon-applied .coupon-desc { font-size:12px; color:#388E3C; margin-top:2px; }
-  .coupon-remove { font-size:12px; color:var(--teal); cursor:pointer; font-weight:500; }
-  .coupon-remove:hover { color:var(--error); }
+/* ── Empty ────────────────────────────────────────────── */
+.empty {
+  background: var(--je-white);
+  border: 1px solid var(--je-divider);
+  border-radius: var(--radius);
+  padding: 56px 32px;
+  text-align: center;
+  color: var(--je-light-gray);
+  font-size: 14px;
+}
 
-  /* ── FISCAL DATA ── */
-  .fiscal-block {
-    margin-top: 20px;
-    border: 1px solid var(--amber-border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .fiscal-block-header {
-    background: var(--amber-light);
-    border-bottom: 1px solid var(--amber-border);
-    padding: 10px 16px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--amber);
-  }
-  .fiscal-block-body { padding: 16px; background: #fff; }
-  .vat-valid { color: var(--success); font-size: 12px; margin-top: 4px; font-weight: 500; }
-  .vat-invalid { color: var(--error); font-size: 12px; margin-top: 4px; font-weight: 500; }
-
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s;
-  }
-  .modal-overlay.show { opacity: 1; pointer-events: all; }
-  .modal-box {
-    background: #fff; border-radius: 6px; padding: 28px 32px;
-    max-width: 440px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-  }
-  .modal-icon { font-size: 28px; margin-bottom: 12px; }
-  .modal-title { font-size: 16px; font-weight: 600; color: var(--black); margin-bottom: 8px; }
-  .modal-body { font-size: 14px; color: var(--mid-gray); line-height: 1.6; margin-bottom: 24px; }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-  .toast { position: fixed; bottom: 32px; right: 32px; background: var(--black); color: #fff; font-size: 13px; font-weight: 500; padding: 14px 20px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); display: none; z-index: 999; max-width: 340px; line-height: 1.4; }
-  .toast.show { display: block; animation: fadeup 0.2s ease; }
-  @keyframes fadeup { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-  .hidden { display: none !important; }
+/* ── Footer ───────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 32px 0 0;
+  font-size: 11px;
+  color: var(--je-muted-gray);
+  letter-spacing: 0.04em;
+}
 </style>
 </head>
 <body>
 
-<div class="page">
-
-  <!-- PAGE HEADER -->
-  <div class="page-header">
-    <h1>Deal Creator</h1>
-    <p>Generate a Stripe checkout link or bank-transfer invoice for a custom-priced subscription.</p>
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="5" height="5" fill="white"/>
+        <rect x="9" y="2" width="5" height="5" fill="white"/>
+        <rect x="2" y="9" width="5" height="5" fill="white"/>
+        <rect x="9" y="9" width="5" height="5" fill="white" opacity="0.4"/>
+      </svg>
+    </div>
+    <span class="header-title">Price Calculator</span>
   </div>
+  <span class="header-meta">Data refreshed Jun 2026</span>
+</header>
 
-  <!-- ── VIEW TABS ── -->
-  <div class="view-tabs">
-    <div class="view-tab active" id="vtab-creator" onclick="setView('creator')">Deal Creator</div>
-    <div class="view-tab" id="vtab-subs" onclick="setView('subs')">Subscriptions</div>
-  </div>
+<div class="wrap">
 
-  <!-- ════ DEAL CREATOR VIEW ════ -->
-  <div id="view-creator">
+  <!-- Config -->
+  <div class="config-card">
+    <div class="config-rows" id="rows-container"></div>
+    <div class="config-footer">
+      <button class="btn-add" id="btn-add">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add Location
+      </button>
 
-  <!-- ── TOP MODE TOGGLE ── -->
-  <div class="mode-toggle-bar">
-    <span class="mode-toggle-label">Mode</span>
-    <div class="toggle-pills">
-      <div class="toggle-pill active" id="pill-new" onclick="setMode('new')">New subscription</div>
-      <div class="toggle-pill" id="pill-renewal" onclick="setMode('renewal')">Renewal</div>
-      <div class="toggle-pill" id="pill-midsub" onclick="setMode('midsub')">Mid-sub update</div>
     </div>
   </div>
 
-  <!-- RENEWAL BANNER (hidden by default) -->
-  <div class="renewal-banner hidden" id="renewal-banner">
-    <div class="renewal-icon">↻</div>
-    <div class="renewal-banner-text">
-      <strong>Renewal mode.</strong> Enter the existing Stripe subscription ID below — the form will be pre-filled from the previous deal. Adjust price, tier, or add-ons as needed before generating a new checkout link.
-    </div>
-  </div>
+  <div id="output"></div>
 
-  <!-- MID-SUB BANNER -->
-  <div class="midsub-banner hidden" id="midsub-banner">
-    <div class="midsub-banner-icon">↙</div>
-    <div class="midsub-banner-text"><strong>Mid-sub update mode.</strong> Enter the existing Stripe subscription ID. Use this to charge a one-time add-on or upgrade the subscription mid-cycle.</div>
-  </div>
-  <div class="form-card hidden" id="midsub-sub-card">
-    <div class="form-section-header"><h2>Existing subscription</h2><div class="step-badge" style="background:#5046e5;">↙</div></div>
-    <div class="form-body">
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Stripe subscription ID <span class="req">*</span></label>
-          <input type="text" id="midsub-sub-id" class="renewal-field" placeholder="sub_xxxxxxxxxxxxxxxx" style="border-color:#c7caf9;background:#eef0fe;">
-          <div class="form-hint">The subscription to charge against or upgrade.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RENEWAL SUBSCRIPTION ID (hidden by default) -->
-  <div class="form-card hidden" id="renewal-sub-card">
-    <div class="form-section-header">
-      <h2>Existing subscription</h2>
-      <div class="step-badge amber">↻</div>
-    </div>
-    <div class="form-body">
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Stripe subscription ID <span class="req">*</span></label>
-          <input type="text" id="renewal-sub-id" class="renewal-field" placeholder="sub_xxxxxxxxxxxxxxxx" oninput="prefillFromSub(this.value)">
-          <div class="form-hint">Enter the existing subscription ID to pre-fill the form. The current customer, product, and offices will be loaded automatically.</div>
-        </div>
-      </div>
-      <div class="form-row single hidden" id="prefill-status">
-        <div style="display:flex; align-items:center; gap:8px; font-size:13px; color: var(--success); font-weight:500;">
-          <span>✓</span> <span id="prefill-status-text"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 1: PAYMENT METHOD -->
-  <div class="form-card">
-    <div class="form-section-header"><h2>Payment method</h2><div class="step-badge" id="step1-badge">1</div></div>
-    <div class="form-body">
-      <div class="radio-group" id="payment-group">
-        <div class="radio-card selected" onclick="selectRadio('payment-group',0); hideFiscal()">
-          <div class="radio-dot"></div>
-          <div><div class="radio-label">Card</div><div class="radio-desc">Generate a hosted Stripe checkout link. Client clicks, enters card details, subscription activates automatically.</div></div>
-        </div>
-        <div class="radio-card" onclick="selectRadio('payment-group',1); showFiscal()">
-          <div class="radio-dot"></div>
-          <div><div class="radio-label">Bank transfer</div><div class="radio-desc">Generate an invoice with IBAN/BIC. Client pays by wire transfer.</div></div>
-        </div>
-      </div>
-
-      <!-- FISCAL DATA — shown for bank transfer only -->
-      <div class="fiscal-block hidden" id="fiscal-block">
-        <div class="fiscal-block-header">Fiscal data (required for invoice)</div>
-        <div class="fiscal-block-body">
-          <div class="form-row" style="margin-bottom:16px;">
-            <div class="form-group">
-              <label>Country <span class="req">*</span></label>
-              <select id="fiscal-country">
-                <option value="">Select country...</option>
-                <option>Austria</option><option>Belgium</option><option>Croatia</option>
-                <option>Cyprus</option><option>Czech Republic</option><option>Denmark</option>
-                <option>Estonia</option><option>Finland</option><option>France</option>
-                <option>Germany</option><option>Greece</option><option>Hungary</option>
-                <option>Ireland</option><option>Italy</option><option>Latvia</option>
-                <option>Lithuania</option><option>Luxembourg</option><option>Malta</option>
-                <option>Netherlands</option><option>Poland</option><option>Portugal</option>
-                <option>Romania</option><option>Slovakia</option><option>Slovenia</option>
-                <option>Spain</option><option>Sweden</option><option>United Kingdom</option>
-                <option>United States</option><option>United Arab Emirates</option>
-                <option>Switzerland</option><option>Other</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Billing address (line 1) <span class="req">*</span></label>
-              <input type="text" id="fiscal-address" placeholder="e.g. Keizersgracht 123">
-            </div>
-          </div>
-          <div class="form-row single">
-            <div class="form-group">
-              <label>VAT ID <span class="opt">(optional, validated for EU)</span></label>
-              <input type="text" id="fiscal-vat" placeholder="e.g. NL123456789B01" oninput="validateVat(this.value)" style="text-transform:uppercase;">
-              <div id="vat-feedback" class="form-hint"></div>
-            </div>
-          </div>
-          <div class="form-row" style="margin-top:12px;">
-            <div class="form-group">
-              <label>Payment due <span class="req">*</span></label>
-              <div style="display:flex;align-items:center;gap:12px;">
-                <input type="number" id="payment-due-days" value="7" min="1" max="90" style="width:100px;flex-shrink:0;">
-                <span style="font-size:13px;color:var(--mid-gray);">days after invoice is sent</span>
-              </div>
-              <div class="form-hint">Default 7 days. Client must pay within this period.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2: CUSTOMER -->
-  <div id="customer-section">
-  <div class="form-card">
-    <div class="form-section-header"><h2>Customer</h2><div class="step-badge" id="step2-badge">2</div></div>
-    <div class="form-body">
-      <div class="radio-group" id="customer-type-group" style="margin-bottom:20px;">
-        <div class="radio-card" onclick="selectRadio('customer-type-group',0); showEl('new-customer-fields'); hideEl('existing-customer-fields');">
-          <div class="radio-dot"></div>
-          <div><div class="radio-label">New customer</div><div class="radio-desc">Create a new Stripe customer record</div></div>
-        </div>
-        <div class="radio-card selected" onclick="selectRadio('customer-type-group',1); hideEl('new-customer-fields'); showEl('existing-customer-fields');">
-          <div class="radio-dot"></div>
-          <div><div class="radio-label">Existing customer</div><div class="radio-desc">Search and select from Stripe</div></div>
-        </div>
-      </div>
-      <div id="new-customer-fields" class="hidden">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Client email <span class="req">*</span></label>
-            <input type="text" id="new-customer-email" placeholder="e.g. contact@agency.com">
-          </div>
-          <div class="form-group">
-            <label>Company legal name <span class="req">*</span></label>
-            <input type="text" id="new-customer-name" placeholder="e.g. Acme Real Estate S.L.">
-          </div>
-        </div>
-      </div>
-      <div id="existing-customer-fields">
-        <div id="customer-search-panel" class="form-row single">
-          <div class="form-group">
-            <label>Search customer</label>
-            <div class="search-wrapper">
-              <span class="search-icon">⌕</span>
-              <input type="text" id="customer-search-input" placeholder="Search by email or company name..." oninput="filterCustomers(this.value)">
-            </div>
-            <div id="customer-results" class="search-result hidden"></div>
-          </div>
-        </div>
-        <div id="customer-selected-panel" class="form-row single hidden">
-          <div class="form-group">
-            <label>Customer</label>
-            <div class="customer-selected">
-              <div><div class="cs-name" id="selected-customer-name"></div><div class="cs-meta" id="selected-customer-meta"></div></div>
-              <span class="change-link" onclick="changeCustomer()">Change</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  </div><!-- /customer-section -->
-
-  <!-- 3: SUBSCRIPTION + OFFICES -->
-  <div class="form-card">
-    <div class="form-section-header"><h2>Subscription</h2><div class="step-badge" id="step3-badge">3</div></div>
-    <div class="form-body">
-      <div id="office-sub-fields">
-        <div class="form-row single" style="margin-bottom:20px;">
-          <div class="form-group">
-            <label>Product <span class="req">*</span></label>
-            <select id="product-select" onchange="selectProduct(this.value)">
-              <option value="">Choose a product...</option>
-              <option value="Elite Plus|Annual|EUR">Elite Plus</option>
-              <option value="Elite|Annual|EUR">Elite</option>
-              <option value="Elite - Cars|Annual|EUR">Elite — Cars</option>
-              <option value="Premium|Monthly|EUR">Premium</option>
-              <option value="Classic|Monthly|EUR">Classic</option>
-              <option value="Corporate|Annual|EUR">Corporate</option>
-              <option value="Self-Service Elite|Annual|EUR">Self-Service Elite</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Custom price <span class="req">*</span></label>
-          <input type="number" id="price-input" placeholder="e.g. 4500" oninput="updateSummary()">
-          <div class="form-hint">Enter in minor units — 4500 = €4,500.00</div>
-        </div>
-        <div class="form-group">
-          <label>Currency</label>
-          <select id="currency-select" onchange="updateSummary()">
-            <option value="EUR">EUR — Euro</option>
-            <option value="USD">USD — US Dollar</option>
-            <option value="GBP">GBP — British Pound</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Billing period <span class="req">*</span></label>
-          <select id="billing-select">
-            <option>Annual</option><option>Monthly</option><option>Quarterly</option><option>Biannual</option>
-          </select>
-          <div class="form-hint">Only valid combinations for this product are shown.</div>
-        </div>
-        <div class="form-group">
-          <label>Start date <span class="req">*</span></label>
-          <input type="date" id="sub-start-date">
-          <div class="form-hint">When the subscription billing begins.</div>
-        </div>
-      </div>
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Subscription discount <span class="opt">(optional)</span></label>
-          <select id="sub-discount" onchange="updateSummary()" style="max-width:200px;">
-            <option value="">0%</option><option value="10">10%</option><option value="20">20%</option><option value="30">30%</option><option value="40">40%</option><option value="50">50%</option><option value="60">60%</option><option value="70">70%</option><option value="80">80%</option><option value="90">90%</option><option value="100">100%</option>
-          </select>
-          <div class="form-hint">Percentage discount applied to the subscription line item.</div>
-        </div>
-      </div>
-      <!-- OFFICES -->
-      <div class="office-block" id="office-block">
-        <div class="office-block-label">Offices <span class="count-badge" id="office-count">0</span></div>
-        <div class="form-group">
-          <div class="tag-input-wrapper" id="office-tags" onclick="document.getElementById('office-tag-input').focus()">
-            <input class="tag-input-inner" id="office-tag-input" type="text" placeholder="Add office ID or name..." oninput="handleOfficeInput(this.value)">
-          </div>
-          <div id="office-dropdown" class="search-result hidden" style="margin-top:4px;"></div>
-          <div class="form-hint">One checkout link will be generated per office. All offices receive the same product and price.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD-ONS -->
-  <div class="addon-section" id="addon-section">
-    <div class="addon-header open" id="addon-header" onclick="toggleAddon('addon')">
-      <div class="addon-title">Add-ons <span class="addon-optional">optional</span> <span class="addon-item-count" id="addon-count">0</span></div>
-      <span class="addon-chevron open" id="addon-chevron">▾</span>
-    </div>
-    <div class="addon-body open" id="addon-body">
-      <div class="addon-desc">Hero placements, newsletter features, journal articles, featured agents. Enter quantity and apply a line-item discount if agreed.</div>
-      <div class="addon-col-headers"><div class="addon-col-header">Product</div><div class="addon-col-header">Qty</div><div class="addon-col-header">Disc %</div><div></div></div>
-      <div id="addon-rows"></div>
-      <button class="btn-add-row" onclick="addAddonRow('addon-rows','addon-count',allAddonProducts,'')">+ Add add-on</button>
-    </div>
-  </div>
-
-  <!-- 4: INTERNAL DETAILS -->
-  <div class="form-card">
-    <div class="form-section-header"><h2>Internal details</h2><div class="step-badge" id="step4-badge">4</div></div>
-    <div class="form-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>HubSpot deal ID <span class="req">*</span></label>
-          <input type="text" id="hs-deal" placeholder="e.g. 987001" oninput="updateSummary(); validateHubSpotIds();">
-          <div class="form-hint">AE / CSM name will be pulled automatically from the HubSpot deal owner.</div>
-        </div>
-        <div class="form-group">
-          <label>HubSpot company ID <span class="req">*</span></label>
-          <input type="text" id="hs-company" placeholder="e.g. 255330572531" oninput="validateHubSpotIds()">
-          <div id="hs-mismatch-feedback" class="form-hint"></div>
-        </div>
-      </div>
-      <div class="form-row single" style="margin-bottom:20px;">
-        <div class="form-group">
-          <label>Coupon / promo code <span class="opt">(optional)</span></label>
-          <div id="coupon-search-wrap">
-            <div class="search-wrapper">
-              <span class="search-icon">%</span>
-              <input type="text" id="coupon-input" placeholder="Search by coupon name or code..." oninput="filterCoupons(this.value)" autocomplete="off">
-            </div>
-            <div id="coupon-results" class="search-result hidden"></div>
-          </div>
-          <div id="coupon-applied-panel" class="hidden" style="margin-top:6px;">
-            <div class="coupon-applied">
-              <div><div class="coupon-name" id="applied-coupon-name"></div><div class="coupon-desc" id="applied-coupon-desc"></div></div>
-              <span class="coupon-remove" onclick="removeCoupon()">Remove</span>
-            </div>
-          </div>
-          <div class="form-hint">Applied at invoice creation. Discount details stored in Stripe — coupon ID only.</div>
-        </div>
-      </div>
-      <div class="form-row single">
-        <div class="form-group">
-          <label>Internal notes <span class="opt">(optional)</span></label>
-          <textarea placeholder="Negotiation context, discount rationale, special terms..."></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SUMMARY -->
-  <div class="summary-panel">
-    <h3>Summary</h3>
-    <div class="summary-row" id="s-mode-row" style="display:none;"><span class="summary-key">Mode</span><span class="summary-val" id="s-mode" style="color:var(--amber)">Renewal</span></div>
-    <div class="summary-row" id="s-subid-row" style="display:none;"><span class="summary-key">Existing subscription</span><span class="summary-val mono" id="s-subid">—</span></div>
-    <div class="summary-row"><span class="summary-key">Offices</span><span class="summary-val" id="s-offices">—</span></div>
-    <div class="summary-row"><span class="summary-key">Product</span><span class="summary-val" id="s-product">—</span></div>
-    <div class="summary-row"><span class="summary-key">Price per office</span><span class="summary-val" id="s-price">—</span></div>
-    <div class="summary-row"><span class="summary-key">Add-ons</span><span class="summary-val" id="s-addons">None</span></div>
-    <div class="summary-row"><span class="summary-key">Sub discount</span><span class="summary-val" id="s-sub-discount">None</span></div>
-    <div class="summary-row"><span class="summary-key">Checkout links</span><span class="summary-val" id="s-links">—</span></div>
-    <div class="summary-row"><span class="summary-key">HubSpot deal</span><span class="summary-val mono" id="s-deal">—</span></div>
-    <div class="summary-row"><span class="summary-key">HubSpot company</span><span class="summary-val mono" id="s-company">—</span></div>
-    <div class="summary-row"><span class="summary-key">Coupon</span><span class="summary-val" id="s-coupon">None</span></div>
-    <div class="summary-row"><span class="summary-key">Start date</span><span class="summary-val" id="s-startdate">—</span></div>
-    <div class="summary-row" id="s-duedays-row" style="display:none;"><span class="summary-key">Payment due</span><span class="summary-val" id="s-duedays">7 days</span></div>
-    <div class="summary-row"><span class="summary-key">Billing platform</span><span class="summary-val">Stripe</span></div>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="form-card">
-    <div class="form-actions">
-      <div class="inline-notice"><div class="live-dot"></div>Connected to Stripe — live mode</div>
-      <button class="btn btn-ghost">Cancel</button>
-      <button class="btn btn-primary" id="btn-new-sub" onclick="generateLinks('new_sub')">Generate checkout links →</button>
-      <button class="btn btn-warning" id="btn-renewal-new" style="display:none;" onclick="confirmNewSub()">⚠ Create new subscription for renewal →</button>
-      <button class="btn btn-primary" id="btn-renewal-update" style="display:none;" onclick="generateLinks('renewal_update')">Update subscription for renewal →</button>
-      <button class="btn btn-warning" id="btn-cancel-sub" style="display:none;" onclick="confirmCancelSub()">⚠ Cancel subscription →</button>
-      <button class="btn btn-primary" id="btn-midsub" style="display:none;background:#5046e5;" onclick="generateLinks('midsub')">Charge mid-sub update →</button>
-    </div>
-  </div>
-
-  </div><!-- /view-creator -->
-
-  <!-- ════ SUBSCRIPTIONS VIEW ════ -->
-  <div id="view-subs" class="hidden">
-    <div class="page-header" style="margin-top:8px;">
-      <h1 style="font-size:22px;">Subscriptions</h1>
-      <p>Existing subscriptions and the offices linked to each. Edit office associations directly — changes only affect the invoice → office mapping, not Stripe billing.</p>
-    </div>
-    <table class="subs-table" id="subs-table">
-      <thead>
-        <tr><th>Subscription</th><th>Customer</th><th>Product</th><th>Status</th><th>Offices</th><th></th></tr>
-      </thead>
-      <tbody id="subs-tbody"></tbody>
-    </table>
-  </div>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="modal-overlay" id="cancel-modal">
-  <div class="modal-box">
-    <div class="modal-icon">🛑</div>
-    <div class="modal-title">Cancel this subscription?</div>
-    <div class="modal-body">
-      You are about to cancel the subscription <strong id="cancel-sub-id-display"></strong> in Stripe. This will stop all future billing immediately.<br><br>
-      This action cannot be undone. Make sure you have confirmed this with the client before proceeding.
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeCancelModal()">Go back</button>
-      <button class="btn btn-warning" onclick="confirmCancelProceed()">Yes, cancel subscription →</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="warning-modal">
-  <div class="modal-box">
-    <div class="modal-icon">⚠️</div>
-    <div class="modal-title">Create a new subscription?</div>
-    <div class="modal-body">
-      You are about to end the existing subscription and create a brand new one for this renewal.<br><br>
-      Unless you have a specific reason (e.g. changing billing entity, currency, or the customer has requested it), you should use <strong>Update subscription for renewal</strong> instead — it preserves the subscription history and is simpler for the client.
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-warning" onclick="confirmProceed()">Yes, create new subscription →</button>
-    </div>
-  </div>
+  <div class="footer">JamesEdition · BigQuery · 12-month rolling window · Real estate, excl. rentals</div>
 </div>
 
 <script>
-  const allAddonProducts = ['Hero homepage','Hero real estate','Newsletter feature','Journal article','Trending homepage','Featured Agent','Newsletter agent spotlight','Agent profile boost'];
-  const currencySymbols = { EUR: '€', USD: '$', GBP: '£' };
-  const officeData = [
-    { id:'#10482', name:"Sotheby's Madrid" },
-    { id:'#10483', name:"Sotheby's Barcelona" },
-    { id:'#10491', name:"Sotheby's Marbella" },
-    { id:'#10492', name:"Sotheby's Valencia" },
-    { id:'#10501', name:"Sotheby's Lisbon" },
-    { id:'#10512', name:"Sotheby's Porto" },
-    { id:'#10521', name:"Knight Frank London" },
-    { id:'#10534', name:"Knight Frank Paris" },
-    { id:'#10545', name:"Engel & Völkers Hamburg" },
-    { id:'#10556', name:"Christie's New York" },
-  ];
-  const customers = [
-    { name:"Sotheby's International Realty", meta:'Madrid · 3 offices', id:'cus_Px9a2kL' },
-    { name:'Knight Frank', meta:'London · 12 offices', id:'cus_Qr4b8mN' },
-    { name:'Engel & Völkers', meta:'Hamburg · 8 offices', id:'cus_Rk7c3pM' },
-    { name:"Christie's International Real Estate", meta:'New York · 5 offices', id:'cus_Sl2d9qN' },
-    { name:'Savills', meta:'London · 20 offices', id:'cus_Tm8e4rP' },
-    { name:'JLL Residential', meta:'Chicago · 7 offices', id:'cus_Un9f5sQ' },
-  ];
+var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calculator-hs";
 
-  let currentMode = 'new';
-  let prefillTimer = null;
+var COUNTRY_NAMES = { FR:"France 🇫🇷", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹", ES:"Spain 🇪🇸", CH:"Switzerland 🇨🇭", AE:"UAE 🇦🇪", GB:"United Kingdom 🇬🇧", US:"United States 🇺🇸", Other:"Rest of the World 🌍" };
 
-  function showEl(id) { const el = document.getElementById(id); if (el) el.classList.remove('hidden'); }
-  function hideEl(id) { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }
+var ALL_DATA = {
+  AE: [
+    { district:"Other", price_elite_5:73.58, price_elite_15:58.86, price_elite_30:51.51, price_elite_60:44.15, price_elite_100:36.79, price_elite_150:33.11, price_elite_200:29.43, price_elite_150:26.62, price_elite_200:23.66, price_elite_150:10.03, price_elite_200:8.91, price_elite_150:9.57, price_elite_200:8.51, price_elite_150:9.2, price_elite_200:8.17, price_elite_150:7.86, price_elite_200:6.99, price_elite_150:17.35, price_elite_200:15.42, price_elite_150:11.5, price_elite_200:10.23, price_elite_150:35.58, price_elite_200:31.63, price_elp_3m:217.00 },
+  ],
+  CH: [
+    { district:"Other", price_elite_5:59.16, price_elite_15:47.33, price_elite_30:41.41, price_elite_60:35.49, price_elite_100:29.58, price_elp_3m:213.00 },
+  ],
+  ES: [
+    { district:"Alicante",  price_elite_5:20.26, price_elite_15:16.21, price_elite_30:14.18, price_elite_60:12.16, price_elite_100:10.13, price_elite_150:9.12, price_elite_200:8.11, price_elp_3m:196.00 },
+    { district:"Barcelona", price_elite_5:23.92, price_elite_15:19.14, price_elite_30:16.74, price_elite_60:14.35, price_elite_100:11.96, price_elite_150:10.76, price_elite_200:9.57, price_elp_3m:164.00 },
+    { district:"Cádiz",     price_elite_5:39.31, price_elite_15:31.45, price_elite_30:27.52, price_elite_60:23.58, price_elite_100:19.65, price_elite_150:17.69, price_elite_200:15.72, price_elp_3m:312.00 },
+    { district:"Girona",    price_elite_5:22.09, price_elite_15:17.67, price_elite_30:15.46, price_elite_60:13.26, price_elite_100:11.05, price_elite_150:9.94, price_elite_200:8.84, price_elp_3m:148.00 },
+    { district:"Ibiza",     price_elite_5:45.63, price_elite_15:36.50, price_elite_30:31.94, price_elite_60:27.38, price_elite_100:22.82, price_elite_150:20.53, price_elite_200:18.25, price_elp_3m:306.00 },
+    { district:"Madrid",    price_elite_5:43.50, price_elite_15:34.80, price_elite_30:30.45, price_elite_60:26.10, price_elite_100:21.75, price_elite_150:19.57, price_elite_200:17.4, price_elp_3m:406.00 },
+    { district:"Mallorca",  price_elite_5:39.61, price_elite_15:31.69, price_elite_30:27.73, price_elite_60:23.77, price_elite_100:19.81, price_elite_150:17.83, price_elite_200:15.85, price_elp_3m:265.00 },
+    { district:"Málaga",    price_elite_5:39.61, price_elite_15:31.69, price_elite_30:27.73, price_elite_60:23.77, price_elite_100:19.81, price_elite_150:17.83, price_elite_200:15.85, price_elp_3m:315.00 },
+    { district:"Other",     price_elite_5:22.28, price_elite_15:17.82, price_elite_30:15.60, price_elite_60:13.37, price_elite_100:11.14, price_elp_3m:180.00 },
+  ],
+  FR: [
+    { district:"Alpes-Maritimes (Nice, Cannes)", price_elite_5:32.84, price_elite_15:26.27, price_elite_30:22.99, price_elite_60:19.71, price_elite_100:16.42, price_elite_150:14.78, price_elite_200:13.14, price_elp_3m:209.00 },
+    { district:"Paris",                          price_elite_5:30.87, price_elite_15:24.70, price_elite_30:21.61, price_elite_60:18.52, price_elite_100:15.44, price_elite_150:13.89, price_elite_200:12.35, price_elp_3m:197.00 },
+    { district:"Var (Saint-Tropez)",             price_elite_5:41.38, price_elite_15:33.11, price_elite_30:28.97, price_elite_60:24.83, price_elite_100:20.69, price_elite_150:18.62, price_elite_200:16.55, price_elp_3m:264.00 },
+    { district:"Other",                          price_elite_5:21.27, price_elite_15:17.02, price_elite_30:14.89, price_elite_60:12.76, price_elite_100:10.64, price_elp_3m:137.00 },
+  ],
+  GB: [
+    { district:"Greater London", price_elite_5:55.58, price_elite_15:44.46, price_elite_30:38.90, price_elite_60:33.35, price_elite_100:27.79, price_elite_150:25.01, price_elite_200:22.23, price_elp_3m:354.00 },
+    { district:"Other",          price_elite_5:20.44, price_elite_15:16.35, price_elite_30:14.31, price_elite_60:12.26, price_elite_100:10.22, price_elp_3m:130.00 },
+  ],
+  GR: [
+    { district:"Attica",          price_elite_5:20.20, price_elite_15:16.16, price_elite_30:14.14, price_elite_60:12.12, price_elite_100:10.10, price_elite_150:9.09, price_elite_200:8.08, price_elp_3m:206.00 },
+    { district:"Crete",           price_elite_5:19.55, price_elite_15:15.64, price_elite_30:13.69, price_elite_60:11.73, price_elite_100: 9.78, price_elite_150:8.8, price_elite_200:7.82, price_elp_3m:199.00 },
+    { district:"Ionian Islands",  price_elite_5:25.81, price_elite_15:20.65, price_elite_30:18.07, price_elite_60:15.48, price_elite_100:12.90, price_elite_150:11.61, price_elite_200:10.32, price_elp_3m:263.00 },
+    { district:"Southern Aegean", price_elite_5:25.81, price_elite_15:20.65, price_elite_30:18.07, price_elite_60:15.48, price_elite_100:12.90, price_elite_150:11.61, price_elite_200:10.32, price_elp_3m:263.00 },
+    { district:"Other",           price_elite_5:17.47, price_elite_15:13.98, price_elite_30:12.23, price_elite_60:10.48, price_elite_100: 8.74, price_elp_3m:167.00 },
+  ],
+  IT: [
+    { district:"Arezzo",   price_elite_5:39.00, price_elite_15:31.20, price_elite_30:27.30, price_elite_60:23.40, price_elite_100:19.50, price_elite_150:17.55, price_elite_200:15.6, price_elp_3m:163.00 },
+    { district:"Lazio",    price_elite_5:51.72, price_elite_15:41.38, price_elite_30:36.20, price_elite_60:31.03, price_elite_100:25.86, price_elite_150:23.27, price_elite_200:20.69, price_elp_3m:178.00 },
+    { district:"Liguria",  price_elite_5:52.50, price_elite_15:42.00, price_elite_30:36.75, price_elite_60:31.50, price_elite_100:26.25, price_elite_150:23.63, price_elite_200:21.0, price_elp_3m:230.00 },
+    { district:"Lombardy", price_elite_5:49.50, price_elite_15:39.60, price_elite_30:34.65, price_elite_60:29.70, price_elite_100:24.75, price_elite_150:22.28, price_elite_200:19.8, price_elp_3m:195.00 },
+    { district:"Piedmont", price_elite_5:69.00, price_elite_15:55.20, price_elite_30:48.30, price_elite_60:41.40, price_elite_100:34.50, price_elite_150:31.05, price_elite_200:27.6, price_elp_3m:293.00 },
+    { district:"Sardinia", price_elite_5:44.70, price_elite_15:35.76, price_elite_30:31.29, price_elite_60:26.82, price_elite_100:22.35, price_elite_150:20.11, price_elite_200:17.88, price_elp_3m:153.00 },
+    { district:"Tuscany",  price_elite_5:55.33, price_elite_15:44.26, price_elite_30:38.73, price_elite_60:33.20, price_elite_100:27.67, price_elite_150:24.9, price_elite_200:22.13, price_elp_3m:221.00 },
+    { district:"Umbria",   price_elite_5:37.50, price_elite_15:30.00, price_elite_30:26.25, price_elite_60:22.50, price_elite_100:18.75, price_elite_150:16.88, price_elite_200:15.0, price_elp_3m:129.00 },
+    { district:"Other",    price_elite_5:38.55, price_elite_15:30.84, price_elite_30:26.99, price_elite_60:23.13, price_elite_100:19.28, price_elp_3m:132.00 },
+  ],
+  Other: [
+    { district:"Rest of the World", price_elite_5:46.36, price_elite_15:37.08, price_elite_30:32.45, price_elite_60:27.81, price_elite_100:23.18, price_elite_150:20.86, price_elite_200:18.54, price_elp_3m:193.00 },
+  ],
+  PT: [
+    { district:"Cascais", price_elite_5:42.25, price_elite_15:33.80, price_elite_30:29.58, price_elite_60:25.35, price_elite_100:21.13, price_elite_150:19.01, price_elite_200:16.9, price_elp_3m:306.00 },
+    { district:"Lisbon",  price_elite_5:25.08, price_elite_15:20.06, price_elite_30:17.56, price_elite_60:15.05, price_elite_100:12.54, price_elite_150:11.29, price_elite_200:10.03, price_elp_3m:205.00 },
+    { district:"Other",   price_elite_5:25.57, price_elite_15:20.45, price_elite_30:17.90, price_elite_60:15.34, price_elite_100:12.78, price_elp_3m:167.00 },
+  ],
+  US: [
+    { district:"Other", price_elite_5:79.08, price_elite_15:63.27, price_elite_30:55.36, price_elite_60:47.45, price_elite_100:39.54, price_elp_3m:899.00 },
+  ],
+}
+var COMPONENTS_DATA = {
+  AE: { "Other": { median:5342019, commission:0.015, leads_per_listing:0.4591, lead_per_elp_3m:1.4525, demand_multiplier:0.931, conversion:0.02 } },
+  CH: { "Other": { median:3943817, commission:0.020, leads_per_listing:0.5000, lead_per_elp_3m:2.0000, demand_multiplier:0.900, conversion:0.015 } },
+  ES: {
+    "Alicante":  { median:1330000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:1.300, conversion:0.03 },
+    "Barcelona": { median:1570000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:0.922, conversion:0.03 },
+    "Cádiz":     { median:2580000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:1.067, conversion:0.03 },
+    "Girona":    { median:1450000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:0.900, conversion:0.03 },
+    "Ibiza":     { median:2995000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:0.900, conversion:0.03 },
+    "Madrid":    { median:2855000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:1.255, conversion:0.03 },
+    "Mallorca":  { median:2600000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:0.900, conversion:0.03 },
+    "Málaga":    { median:2600000, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:1.069, conversion:0.03 },
+    "Other":     { median:1462359, commission:0.03, leads_per_listing:0.1693, lead_per_elp_3m:1.2594, demand_multiplier:1.085, conversion:0.03 },
+  },
+  FR: {
+    "Alpes-Maritimes (Nice, Cannes)": { median:2500000, commission:0.03, leads_per_listing:0.2190, lead_per_elp_3m:1.5505, demand_multiplier:0.900, conversion:0.02 },
+    "Paris":                          { median:2350000, commission:0.03, leads_per_listing:0.2190, lead_per_elp_3m:1.5505, demand_multiplier:0.900, conversion:0.02 },
+    "Var (Saint-Tropez)":             { median:3150000, commission:0.03, leads_per_listing:0.2190, lead_per_elp_3m:1.5505, demand_multiplier:0.900, conversion:0.02 },
+    "Other":                          { median:1619119, commission:0.03, leads_per_listing:0.2190, lead_per_elp_3m:1.5505, demand_multiplier:0.906, conversion:0.02 },
+  },
+  GB: {
+    "Greater London": { median:5044829, commission:0.013, leads_per_listing:0.2825, lead_per_elp_3m:2.0000, demand_multiplier:0.900, conversion:0.03 },
+    "Other":          { median:1855088, commission:0.013, leads_per_listing:0.2825, lead_per_elp_3m:2.0000, demand_multiplier:0.900, conversion:0.03 },
+  },
+  GR: {
+    "Attica":          { median:1550000, commission:0.03, leads_per_listing:0.1448, lead_per_elp_3m:1.1349, demand_multiplier:1.300, conversion:0.03 },
+    "Crete":           { median:1500000, commission:0.03, leads_per_listing:0.1448, lead_per_elp_3m:1.1349, demand_multiplier:1.300, conversion:0.03 },
+    "Ionian Islands":  { median:1980000, commission:0.03, leads_per_listing:0.1448, lead_per_elp_3m:1.1349, demand_multiplier:1.300, conversion:0.03 },
+    "Southern Aegean": { median:1980000, commission:0.03, leads_per_listing:0.1448, lead_per_elp_3m:1.1349, demand_multiplier:1.300, conversion:0.03 },
+    "Other":           { median:1340599, commission:0.03, leads_per_listing:0.1448, lead_per_elp_3m:1.1349, demand_multiplier:1.219, conversion:0.03 },
+  },
+  IT: {
+    "Arezzo":   { median:1300000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:1.097, conversion:0.02 },
+    "Lazio":    { median:1724000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:0.900, conversion:0.02 },
+    "Liguria":  { median:1750000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:1.146, conversion:0.02 },
+    "Lombardy": { median:1650031, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:1.031, conversion:0.02 },
+    "Piedmont": { median:2300000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:1.114, conversion:0.02 },
+    "Sardinia": { median:1490000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:0.900, conversion:0.02 },
+    "Tuscany":  { median:1844353, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:1.048, conversion:0.02 },
+    "Umbria":   { median:1250000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:0.900, conversion:0.02 },
+    "Other":    { median:1285000, commission:0.03, leads_per_listing:0.5000, lead_per_elp_3m:1.9075, demand_multiplier:0.900, conversion:0.02 },
+  },
+  Other: { "Rest of the World": { median:1865817, commission:0.03, leads_per_listing:0.4141, lead_per_elp_3m:1.8451, demand_multiplier:0.936, conversion:0.02 } },
+  PT: {
+    "Cascais": { median:2190000, commission:0.03, leads_per_listing:0.2144, lead_per_elp_3m:1.3452, demand_multiplier:1.153, conversion:0.03 },
+    "Lisbon":  { median:1300000, commission:0.03, leads_per_listing:0.2144, lead_per_elp_3m:1.3452, demand_multiplier:1.300, conversion:0.03 },
+    "Other":   { median:1325163, commission:0.03, leads_per_listing:0.2144, lead_per_elp_3m:1.3452, demand_multiplier:1.043, conversion:0.03 },
+  },
+  US: { "Other": { median:4790234, commission:0.03, leads_per_listing:0.1638, lead_per_elp_3m:2.0000, demand_multiplier:0.932, conversion:0.03 } },
+};
+var TIERS = [
+  { label:"0",        count:0,   elps:0,  priceKey:"price_elite_60"  },
+  { label:"1–5",      count:5,   elps:1,  priceKey:"price_elite_5"   },
+  { label:"6–15",     count:15,  elps:2,  priceKey:"price_elite_15"  },
+  { label:"16–30",    count:30,  elps:3,  priceKey:"price_elite_30"  },
+  { label:"31–60",    count:60,  elps:5,  priceKey:"price_elite_60"  },
+  { label:"61–100",   count:100, elps:7,  priceKey:"price_elite_100" },
+  { label:"101–150",  count:150, elps:10, priceKey:"price_elite_150" },
+  { label:"151–200",  count:200, elps:15, priceKey:"price_elite_200" },
+];
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
+var rows = [], nextId = 0, lastPricing = null;
 
-  /* ── MODE TOGGLE ── */
-  function setMode(mode) {
-    currentMode = mode;
-    document.getElementById('pill-new').className = 'toggle-pill' + (mode==='new' ? ' active' : '');
-    document.getElementById('pill-renewal').className = 'toggle-pill' + (mode==='renewal' ? ' renewal-active' : '');
-    document.getElementById('pill-midsub').className = 'toggle-pill' + (mode==='midsub' ? ' midsub-active' : '');
-    hideEl('renewal-banner'); hideEl('renewal-sub-card');
-    hideEl('midsub-banner');  hideEl('midsub-sub-card');
-    document.getElementById('btn-new-sub').style.display = 'none';
-    document.getElementById('btn-renewal-update').style.display = 'none';
-    document.getElementById('btn-renewal-new').style.display = 'none';
-    document.getElementById('btn-midsub').style.display = 'none';
-    document.getElementById('btn-cancel-sub').style.display = 'none';
-    document.getElementById('s-mode-row').style.display = 'none';
-    document.getElementById('s-subid-row').style.display = 'none';
-    if (mode === 'new') {
-      document.getElementById('btn-new-sub').style.display = '';
-      showEl('customer-section');
-      showEl('office-block');
-    } else if (mode === 'renewal') {
-      showEl('renewal-banner'); showEl('renewal-sub-card');
-      document.getElementById('s-mode-row').style.display = 'flex';
-      document.getElementById('s-subid-row').style.display = 'flex';
-      document.getElementById('btn-renewal-update').style.display = '';
-      document.getElementById('btn-renewal-new').style.display = '';
-      hideEl('customer-section');
-      hideEl('office-block');
-    } else if (mode === 'midsub') {
-      showEl('midsub-banner'); showEl('midsub-sub-card');
-      document.getElementById('s-mode-row').style.display = 'flex';
-      document.getElementById('s-subid-row').style.display = 'flex';
-      document.getElementById('btn-midsub').style.display = '';
-      document.getElementById('btn-cancel-sub').style.display = '';
-      hideEl('customer-section');
-      hideEl('office-block');
+function psych(v) {
+  if (v <= 0) return 0;
+  if (v < 1000)  return Math.round(v / 10) * 10;
+  if (v < 10000) return Math.round(v / 100) * 100;
+  return Math.round(v / 500) * 500;
+}
+function fmt(v) { return "€" + v.toLocaleString("en-US"); }
+function fmtDec(v) { return "€" + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+function getDistrictData(cc, loc) {
+  var ds = ALL_DATA[cc] || [];
+  if (loc === "__whole__") {
+    // Single-district countries — just return that district, no source label
+    if (ds.length === 1) return { data: ds[0], source: null };
+    var excludeFromWhole = ["Province Of Verbano-Cusio-Ossola", "Province Of Imperia"];
+    var best = ds[0];
+    for (var i = 1; i < ds.length; i++) {
+      if (ds[i].district !== "Other" && excludeFromWhole.indexOf(ds[i].district) === -1 && ds[i].price_elite_60 > best.price_elite_60) best = ds[i];
     }
-    updateStepBadges();
-    updateSummary();
+    return { data: best, source: best.district };
   }
+  for (var i = 0; i < ds.length; i++) { if (ds[i].district === loc) return { data: ds[i], source: null }; }
+  return { data: ds[0], source: null };
+}
 
-  function updateStepBadges() {
-    const offset = currentMode === 'renewal' ? 1 : 0;
-    ['step1-badge','step2-badge','step3-badge','step4-badge'].forEach((id, i) => {
-      document.getElementById(id).textContent = i + 1 + offset;
+function addRow(cc, loc, ti, elps) {
+  var id = nextId++;
+  ti = ti || 0;
+  rows.push({ id: id, country: cc || "ES", loc: loc || "__whole__", tierIdx: ti, elps: elps != null ? elps : 0 });
+  renderRows(); render();
+}
+
+function removeRow(id) {
+  rows = rows.filter(function(r){ return r.id !== id; });
+  renderRows(); render();
+}
+
+function buildDistrictOptions(cc, sel) {
+  var ds = ALL_DATA[cc] || [];
+  // Single-district countries — just show Whole Country, skip the district
+  if (ds.length === 1 && (ds[0].district === 'Other' || ds[0].district === 'Rest of the World')) {
+    return '<option value="__whole__" selected>Whole Country</option>';
+  }
+  var h = '';
+  if (cc !== 'Other') {
+    h += '<option value="__whole__"' + (sel === "__whole__" ? " selected" : "") + '>Whole Country</option>';
+  }
+  ds.forEach(function(d){ h += '<option value="' + d.district + '"' + (sel === d.district ? " selected" : "") + '>' + d.district + '</option>'; });
+  return h;
+}
+
+function renderRows() {
+  var c = document.getElementById("rows-container");
+  c.innerHTML = "";
+  rows.forEach(function(r) {
+    var div = document.createElement("div");
+    div.className = "config-row";
+    var showX = rows.length > 1;
+    var h = '<div><label class="field-label">Country</label><select class="sel-country" data-id="' + r.id + '">';
+    ['FR','GR','IT','PT','ES','CH','AE','GB','US','Other'].forEach(function(k){ if(!COUNTRY_NAMES[k]) return; h += '<option value="' + k + '"' + (r.country===k?" selected":"") + '>' + COUNTRY_NAMES[k] + '</option>'; });
+    h += '</select></div>';
+    h += '<div><label class="field-label">Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
+    h += '<div><label class="field-label">Listings</label><select class="sel-tier" data-id="' + r.id + '">';
+    TIERS.forEach(function(t, j){
+      
+      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + '>' + t.label + '</option>';
     });
-  }
-
-  /* ── PREFILL FROM SUBSCRIPTION ID ── */
-  const fakeSubs = {
-    'sub_abc123': { customer: "Sotheby's International Realty", meta: 'Madrid · 3 offices', custId: 'cus_Px9a2kL', product: 'Elite Plus|Annual|EUR', price: 4500, offices: [{id:'#10482',name:"Sotheby's Madrid"},{id:'#10483',name:"Sotheby's Barcelona"},{id:'#10491',name:"Sotheby's Marbella"}] },
-    'sub_def456': { customer: 'Knight Frank', meta: 'London · 5 offices', custId: 'cus_Qr4b8mN', product: 'Elite|Annual|EUR', price: 3200, offices: [{id:'#10521',name:'Knight Frank London'},{id:'#10534',name:'Knight Frank Paris'}] },
-    'sub_ghi789': { customer: 'Engel & Völkers', meta: 'Hamburg · 2 offices', custId: 'cus_Rk7c3pM', product: 'Corporate|Annual|EUR', price: 8000, offices: [{id:'#10545',name:'Engel & Völkers Hamburg'}] },
-  };
-
-  function prefillFromSub(val) {
-    clearTimeout(prefillTimer);
-    hideEl('prefill-status');
-    if (val.length < 8) return;
-    prefillTimer = setTimeout(() => {
-      const sub = fakeSubs[val.trim()];
-      if (sub) {
-        selectCustomer(sub.customer, sub.meta, sub.custId);
-        document.getElementById('product-select').value = sub.product;
-        selectProduct(sub.product);
-        document.getElementById('price-input').value = sub.price;
-        clearOfficeTags();
-        sub.offices.forEach(o => addOfficeTag(o.id, o.name, false));
-        updateOfficeCount();
-        document.getElementById('s-subid').textContent = val.trim();
-        document.getElementById('prefill-status-text').textContent = `Pre-filled from ${sub.customer} — ${sub.offices.length} office${sub.offices.length>1?'s':''} loaded.`;
-        showEl('prefill-status');
-        updateSummary();
-        showToast(`✓ Loaded subscription ${val.trim()}`);
-      } else if (val.startsWith('sub_')) {
-        showToast('⚠ Subscription not found. Check the ID and try again.');
-      }
-    }, 600);
-  }
-
-  /* ── FISCAL DATA ── */
-  function showFiscal() {
-    document.getElementById('fiscal-block').classList.remove('hidden');
-    const row = document.getElementById('s-duedays-row');
-    if (row) row.style.display = 'flex';
-    const btn = document.getElementById('btn-new-sub');
-    if (btn) btn.textContent = 'Generate invoice →';
-  }
-  function hideFiscal() {
-    document.getElementById('fiscal-block').classList.add('hidden');
-    document.getElementById('fiscal-vat').value = '';
-    document.getElementById('vat-feedback').textContent = '';
-    document.getElementById('vat-feedback').className = 'form-hint';
-    const row = document.getElementById('s-duedays-row');
-    if (row) row.style.display = 'none';
-    const btn = document.getElementById('btn-new-sub');
-    if (btn) btn.textContent = 'Generate checkout links →';
-  }
-
-  const EU_VAT_PATTERNS = {
-    AT:/^ATU\d{8}$/,BE:/^BE0\d{9}$/,BG:/^BG\d{9,10}$/,CY:/^CY\d{8}[A-Z]$/,
-    CZ:/^CZ\d{8,10}$/,DE:/^DE\d{9}$/,DK:/^DK\d{8}$/,EE:/^EE\d{9}$/,
-    EL:/^EL\d{9}$/,ES:/^ES[A-Z0-9]\d{7}[A-Z0-9]$/,FI:/^FI\d{8}$/,
-    FR:/^FR[A-Z0-9]{2}\d{9}$/,HR:/^HR\d{11}$/,HU:/^HU\d{8}$/,
-    IE:/^IE\d[A-Z0-9+*]\d{5}[A-Z]{1,2}$/,IT:/^IT\d{11}$/,LT:/^LT(\d{9}|\d{12})$/,
-    LU:/^LU\d{8}$/,LV:/^LV\d{11}$/,MT:/^MT\d{8}$/,NL:/^NL\d{9}B\d{2}$/,
-    PL:/^PL\d{10}$/,PT:/^PT\d{9}$/,RO:/^RO\d{2,10}$/,SE:/^SE\d{12}$/,
-    SI:/^SI\d{8}$/,SK:/^SK\d{10}$/,
-  };
-
-  let vatTimer = null;
-  function validateVat(val) {
-    const fb = document.getElementById('vat-feedback');
-    clearTimeout(vatTimer);
-    val = val.trim().toUpperCase().replace(/\s/g,'');
-    if (!val) { fb.textContent = ''; fb.className = 'form-hint'; return; }
-    vatTimer = setTimeout(() => {
-      const prefix = val.slice(0,2);
-      const pattern = EU_VAT_PATTERNS[prefix];
-      if (!pattern) {
-        fb.textContent = 'Non-EU VAT ID — will be stored as-is without validation.';
-        fb.className = 'form-hint';
-      } else if (pattern.test(val)) {
-        fb.textContent = '✓ Valid EU VAT ID format';
-        fb.className = 'vat-valid';
-      } else {
-        fb.textContent = '✗ Format does not match expected pattern for ' + prefix;
-        fb.className = 'vat-invalid';
-      }
-    }, 400);
-  }
-
-  /* ── RADIO ── */
-  function selectRadio(groupId, index) {
-    document.getElementById(groupId).querySelectorAll('.radio-card').forEach((c,i) => c.classList.toggle('selected', i===index));
-  }
-
-  /* ── CUSTOMER ── */
-  function filterCustomers(val) {
-    const res = document.getElementById('customer-results');
-    res.innerHTML = '';
-    const filtered = customers.filter(c => !val || c.name.toLowerCase().includes(val.toLowerCase()));
-    filtered.slice(0,5).forEach(c => {
-      const div = document.createElement('div');
-      div.className = 'search-result-item';
-      div.innerHTML = `<div><div class="result-name">${c.name}</div><div class="result-meta">${c.meta}</div></div><div class="result-id">${c.id}</div>`;
-      div.onclick = () => selectCustomer(c.name, c.meta, c.id);
-      res.appendChild(div);
-    });
-  }
-
-  function selectCustomer(name, meta, id) {
-    document.getElementById('selected-customer-name').textContent = name;
-    document.getElementById('selected-customer-meta').textContent = `${meta} · ${id}`;
-    hideEl('customer-search-panel');
-    showEl('customer-selected-panel');
-  }
-
-  function changeCustomer() {
-    hideEl('customer-selected-panel');
-    showEl('customer-search-panel');
-    document.getElementById('customer-search-input').value = '';
-    filterCustomers('');
-  }
-
-  /* ── PRODUCT ── */
-  function selectProduct(val) {
-    if (!val) return;
-    const [name, billing, currency] = val.split('|');
-    if (billing) document.getElementById('billing-select').value = billing;
-    if (currency) document.getElementById('currency-select').value = currency;
-    document.getElementById('s-product').textContent = name + ' — ' + (billing || 'Annual');
-    updateSummary();
-  }
-
-  /* ── OFFICES ── */
-  function clearOfficeTags() {
-    const wrapper = document.getElementById('office-tags');
-    wrapper.querySelectorAll('.tag').forEach(t => t.remove());
-  }
-
-  function handleOfficeInput(val) {
-    const dd = document.getElementById('office-dropdown');
-    if (!val.trim()) { hideEl('office-dropdown'); return; }
-    dd.innerHTML = '';
-    const filtered = officeData.filter(o =>
-      o.name.toLowerCase().includes(val.toLowerCase()) || o.id.includes(val)
-    ).slice(0, 5);
-    if (!filtered.length) { hideEl('office-dropdown'); return; }
-    filtered.forEach(o => {
-      const div = document.createElement('div');
-      div.className = 'search-result-item';
-      div.innerHTML = `<div class="result-name">${o.name}</div><div class="result-id">${o.id}</div>`;
-      div.onclick = () => { addOfficeTag(o.id, o.name); document.getElementById('office-tag-input').value = ''; hideEl('office-dropdown'); };
-      dd.appendChild(div);
-    });
-    showEl('office-dropdown');
-  }
-
-  function addOfficeTag(id, name, focus = true) {
-    const wrapper = document.getElementById('office-tags');
-    const input = document.getElementById('office-tag-input');
-    const tag = document.createElement('div');
-    tag.className = 'tag';
-    tag.innerHTML = `<span class="tag-id">${id}</span> ${name} <span class="tag-remove" onclick="removeTag(this)">×</span>`;
-    wrapper.insertBefore(tag, input);
-    if (focus) input.focus();
-    updateOfficeCount();
-  }
-
-  function removeTag(el) {
-    el.closest('.tag').remove();
-    updateOfficeCount();
-  }
-
-  function updateOfficeCount() {
-    const count = document.querySelectorAll('#office-tags .tag').length;
-    document.getElementById('office-count').textContent = count;
-    document.getElementById('s-offices').textContent = count ? count + ' office' + (count!==1?'s':'') : '—';
-    document.getElementById('s-links').textContent = count || '—';
-    updateSummary();
-  }
-
-  /* ── ADD-ONS ── */
-  function toggleAddon(id) {
-    const body = document.getElementById(id+'-body');
-    const chevron = document.getElementById(id+'-chevron');
-    const header = document.getElementById(id+'-header');
-    const open = body.classList.toggle('open');
-    chevron.classList.toggle('open', open);
-    header.classList.toggle('open', open);
-  }
-
-  function removeAddonRow(btn) {
-    const row = btn.closest('.addon-row');
-    const container = row.parentElement;
-    row.remove();
-    const countId = container.id.replace('-rows','-count');
-    document.getElementById(countId).textContent = container.querySelectorAll('.addon-row').length;
-    updateSummary();
-  }
-
-  function addAddonRow(containerId, countId, products) {
-    const container = document.getElementById(containerId);
-    const options = products.map((p,i) => `<option${i===0?' selected':''}>${p}</option>`).join('');
-    const discOptions = [0,10,20,30,40,50,60,70,80,90,100].map(v=>`<option value="${v}">${v}%</option>`).join('');
-    const row = document.createElement('div');
-    row.className = 'addon-row';
-    row.innerHTML = `<select>${options}</select><input type="number" min="1" value="1" style="text-align:center;"><select>${discOptions}</select><button class="btn-remove" onclick="removeAddonRow(this)">×</button>`;
-    container.appendChild(row);
-    document.getElementById(countId).textContent = container.querySelectorAll('.addon-row').length;
-    updateSummary();
-  }
-
-  /* ── COUPONS ── */
-  const coupons = [
-    { id:'ANNUAL20', name:'Annual 20% off', desc:'20% off — once' },
-    { id:'RENEWAL15', name:'Renewal 15% loyalty', desc:'15% off — repeating' },
-    { id:'NEWCLIENT25', name:'New client 25% off', desc:'25% off — once' },
-    { id:'Q1PROMO', name:'Q1 Promo', desc:'€500 off — once' },
-    { id:'PARTNER10', name:'Partner discount 10%', desc:'10% off — forever' },
-    { id:'ENTERPRISE30', name:'Enterprise 30% off', desc:'30% off — once' },
-  ];
-  let appliedCoupon = null;
-
-  function filterCoupons(val) {
-    const res = document.getElementById('coupon-results');
-    res.innerHTML = '';
-    if (!val.trim()) { res.classList.add('hidden'); return; }
-    const filtered = coupons.filter(c => c.name.toLowerCase().includes(val.toLowerCase()) || c.id.toLowerCase().includes(val.toLowerCase()));
-    if (!filtered.length) { res.classList.add('hidden'); return; }
-    filtered.forEach(c => {
-      const div = document.createElement('div'); div.className = 'search-result-item';
-      div.innerHTML = `<div><div class="result-name">${c.name}</div><div class="result-meta">${c.desc}</div></div><div class="result-id">${c.id}</div>`;
-      div.onclick = () => applyCoupon(c);
-      res.appendChild(div);
-    });
-    res.classList.remove('hidden');
-  }
-
-  function applyCoupon(c) {
-    appliedCoupon = c;
-    document.getElementById('coupon-input').value = '';
-    document.getElementById('coupon-results').classList.add('hidden');
-    document.getElementById('applied-coupon-name').textContent = c.name;
-    document.getElementById('applied-coupon-desc').textContent = c.desc + ' · ' + c.id;
-    hideEl('coupon-search-wrap'); showEl('coupon-applied-panel');
-    updateSummary(); showToast('✓ Coupon "' + c.name + '" applied');
-  }
-
-  function removeCoupon() {
-    appliedCoupon = null;
-    showEl('coupon-search-wrap'); hideEl('coupon-applied-panel');
-    document.getElementById('coupon-input').value = '';
-    updateSummary();
-  }
-
-  /* ── SUBSCRIPTION TYPE ── */
-
-
-
-  function selectSLPProduct(val) {
-    if (!val) return;
-    const [name, billing, currency] = val.split('|');
-    if (document.getElementById('billing-select')) document.getElementById('billing-select').value = billing;
-    if (document.getElementById('currency-select')) document.getElementById('currency-select').value = currency;
-    updateSummary();
-  }
-
-  const slpListingData = [
-    { id:'L-88421', title:'Villa Keizersgracht Amsterdam' },
-    { id:'L-91034', title:'Penthouse Passeig de Gràcia' },
-    { id:'L-72901', title:'Château Loire Valley' },
-    { id:'L-65432', title:'Townhouse Mayfair London' },
-  ];
-
-  function handleSLPListingInput(val) {
-    const dd = document.getElementById('slp-listing-dropdown');
-    if (!val.trim()) { dd.classList.add('hidden'); return; }
-    dd.innerHTML = '';
-    const filtered = slpListingData.filter(l => l.title.toLowerCase().includes(val.toLowerCase()) || l.id.toLowerCase().includes(val.toLowerCase())).slice(0,5);
-    if (!filtered.length) { dd.classList.add('hidden'); return; }
-    filtered.forEach(l => {
-      const div = document.createElement('div'); div.className = 'search-result-item';
-      div.innerHTML = `<div class="result-name">${l.title}</div><div class="result-id">${l.id}</div>`;
-      div.onclick = () => { addSLPListingTag(l.id, l.title); document.getElementById('slp-listing-input').value=''; dd.classList.add('hidden'); };
-      dd.appendChild(div);
-    });
-    dd.classList.remove('hidden');
-  }
-
-  function addSLPListingTag(id, title) {
-    const wrapper = document.getElementById('slp-listing-tags');
-    const input = document.getElementById('slp-listing-input');
-    const tag = document.createElement('div'); tag.className = 'tag';
-    tag.innerHTML = `<span class="tag-id">${id}</span> ${title} <span class="tag-remove" onclick="this.closest('.tag').remove();updateSummary();">×</span>`;
-    wrapper.insertBefore(tag, input);
-    updateSummary();
-  }
-
-  /* ── HUBSPOT ID VALIDATION ── */
-  const fakeHsDealToCompany = {
-    '987001': '255330572531', '987002': '255330572531',
-    '987003': '123456789012', '987004': '123456789012',
-  };
-  let hsValidTimer = null;
-  function validateHubSpotIds() {
-    clearTimeout(hsValidTimer);
-    hsValidTimer = setTimeout(() => {
-      const deal = document.getElementById('hs-deal').value.trim();
-      const company = document.getElementById('hs-company').value.trim();
-      const fb = document.getElementById('hs-mismatch-feedback');
-      if (!deal || !company) { fb.textContent = ''; fb.className = 'form-hint'; return; }
-      const expected = fakeHsDealToCompany[deal];
-      if (!expected) { fb.textContent = 'Deal ID not found — check HubSpot.'; fb.className = 'form-hint'; return; }
-      if (expected === company) {
-        fb.textContent = '✓ Deal and company match';
-        fb.className = 'hs-match';
-      } else {
-        fb.textContent = '✗ Company ID does not match the deal — check HubSpot before continuing.';
-        fb.className = 'hs-mismatch';
-      }
-    }, 500);
-  }
-
-  /* ── SUMMARY ── */
-  function updateSummary() {
-    const price = parseInt(document.getElementById('price-input').value) || 0;
-    const currency = document.getElementById('currency-select').value;
-    const symbol = currencySymbols[currency] || currency;
-    const formatted = (price / 100).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-    document.getElementById('s-price').textContent = price ? `${symbol}${formatted}` : '—';
-
-    const deal = document.getElementById('hs-deal').value;
-    document.getElementById('s-deal').textContent = deal ? `#${deal}` : '—';
-    const company = document.getElementById('hs-company') ? document.getElementById('hs-company').value : '';
-    const elCompany = document.getElementById('s-company');
-    if (elCompany) elCompany.textContent = company ? `#${company}` : '—';
-    const subDisc = document.getElementById('sub-discount') ? document.getElementById('sub-discount').value : '0';
-    const elSubDisc = document.getElementById('s-sub-discount');
-    if (elSubDisc) elSubDisc.textContent = subDisc && subDisc !== '0' && subDisc !== '' ? subDisc + '%' : 'None';
-    const elCoupon = document.getElementById('s-coupon');
-    if (elCoupon) elCoupon.textContent = appliedCoupon ? appliedCoupon.name + ' (' + appliedCoupon.id + ')' : 'None';
-    const elStart = document.getElementById('s-startdate');
-    if (elStart) { const sd = document.getElementById('sub-start-date'); elStart.textContent = sd && sd.value ? sd.value : '—'; }
-    const elDue = document.getElementById('s-duedays');
-    if (elDue) { const dd = document.getElementById('payment-due-days'); elDue.textContent = (dd ? dd.value : '7') + ' days'; }
-    if (currentMode === 'midsub') {
-      const msId = document.getElementById('midsub-sub-id') ? document.getElementById('midsub-sub-id').value : '';
-      document.getElementById('s-subid').textContent = msId || '—';
-    }
-
-    const addonCount = document.querySelectorAll('#addon-rows .addon-row').length;
-    const elSAddons = document.getElementById('s-addons');
-    if (elSAddons) elSAddons.textContent = addonCount || 'None';
-    const elAddonCount = document.getElementById('addon-count');
-    if (elAddonCount) elAddonCount.textContent = addonCount;
-
-    const subId = document.getElementById('renewal-sub-id') ? document.getElementById('renewal-sub-id').value : '';
-    if (currentMode === 'renewal' && subId) document.getElementById('s-subid').textContent = subId;
-
-    const productEl = document.getElementById('product-select');
-    if (productEl.value) {
-      const name = productEl.options[productEl.selectedIndex].text;
-      const billing = document.getElementById('billing-select').value;
-      document.getElementById('s-product').textContent = `${name} — ${billing}`;
-    }
-  }
-
-  /* ── GENERATE ── */
-  function generateLinks(action) {
-    const offices = document.querySelectorAll('#office-tags .tag').length;
-    if (action === 'new_sub' && offices === 0) { showToast('⚠ Add at least one office to continue.'); return; }
-    if (currentMode === 'renewal' && !document.getElementById('renewal-sub-id').value) {
-      showToast('⚠ Enter the existing subscription ID to continue.'); return;
-    }
-    if (action === 'new_sub') {
-      showToast(`Generating ${offices} checkout link${offices>1?'s':''}…`);
-      setTimeout(() => showToast(`✓ ${offices} checkout link${offices>1?'s were':' was'} generated and sent to client.`), 1800);
-    } else if (action === 'midsub') {
-      const subId = document.getElementById('midsub-sub-id').value;
-      if (!subId) { showToast('⚠ Enter the existing subscription ID to continue.'); return; }
-      showToast('Creating mid-sub invoice in Stripe…');
-      setTimeout(() => showToast('✓ Mid-sub invoice created and sent to client.'), 1800);
-    } else if (action === 'renewal_update') {
-      showToast('Updating existing subscription in Stripe…');
-      setTimeout(() => showToast('✓ Subscription updated and renewal invoice created.'), 1800);
-    } else if (action === 'renewal_new') {
-      showToast('Creating new subscription in Stripe…');
-      setTimeout(() => showToast('✓ New subscription created and renewal invoice sent to client.'), 1800);
-    }
-  }
-
-  function confirmNewSub() {
-    const offices = document.querySelectorAll('#office-tags .tag').length;
-    if (offices === 0) { showToast('⚠ Add at least one office to continue.'); return; }
-    if (!document.getElementById('renewal-sub-id').value) {
-      showToast('⚠ Enter the existing subscription ID to continue.'); return;
-    }
-    document.getElementById('warning-modal').classList.add('show');
-  }
-
-  function closeModal() {
-    document.getElementById('warning-modal').classList.remove('show');
-  }
-
-  function confirmCancelSub() {
-    const subId = document.getElementById('midsub-sub-id') ? document.getElementById('midsub-sub-id').value : '';
-    if (!subId) { showToast('⚠ Enter the existing subscription ID to continue.'); return; }
-    document.getElementById('cancel-sub-id-display').textContent = subId;
-    document.getElementById('cancel-modal').classList.add('show');
-  }
-
-  function closeCancelModal() {
-    document.getElementById('cancel-modal').classList.remove('show');
-  }
-
-  function confirmCancelProceed() {
-    closeCancelModal();
-    showToast('Cancelling subscription in Stripe…');
-    setTimeout(() => showToast('✓ Subscription cancelled. No further invoices will be generated.'), 1800);
-  }
-
-  function confirmProceed() {
-    closeModal();
-    generateLinks('renewal_new');
-  }
-
-  /* INIT */
-  filterCustomers('');
-  updateSummary();
-
-  document.getElementById('warning-modal').addEventListener('click', e => {
-    if (e.target === document.getElementById('warning-modal')) closeModal();
-  });
-  document.getElementById('cancel-modal').addEventListener('click', e => {
-    if (e.target === document.getElementById('cancel-modal')) closeCancelModal();
+    h += '</select></div>';
+    h += '<div><label class="field-label">ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
+    var elpMin = (rows.indexOf(r) === 0) ? 1 : 0; for (var j = elpMin; j <= 20; j++) h += '<option value="' + j + '"' + (r.elps===j?" selected":"") + '>' + j + '</option>';
+    h += '</select></div>';
+    h += showX ? '<button class="btn-remove" data-id="' + r.id + '" style="align-self:end">×</button>' : '<div></div>';
+    div.innerHTML = h;
+    c.appendChild(div);
   });
 
-  /* ── VIEW SWITCHING ── */
-  function setView(view) {
-    document.getElementById('vtab-creator').className = 'view-tab' + (view==='creator' ? ' active' : '');
-    document.getElementById('vtab-subs').className = 'view-tab' + (view==='subs' ? ' active' : '');
-    document.getElementById('view-creator').classList.toggle('hidden', view !== 'creator');
-    document.getElementById('view-subs').classList.toggle('hidden', view !== 'subs');
-    if (view === 'subs') renderSubs();
-  }
-
-  /* ── SUBSCRIPTIONS DATA ── */
-  const subscriptions = [
-    { id:'sub_abc123', customer:"Sotheby's International Realty", product:'Elite Plus Annual', status:'active',
-      offices:[{id:'10482',name:'Madrid'},{id:'10483',name:'Barcelona'},{id:'10491',name:'Marbella'}] },
-    { id:'sub_def456', customer:'Knight Frank', product:'Elite Annual', status:'active',
-      offices:[{id:'10521',name:'London'},{id:'10534',name:'Paris'}] },
-    { id:'sub_ghi789', customer:'Engel & Völkers', product:'Corporate Annual', status:'past_due',
-      offices:[{id:'10545',name:'Hamburg'}] },
-  ];
-  let expandedSub = null;
-
-  function renderSubs() {
-    const tbody = document.getElementById('subs-tbody');
-    tbody.innerHTML = '';
-    subscriptions.forEach((s, idx) => {
-      const tr = document.createElement('tr');
-      tr.className = 'expandable';
-      tr.onclick = () => toggleSubDetail(idx);
-      tr.innerHTML = `
-        <td><span class="sub-id-mono">${s.id}</span></td>
-        <td>${s.customer}</td>
-        <td>${s.product}</td>
-        <td><span class="sub-status ${s.status}">${s.status === 'past_due' ? 'Past due' : 'Active'}</span></td>
-        <td>${s.offices.length} office${s.offices.length>1?'s':''}</td>
-        <td style="text-align:right;color:var(--mid-gray);">${expandedSub===idx?'▴':'▾'}</td>`;
-      tbody.appendChild(tr);
-      if (expandedSub === idx) {
-        const dr = document.createElement('tr');
-        dr.className = 'sub-detail-row';
-        const chips = s.offices.map((o,oi) => `<span class="office-chip"><span class="sub-id-mono">#${o.id}</span> ${o.name} <span class="chip-remove" onclick="removeOffice(event,${idx},${oi})">×</span></span>`).join('');
-        dr.innerHTML = `<td colspan="6">
-          <div class="sub-detail-label">Linked offices</div>
-          <div style="font-size:12px;color:var(--mid-gray);margin-bottom:12px;">Editing affects the current cycle only. Past invoices keep their original office records. A subscription must keep at least one office — to end it, cancel the subscription.</div>
-          <div class="office-chips" id="chips-${idx}">${chips}</div>
-          <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
-            <input type="text" id="add-office-${idx}" placeholder="Add office ID or name..." style="max-width:280px;" onclick="event.stopPropagation()">
-            <button class="btn btn-ghost" style="padding:8px 16px;" onclick="addOffice(event,${idx})">+ Add office</button>
-            <span style="flex:1;"></span>
-            <button class="btn btn-primary" style="padding:8px 18px;" onclick="saveOffices(event,${idx})">Save changes</button>
-          </div>
-        </td>`;
-        tbody.appendChild(dr);
-      }
+  c.querySelectorAll(".sel-country").forEach(function(el){
+    el.addEventListener("change", function(){
+      var id = parseInt(this.getAttribute("data-id"));
+      rows.forEach(function(r){ if(r.id===id){ r.country=el.value; r.loc='__whole__'; } });
+      renderRows(); render();
     });
-  }
-
-  function toggleSubDetail(idx) {
-    expandedSub = expandedSub === idx ? null : idx;
-    renderSubs();
-  }
-  function removeOffice(e, subIdx, officeIdx) {
-    e.stopPropagation();
-    if (subscriptions[subIdx].offices.length === 1) {
-      showToast('⚠ Cannot remove the last office. A subscription must keep at least one — cancel the subscription to end it.');
-      return;
-    }
-    subscriptions[subIdx].offices.splice(officeIdx, 1);
-    renderSubs();
-  }
-  function addOffice(e, subIdx) {
-    e.stopPropagation();
-    const input = document.getElementById('add-office-' + subIdx);
-    const val = input.value.trim();
-    if (!val) return;
-    const idMatch = val.match(/\d+/);
-    subscriptions[subIdx].offices.push({ id: idMatch ? idMatch[0] : '?????', name: val.replace(/[0-9#]/g,'').trim() || 'New office' });
-    input.value = '';
-    renderSubs();
-  }
-  function saveOffices(e, subIdx) {
-    e.stopPropagation();
-    if (subscriptions[subIdx].offices.length === 0) {
-      showToast('⚠ A subscription must have at least one office. To end it, cancel the subscription instead.');
-      return;
-    }
-    showToast('✓ Office associations updated for ' + subscriptions[subIdx].id + ' (current cycle)');
-  }
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('#office-tags') && !e.target.closest('#office-dropdown')) {
-      hideEl('office-dropdown');
-    }
-    if (!e.target.closest('#customer-search-input') && !e.target.closest('#customer-results')) {
-      const cr = document.getElementById('customer-results'); if (cr) cr.classList.add('hidden');
-    }
-    if (!e.target.closest('#slp-listing-input') && !e.target.closest('#slp-listing-dropdown')) {
-      const dd = document.getElementById('slp-listing-dropdown'); if (dd) dd.classList.add('hidden');
-    }
-    if (!e.target.closest('#coupon-input') && !e.target.closest('#coupon-results')) {
-      const cr = document.getElementById('coupon-results'); if (cr) cr.classList.add('hidden');
-    }
   });
+  c.querySelectorAll(".sel-loc").forEach(function(el){
+    el.addEventListener("change", function(){
+      var id = parseInt(this.getAttribute("data-id"));
+      rows.forEach(function(r){ if(r.id===id) r.loc=el.value; });
+      render();
+    });
+  });
+  c.querySelectorAll(".sel-tier").forEach(function(el){
+    el.addEventListener("change", function(){
+      var id = parseInt(this.getAttribute("data-id")), nt = parseInt(el.value);
+      rows.forEach(function(r){ if(r.id===id){ r.tierIdx=nt; r.elps=Math.max(1,TIERS[nt].elps); } });
+      renderRows(); render();
+    });
+  });
+  c.querySelectorAll(".sel-elps").forEach(function(el){
+    el.addEventListener("change", function(){
+      var id = parseInt(this.getAttribute("data-id"));
+      rows.forEach(function(r){ if(r.id===id) r.elps=parseInt(el.value); });
+      render();
+    });
+  });
+  c.querySelectorAll(".btn-remove").forEach(function(el){
+    el.addEventListener("click", function(){ removeRow(parseInt(this.getAttribute("data-id"))); });
+  });
+}
+
+function render() {
+  var $o = document.getElementById("output");
+  var rowCalcs = [], totalListings = 0, totalElps = 0, hasAny = false;
+
+  rows.forEach(function(r){
+    var tier = TIERS[r.tierIdx], info = getDistrictData(r.country, r.loc), d = info.data;
+    if (!d || tier.count === 0) { rowCalcs.push(null); return; }
+    hasAny = true;
+    var cnt = tier.count, re = r.elps, pe = d[tier.priceKey];
+    totalListings += cnt; totalElps += re;
+    rowCalcs.push({
+      country: r.country, loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
+      source: info.source, tier: tier, cnt: cnt, elps: re,
+      e3r: pe*cnt, e6r: pe*2*0.9*cnt, e12r: pe*4*0.8*cnt,
+      elp3r: d.price_elp_3m*re, elp6r: d.price_elp_3m*2*0.9*re, elp12r: d.price_elp_3m*4*0.8*re,
+    });
+  });
+
+  if (!hasAny) {
+    lastPricing = null;
+    $o.innerHTML = '<div class="empty">Select a listing tier to see pricing.</div>';
+    return;
+  }
+
+  var e3=0,e6=0,e12=0,elp3=0,elp6=0,elp12=0;
+  rowCalcs.forEach(function(rc){ if(!rc) return;
+    e3+=psych(rc.e3r); e6+=psych(rc.e6r); e12+=psych(rc.e12r);
+    elp3+=psych(rc.elp3r); elp6+=psych(rc.elp6r); elp12+=psych(rc.elp12r);
+  });
+  e3=Math.max(e3,300); e6=Math.max(e6,570); e12=Math.max(e12,1080);
+  var ep3=e3+elp3, ep6=e6+elp6, ep12=e12+elp12;
+  var eS6=Math.max(e3*2-e6,0), eS12=Math.max(e3*4-e12,0);
+  var epS6=Math.max(ep3*2-ep6,0), epS12=Math.max(ep3*4-ep12,0);
+
+  var active = rowCalcs.filter(function(r){ return r; });
+  var allUS = active.length > 0 && active.every(function(rc){ return rc.country === 'US'; });
+  var has1to5  = active.some(function(rc){ return rc.cnt === 5; });
+  var has6to15 = active.some(function(rc){ return rc.cnt === 15; });
+  var disable3m = has1to5 || has6to15;
+  var sym = allUS ? '$' : '€';
+  var fmtC = function(v) { return sym + v.toLocaleString("en-US"); };
+  var fmtDecC = function(v) { return sym + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); };
+  var tierLabels = active.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
+  var provinceSummary = active.map(function(rc){ return (COUNTRY_NAMES[rc.country]||rc.country) + " — " + rc.loc + (rc.source?" ("+rc.source+")":"") + ": " + rc.tier.label + " listings, " + rc.elps + " ELPs"; }).join("\n");
+  var provinceLabel = active.map(function(rc){ return rc.loc; }).join(", ");
+  var countryLabel  = active.map(function(rc){ return rc.country; }).join(", ");
+
+  lastPricing = {
+    elite_3m:e3, elite_6m:e6, elite_12m:e12, ep_3m:ep3, ep_6m:ep6, ep_12m:ep12,
+    totalListings:totalListings, totalElps:totalElps,
+    listingLabel:tierLabels, provinceSummary:provinceSummary, provinceLabel:provinceLabel, countryLabel:countryLabel,
+  };
+
+  var hsIcon = '<svg width="12" height="12" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="#FF7A59"/><path d="M22 16v10.5M22 26.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM34 22.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-3v7.5m0 0a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>';
+
+  var periods = [
+    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eS:0,    epS:0    },
+    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eS:eS6,  epS:epS6  },
+    { label:"12 Months", mo:12, eT:e12, epT:ep12, eS:eS12, epS:epS12 },
+  ];
+  var planKeys = ["elite_3m","elite_6m","elite_12m"];
+  var epKeys   = ["ep_3m","ep_6m","ep_12m"];
+
+  // ── Pricing cards ──
+  var h = '<div class="pricing-grid">';
+
+  // Elite card
+  h += '<div class="pricing-card">';
+  h += '<div class="card-header"><div class="card-type">Subscription</div><div class="card-name">Elite</div><div class="card-sub">' + tierLabels + '</div><div class="card-sub" style="visibility:hidden">_</div></div>';
+  periods.forEach(function(p, i){
+    var eliteDisabled = (i === 0 && disable3m);
+    h += '<div class="period-row' + (eliteDisabled ? ' period-row--disabled' : '') + '">';
+    h += '<div class="period-name">' + p.label + '</div>';
+    if (eliteDisabled) {
+      h += '<div style="font-size:11px;color:var(--je-muted-gray)">Not available for ' + (has1to5 ? '1–5' : '6–15') + ' listings</div>';
+    } else {
+      if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(p.eS) + '</span></div>';
+      h += '<div class="price-amount">' + fmtC(p.eT) + '</div>';
+      h += '<div class="price-monthly">' + fmtDecC(p.eT/p.mo) + ' / month</div>';
+  
+    }
+    h += '</div>';
+  });
+  h += '</div>';
+
+  // Elite Plus card
+  h += '<div class="pricing-card elite-plus">';
+  h += '<div class="card-header elite-plus-header"><span class="badge-rec">Recommended</span><div class="card-type">Subscription + Promoted Listings</div><div class="card-name">Elite Plus</div><div class="card-sub">' + tierLabels + '</div><div class="card-elp">' + totalElps + ' Promoted Listing' + (totalElps!==1?'s':'') + '</div></div>';
+  periods.forEach(function(p, i){
+    var epDisabled = (i === 0 && disable3m);
+    h += '<div class="period-row elite-plus-row' + (epDisabled ? ' period-row--disabled' : '') + '">';
+    h += '<div class="period-name">' + p.label + '</div>';
+    if (epDisabled) {
+      h += '<div style="font-size:11px;color:var(--je-muted-gray)">Not available for ' + (has1to5 ? '1–5' : '6–15') + ' listings</div>';
+    } else {
+      if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmtC(p.epS) + '</span></div>';
+      h += '<div class="price-amount">' + fmtC(p.epT) + '</div>';
+      h += '<div class="price-monthly">' + fmtDecC(p.epT/p.mo) + ' / month</div>';
+    }
+    h += '</div>';
+  });
+  h += '</div>';
+
+  h += '</div>'; // end pricing-grid
+
+  // ── Breakdown table ──
+  h += '<div class="breakdown-card">';
+  h += '<div class="tab-bar">';
+  h += '<button class="tab-btn active" onclick="showTab(this,\'tab-prices\')">Prices</button>';
+  h += '</div>';
+
+  // Tab 1: Prices
+  h += '<div id="tab-prices" class="tab-pane active"><div class="tbl-wrap"><table><thead><tr>';
+  h += '<th>Country</th><th>Region</th><th>Listings</th><th>ELPs</th>';
+  h += '<th>Elite 3m</th><th>Elite 6m</th><th>Elite 12m</th>';
+  h += '<th>Elite+ 3m</th><th>Elite+ 6m</th><th>Elite+ 12m</th>';
+  h += '</tr></thead><tbody>';
+
+  active.forEach(function(rc){
+    var rl = rc.loc + (rc.source ? ' <span class="region-hint">(' + rc.source + ')</span>' : '');
+    var te3,te6,te12,tep3,tep6,tep12;
+    if (active.length === 1) {
+      te3=e3; te6=e6; te12=e12; tep3=ep3; tep6=ep6; tep12=ep12;
+    } else {
+      te3=psych(rc.e3r); te6=psych(rc.e6r); te12=psych(rc.e12r);
+      tep3=te3+psych(rc.elp3r); tep6=te6+psych(rc.elp6r); tep12=te12+psych(rc.elp12r);
+    }
+    h += '<tr>';
+    h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
+    h += '<td>' + rl + '</td>';
+    h += '<td>' + rc.tier.label + '</td><td>' + rc.elps + '</td>';
+    h += '<td>'+fmtC(te3)+'</td><td>'+fmtC(te6)+'</td><td>'+fmtC(te12)+'</td>';
+    h += '<td>'+fmtC(tep3)+'</td><td>'+fmtC(tep6)+'</td><td>'+fmtC(tep12)+'</td>';
+    h += '</tr>';
+  });
+  if (active.length > 1) {
+    h += '<tr class="total-row"><td colspan="2">Total</td><td>'+totalListings+'</td><td>'+totalElps+'</td>';
+    h += '<td>'+fmtC(e3)+'</td><td>'+fmtC(e6)+'</td><td>'+fmtC(e12)+'</td>';
+    h += '<td>'+fmtC(ep3)+'</td><td>'+fmtC(ep6)+'</td><td>'+fmtC(ep12)+'</td>';
+    h += '</tr>';
+  }
+  h += '</tbody></table></div></div>';
+
+  // Tab 2: Components
+  h += '<div id="tab-components" class="tab-pane"><div class="tbl-wrap"><table><thead><tr>';
+  h += '<th>Country</th><th>Region</th><th>Median Lead Value</th><th>Commission</th>';
+  h += '<th>Leads / Listing</th><th>Lead / ELP (3m)</th><th>Demand Mult.</th><th>Conversion</th>';
+  h += '</tr></thead><tbody>';
+  var seen = {};
+  active.forEach(function(rc) {
+    var distKey = rc.country + '::' + rc.loc;
+    if (seen[distKey]) return;
+    seen[distKey] = true;
+    var lookupLoc = rc.source || (rc.loc === 'Whole Country' ? Object.keys((COMPONENTS_DATA[rc.country]||{}))[0] : rc.loc);
+    var cdata = (COMPONENTS_DATA[rc.country] || {})[lookupLoc] || {};
+    var median = cdata.median ? '€' + Math.round(cdata.median).toLocaleString('en-US') : '—';
+    var commPct = cdata.commission ? cdata.commission * 100 : null;
+    var comm = commPct !== null ? (Number.isInteger(commPct) ? commPct : commPct.toFixed(1)) + '%' : '—';
+    var lpl   = cdata.leads_per_listing !== undefined ? cdata.leads_per_listing : '—';
+    var lelp  = cdata.lead_per_elp_3m   !== undefined ? cdata.lead_per_elp_3m   : '—';
+    var dmult = cdata.demand_multiplier  !== undefined ? cdata.demand_multiplier + '×' : '—';
+    var conv = cdata.conversion !== undefined ? (cdata.conversion * 100).toFixed(1) + '%' : '—';
+    var convStr = cdata.conversion !== undefined && cdata.conversion !== 0.03 ? '<span style="color:var(--je-gold-dark);font-weight:600">' + conv + '</span>' : conv;
+    var rl = rc.loc + (rc.source ? ' <span class="region-hint">(' + rc.source + ')</span>' : '');
+    h += '<tr>';
+    h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
+    h += '<td>' + rl + '</td>';
+    h += '<td>' + median + '</td><td>' + comm + '</td>';
+    h += '<td>' + lpl + '</td><td>' + lelp + '</td><td>' + dmult + '</td><td>' + convStr + '</td>';
+    h += '</tr>';
+  });
+  h += '</tbody></table></div></div>';
+
+
+  h += '</div>';
+
+  $o.innerHTML = h;
+
+}
+
+function showTab(btn, tabId) {
+  var box = btn.closest('.breakdown-card');
+  box.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  box.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+document.getElementById("btn-add").addEventListener("click", function(){ addRow(); });
+addRow("ES", "__whole__", 0, 1);
 </script>
 </body>
 </html>
