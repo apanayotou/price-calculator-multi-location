@@ -287,6 +287,21 @@ select:focus { border-color: var(--je-mid-gray); }
 }
 .save-badge.teal { background: var(--je-teal-deep); color: var(--je-white); }
 .save-badge.gold { background: var(--je-gold-dark); color: var(--je-white); }
+.floor-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 30px;
+  background: var(--je-white);
+  color: var(--je-mid-gray);
+  border: 1px solid var(--je-border);
+  margin-left: 8px;
+  vertical-align: middle;
+}
 
 .price-amount {
   font-size: 28px;
@@ -618,10 +633,21 @@ function buildDistrictOptions(cc, sel) {
   return h;
 }
 
+function isFloorMarket(country, loc) {
+  var info = getDistrictData(country, loc);
+  if (!info || !info.data) return false;
+  return psych(info.data.price_elite_15 * 15 * 2 * 0.9) < 570;
+}
+
+function bumpTierIfNeeded(r) {
+  if (r.tierIdx === 1 && isFloorMarket(r.country, r.loc)) r.tierIdx = 2;
+}
+
 function renderRows() {
   var c = document.getElementById("rows-container");
   c.innerHTML = "";
   rows.forEach(function(r) {
+    bumpTierIfNeeded(r);
     var div = document.createElement("div");
     div.className = "config-row";
     var showX = rows.length > 1;
@@ -630,9 +656,10 @@ function renderRows() {
     h += '</select></div>';
     h += '<div><label class="field-label">Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
     h += '<div><label class="field-label">Listings</label><select class="sel-tier" data-id="' + r.id + '">';
+    var _disable1to5 = isFloorMarket(r.country, r.loc);
     TIERS.forEach(function(t, j){
-      
-      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + '>' + t.label + '</option>';
+      var _tierDisabled = (j === 1 && _disable1to5);
+      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + (_tierDisabled?' disabled style="color:var(--je-muted-gray)"':'') + '>' + t.label + (_tierDisabled?' (min. price same as 6–15)':'') + '</option>';
     });
     h += '</select></div>';
     h += '<div><label class="field-label">ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
@@ -653,14 +680,19 @@ function renderRows() {
   c.querySelectorAll(".sel-loc").forEach(function(el){
     el.addEventListener("change", function(){
       var id = parseInt(this.getAttribute("data-id"));
-      rows.forEach(function(r){ if(r.id===id) r.loc=el.value; });
-      render();
+      rows.forEach(function(r){ if(r.id===id){ r.loc=el.value; bumpTierIfNeeded(r); } });
+      renderRows(); render();
     });
   });
   c.querySelectorAll(".sel-tier").forEach(function(el){
     el.addEventListener("change", function(){
       var id = parseInt(this.getAttribute("data-id")), nt = parseInt(el.value);
-      rows.forEach(function(r){ if(r.id===id){ r.tierIdx=nt; r.elps=Math.max(1,TIERS[nt].elps); } });
+      rows.forEach(function(r){
+        if(r.id===id){
+          r.tierIdx = (nt === 1 && isFloorMarket(r.country, r.loc)) ? 2 : nt;
+          r.elps = Math.max(1, TIERS[r.tierIdx].elps);
+        }
+      });
       renderRows(); render();
     });
   });
@@ -705,7 +737,9 @@ function render() {
     e3+=psych(rc.e3r); e6+=psych(rc.e6r); e12+=psych(rc.e12r);
     elp3+=psych(rc.elp3r); elp6+=psych(rc.elp6r); elp12+=psych(rc.elp12r);
   });
+  var e3raw=e3, e6raw=e6, e12raw=e12;
   e3=Math.max(e3,300); e6=Math.max(e6,570); e12=Math.max(e12,1080);
+  var floored = [e3>e3raw, e6>e6raw, e12>e12raw];
   var ep3=e3+elp3, ep6=e6+elp6, ep12=e12+elp12;
   var eS6=Math.max(e3*2-e6,0), eS12=Math.max(e3*4-e12,0);
   var epS6=Math.max(ep3*2-ep6,0), epS12=Math.max(ep3*4-ep12,0);
@@ -753,9 +787,8 @@ function render() {
       h += '<div style="font-size:11px;color:var(--je-muted-gray)">Not available for ' + (has1to5 ? '1–5' : '6–15') + ' listings</div>';
     } else {
       if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(p.eS) + '</span></div>';
-      h += '<div class="price-amount">' + fmtC(p.eT) + '</div>';
+      h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(p.eT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Price floor</span>' : '') + '</div>';
       h += '<div class="price-monthly">' + fmtDecC(p.eT/p.mo) + ' / month</div>';
-  
     }
     h += '</div>';
   });
@@ -772,7 +805,7 @@ function render() {
       h += '<div style="font-size:11px;color:var(--je-muted-gray)">Not available for ' + (has1to5 ? '1–5' : '6–15') + ' listings</div>';
     } else {
       if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmtC(p.epS) + '</span></div>';
-      h += '<div class="price-amount">' + fmtC(p.epT) + '</div>';
+      h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(p.epT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Price floor</span>' : '') + '</div>';
       h += '<div class="price-monthly">' + fmtDecC(p.epT/p.mo) + ' / month</div>';
     }
     h += '</div>';
