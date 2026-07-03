@@ -1845,7 +1845,7 @@ function render() {
     if (!d || tier.count === 0) { rowCalcs.push(null); return; }
     hasAny = true;
     var cnt = tier.count, re = r.elps, pe = d[tier.priceKey];
-    var elpLo = r.country === 'US' ? 470 : 420, elpHi = r.country === 'US' ? 672 : 600;
+    var elpLo = 420, elpHi = 450;
     var elpClamped = Math.min(Math.max(d.price_elp_3m, elpLo), elpHi);
     totalListings += cnt; totalElps += re;
     rowCalcs.push({
