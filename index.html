@@ -553,6 +553,10 @@ var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calcula
 
 var COUNTRY_NAMES = { FR:"France 🇫🇷", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹", ES:"Spain 🇪🇸", CH:"Switzerland 🇨🇭", AE:"UAE 🇦🇪", GB:"United Kingdom 🇬🇧", US:"United States 🇺🇸", Other:"Rest of the World 🌍" };
 
+// Countries whose ALL_DATA price fields below are stored in USD (converted from the
+// EUR-denominated BigQuery output). See USD_CONVERSION section for the rate applied.
+var USD_COUNTRIES = ["US", "AE"];
+
 var ALL_DATA = {
   "AE": [
     {
@@ -1368,6 +1372,31 @@ var ALL_DATA = {
   ]
 };
 
+// ── USD CONVERSION ────────────────────────────────────────────────────────
+// US and AE quotes are shown in USD. The prices above are computed by the
+// BigQuery view from EUR-normalized listing values (price_eur), so they are
+// EUR amounts even for US/AE — they must be converted to USD before display.
+// Rate below is the mid-market EUR/USD rate as of Jul 2026; refresh this
+// alongside the normal data refresh (see je-price-calculator skill).
+var EUR_USD_RATE = 1.14;
+(function applyUsdConversion() {
+  var priceFields = [
+    "price_elite_5","price_elite_15","price_elite_30","price_elite_60","price_elite_100",
+    "price_elite_150","price_elite_200","price_elite_500","price_elite_1000","price_elite_1500",
+    "price_elite_2000","price_elite_2500","price_elite_3000","price_elite_3500","price_elite_4000",
+    "price_elite_4500","price_elite_5000"
+  ];
+  USD_COUNTRIES.forEach(function(cc){
+    (ALL_DATA[cc] || []).forEach(function(d){
+      priceFields.forEach(function(f){
+        if (d[f] != null) d[f] = Math.round(d[f] * EUR_USD_RATE * 100) / 100;
+      });
+      if (d.price_elp_3m != null) d.price_elp_3m = Math.round(d.price_elp_3m * EUR_USD_RATE);
+      if (d.min_3m != null) d.min_3m = Math.round(d.min_3m * EUR_USD_RATE);
+    });
+  });
+})();
+
 var COMPONENTS_DATA = {
   "AE": {
     "Other": {
@@ -1881,8 +1910,8 @@ function render() {
   var epS6=Math.max(ep3*2-ep6,0), epS12=Math.max(ep3*4-ep12,0);
 
   var active = rowCalcs.filter(function(r){ return r; });
-  var allUS = active.length > 0 && active.every(function(rc){ return rc.country === 'US'; });
-  var sym = allUS ? '$' : '€';
+  var allUSD = active.length > 0 && active.every(function(rc){ return USD_COUNTRIES.indexOf(rc.country) !== -1; });
+  var sym = allUSD ? '$' : '€';
   var fmtC = function(v) { return sym + v.toLocaleString("en-US"); };
   var fmtDecC = function(v) { return sym + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); };
   var tierLabels = active.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
@@ -2000,7 +2029,9 @@ function render() {
     seen[distKey] = true;
     var lookupLoc = rc.source || (rc.loc === 'Whole Country' ? Object.keys((COMPONENTS_DATA[rc.country]||{}))[0] : rc.loc);
     var cdata = (COMPONENTS_DATA[rc.country] || {})[lookupLoc] || {};
-    var median = cdata.median ? '€' + Math.round(cdata.median).toLocaleString('en-US') : '—';
+    var isUsd = USD_COUNTRIES.indexOf(rc.country) !== -1;
+    var medianVal = cdata.median ? (isUsd ? cdata.median * EUR_USD_RATE : cdata.median) : null;
+    var median = medianVal ? (isUsd ? '$' : '€') + Math.round(medianVal).toLocaleString('en-US') : '—';
     var commPct = cdata.commission ? cdata.commission * 100 : null;
     var comm = commPct !== null ? (Number.isInteger(commPct) ? commPct : commPct.toFixed(1)) + '%' : '—';
     var lpl   = cdata.leads_per_listing !== undefined ? cdata.leads_per_listing : '—';
