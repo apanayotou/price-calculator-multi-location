@@ -322,6 +322,11 @@ body.corp-mode .pricing-grid { grid-template-columns: 1fr 1fr 1fr; }
   color: var(--je-light-gray);
   margin-top: 2px;
 }
+.price-per-listing {
+  font-size: 11px;
+  color: var(--je-muted-gray);
+  margin-top: 1px;
+}
 
 /* ── Update deal button ───────────────────────────────── */
 .btn-update {
@@ -347,55 +352,6 @@ body.corp-mode .pricing-grid { grid-template-columns: 1fr 1fr 1fr; }
 .btn-update.sent { border-color: var(--je-teal-deep); color: var(--je-teal-deep); background: #eaf6f6; }
 .elite-plus-row .btn-update:hover { border-color: var(--je-gold-dark); color: var(--je-gold-dark); background: #fdf7ef; }
 .elite-plus-row .btn-update.sent { border-color: var(--je-gold-dark); color: var(--je-gold-dark); background: #fdf7ef; }
-
-/* ── Breakdown table ──────────────────────────────────── */
-.breakdown-card {
-  background: var(--je-white);
-  border: 1px solid var(--je-divider);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.breakdown-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--je-divider);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--je-light-gray);
-}
-.tab-bar { display: flex; border-bottom: 1px solid var(--je-divider); padding: 0 24px; background: var(--je-white); }
-.tab-btn { padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--je-muted-gray); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: var(--font-sans); margin-bottom: -1px; transition: color 200ms, border-color 200ms; }
-.tab-btn.active { color: var(--je-black); border-bottom-color: var(--je-teal-deep); }
-.tab-btn:hover:not(.active) { color: var(--je-mid-gray); }
-.tab-pane { display: none; }
-.tab-pane.active { display: block; }
-.tbl-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th {
-  text-align: left;
-  padding: 10px 16px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--je-light-gray);
-  border-bottom: 1px solid var(--je-divider);
-  white-space: nowrap;
-}
-td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--je-near-white);
-  color: var(--je-black);
-}
-tr.total-row td {
-  font-weight: 600;
-  border-top: 1px solid var(--je-divider);
-  border-bottom: none;
-  background: var(--je-near-white);
-}
-tr:last-child td { border-bottom: none; }
-.region-hint { font-size: 11px; color: var(--je-teal-deep); font-weight: 500; }
 
 /* ── Empty ────────────────────────────────────────────── */
 .empty {
@@ -468,8 +424,7 @@ body.corp-mode .header-logo svg rect { fill: #16181f; }
 body.corp-mode .header-title { color: #e7e9ee; }
 body.corp-mode .header-meta { color: #8b909c; }
 body.corp-mode .config-card,
-body.corp-mode .pricing-card,
-body.corp-mode .breakdown-card {
+body.corp-mode .pricing-card {
   background: #16181f;
   border-color: #262a33;
 }
@@ -482,9 +437,7 @@ body.corp-mode .card-sub { color: #b6bac4; }
 body.corp-mode .field-label,
 body.corp-mode .card-type,
 body.corp-mode .period-name,
-body.corp-mode .section-label,
-body.corp-mode .breakdown-header,
-body.corp-mode th { color: #8b909c; }
+body.corp-mode .section-label { color: #8b909c; }
 body.corp-mode select {
   background-color: #1c1f27;
   border-color: #2e323c;
@@ -496,13 +449,10 @@ body.corp-mode .config-row { border-bottom-color: #1c1f27; }
 body.corp-mode .config-footer { border-top-color: #262a33; }
 body.corp-mode .period-row { border-bottom-color: #1c1f27; }
 body.corp-mode .period-row.elite-plus-row { background: #1c1a14; }
-body.corp-mode td { color: #e7e9ee; border-bottom-color: #1c1f27; }
-body.corp-mode tr.total-row td { background: #1c1f27; }
-body.corp-mode .tab-bar { background: #16181f; border-bottom-color: #262a33; }
-body.corp-mode .tab-btn.active { color: #f4f5f8; }
 body.corp-mode .btn-remove { background: #1c1f27; border-color: #2e323c; color: #8b909c; }
 body.corp-mode .floor-badge { background: #1c1f27; border-color: #2e323c; color: #b6bac4; }
 body.corp-mode .empty { background: #16181f; border-color: #262a33; color: #8b909c; }
+body.corp-mode .price-per-listing { color: #6b7080; }
 body.corp-mode .footer { color: #6b7080; }
 body.corp-mode .corp-toggle-wrap { color: #8b909c; }
 body.corp-mode .corp-switch { background: #2e323c; }
@@ -1392,7 +1342,10 @@ var EUR_USD_RATE = 1.14;
         if (d[f] != null) d[f] = Math.round(d[f] * EUR_USD_RATE * 100) / 100;
       });
       if (d.price_elp_3m != null) d.price_elp_3m = Math.round(d.price_elp_3m * EUR_USD_RATE);
-      if (d.min_3m != null) d.min_3m = Math.round(d.min_3m * EUR_USD_RATE);
+      // USD floor is $200/month, same baseline as the EUR floor (€600 for 3 months = €200/month).
+      // Stored here as the 3-month total so it flows through the existing 2x0.9 / 4x0.8
+      // period multipliers exactly the same way the EUR floor does.
+      if (d.min_3m != null) d.min_3m = 600;
     });
   });
 })();
@@ -1710,25 +1663,27 @@ var COMPONENTS_DATA = {
 
 // Tiers 0–7: standard (always visible)
 // Tiers 8+:  corp-only (visible only in corporate mode)
+// Default ELPs are capped at 50 — larger tiers still let the user pick a higher
+// ELP count manually via the selector, they just don't auto-default above 50.
 var TIERS = [
   { label:"0",          count:0,    elps:0,  priceKey:"price_elite_60"    },
   { label:"1–5",        count:5,    elps:1,  priceKey:"price_elite_5"     },
   { label:"6–15",       count:15,   elps:2,  priceKey:"price_elite_15"    },
   { label:"16–30",      count:30,   elps:3,  priceKey:"price_elite_30"    },
-  { label:"31–60",      count:60,   elps:5,  priceKey:"price_elite_60"    },
-  { label:"61–100",     count:100,  elps:7,  priceKey:"price_elite_100"   },
-  { label:"101–150",    count:150,  elps:10, priceKey:"price_elite_150"   },
-  { label:"151–200",    count:200,  elps:15, priceKey:"price_elite_200"   },
+  { label:"31–60",      count:60,   elps:4,  priceKey:"price_elite_60"    },
+  { label:"61–100",     count:100,  elps:6,  priceKey:"price_elite_100"   },
+  { label:"101–150",    count:150,  elps:8,  priceKey:"price_elite_150"   },
+  { label:"151–200",    count:200,  elps:10, priceKey:"price_elite_200"   },
   { label:"201–500",    count:500,  elps:20, priceKey:"price_elite_500",   corp:true },
   { label:"501–1000",   count:1000, elps:30, priceKey:"price_elite_1000",  corp:true },
   { label:"1001–1500",  count:1500, elps:40, priceKey:"price_elite_1500",  corp:true },
   { label:"1501–2000",  count:2000, elps:50, priceKey:"price_elite_2000",  corp:true },
-  { label:"2001–2500",  count:2500, elps:60, priceKey:"price_elite_2500",  corp:true },
-  { label:"2501–3000",  count:3000, elps:70, priceKey:"price_elite_3000",  corp:true },
-  { label:"3001–3500",  count:3500, elps:80, priceKey:"price_elite_3500",  corp:true },
-  { label:"3501–4000",  count:4000, elps:90, priceKey:"price_elite_4000",  corp:true },
-  { label:"4001–4500",  count:4500, elps:100,priceKey:"price_elite_4500",  corp:true },
-  { label:"4501–5000",  count:5000, elps:110,priceKey:"price_elite_5000",  corp:true },
+  { label:"2001–2500",  count:2500, elps:50, priceKey:"price_elite_2500",  corp:true },
+  { label:"2501–3000",  count:3000, elps:50, priceKey:"price_elite_3000",  corp:true },
+  { label:"3001–3500",  count:3500, elps:50, priceKey:"price_elite_3500",  corp:true },
+  { label:"3501–4000",  count:4000, elps:50, priceKey:"price_elite_4000",  corp:true },
+  { label:"4001–4500",  count:4500, elps:50, priceKey:"price_elite_4500",  corp:true },
+  { label:"4501–5000",  count:5000, elps:50, priceKey:"price_elite_5000",  corp:true },
 ];
 
 var rows = [], nextId = 0, lastPricing = null;
@@ -1874,7 +1829,13 @@ function render() {
     if (!d || tier.count === 0) { rowCalcs.push(null); return; }
     hasAny = true;
     var cnt = tier.count, re = r.elps, pe = d[tier.priceKey];
-    var elpLo = 420, elpHi = 450;
+    // The ELP price is clamped into a fixed band. That band is defined in EUR terms —
+    // for USD countries it must be converted (and psych-rounded, for the same reason
+    // the min_3m floor needed it) or the clamp silently pins USD quotes to EUR-scale
+    // numbers and swallows the whole currency correction.
+    var isUsdRow = USD_COUNTRIES.indexOf(r.country) !== -1;
+    var elpLo = isUsdRow ? psych(420 * EUR_USD_RATE) : 420;
+    var elpHi = isUsdRow ? psych(450 * EUR_USD_RATE) : 450;
     var elpClamped = Math.min(Math.max(d.price_elp_3m, elpLo), elpHi);
     totalListings += cnt; totalElps += re;
     rowCalcs.push({
@@ -1926,9 +1887,9 @@ function render() {
   };
 
   var periods = [
-    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eS:0,    epS:0    },
-    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eS:eS6,  epS:epS6  },
-    { label:"12 Months", mo:12, eT:e12, epT:ep12, eS:eS12, epS:epS12 },
+    { label:"3 Months",  mo:3,  eT:e3,  epT:ep3,  eS:0,    epS:0,     floor:floor3  },
+    { label:"6 Months",  mo:6,  eT:e6,  epT:ep6,  eS:eS6,  epS:epS6,  floor:floor6  },
+    { label:"12 Months", mo:12, eT:e12, epT:ep12, eS:eS12, epS:epS12, floor:floor12 },
   ];
 
   var corpMode = document.body.classList.contains("corp-mode");
@@ -1939,13 +1900,15 @@ function render() {
     h += '<div class="pricing-card classic">';
     h += '<div class="card-header"><div class="card-type">Subscription</div><div class="card-name">Classic</div><div class="card-sub">' + tierLabels + '</div><div class="card-sub" style="visibility:hidden">_</div></div>';
     periods.forEach(function(p, i){
-      var cT = psych(p.eT / 3);
+      var cT = Math.max(psych(p.eT / 3), p.floor);
       var cS = psych(p.eS / 3);
+      var cFloored = cT <= p.floor;
       h += '<div class="period-row">';
       h += '<div class="period-name">' + p.label + '</div>';
       if (cS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(cS) + '</span></div>';
-      h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(cT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
+      h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(cT) + '</div>' + (cFloored ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
       h += '<div class="price-monthly">' + fmtDecC(cT/p.mo) + ' / month</div>';
+      h += '<div class="price-per-listing">' + fmtDecC(cT/p.mo/totalListings) + ' / listing / month</div>';
       h += '</div>';
     });
     h += '</div>';
@@ -1960,6 +1923,7 @@ function render() {
     if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(p.eS) + '</span></div>';
     h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(p.eT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
     h += '<div class="price-monthly">' + fmtDecC(p.eT/p.mo) + ' / month</div>';
+    h += '<div class="price-per-listing">' + fmtDecC(p.eT/p.mo/totalListings) + ' / listing / month</div>';
     h += '</div>';
   });
   h += '</div>';
@@ -1973,92 +1937,15 @@ function render() {
     if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmtC(p.epS) + '</span></div>';
     h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(p.epT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
     h += '<div class="price-monthly">' + fmtDecC(p.epT/p.mo) + ' / month</div>';
+    h += '<div class="price-per-listing">' + fmtDecC(p.epT/p.mo/totalListings) + ' / listing / month</div>';
     h += '</div>';
   });
   h += '</div>';
 
   h += '</div>'; // end pricing-grid
 
-  // Breakdown table
-  h += '<div class="breakdown-card">';
-  h += '<div class="tab-bar">';
-  h += '<button class="tab-btn active" onclick="showTab(this,\'tab-prices\')">Prices</button>';
-  h += '</div>';
-
-  // Tab: Prices
-  h += '<div id="tab-prices" class="tab-pane active"><div class="tbl-wrap"><table><thead><tr>';
-  h += '<th>Country</th><th>Region</th><th>Listings</th><th>ELPs</th>';
-  h += '<th>Elite 3m</th><th>Elite 6m</th><th>Elite 12m</th>';
-  h += '<th>Elite+ 3m</th><th>Elite+ 6m</th><th>Elite+ 12m</th>';
-  h += '</tr></thead><tbody>';
-
-  active.forEach(function(rc){
-    var rl = rc.loc + (rc.source ? ' <span class="region-hint">(' + rc.source + ')</span>' : '');
-    var te3,te6,te12,tep3,tep6,tep12;
-    if (active.length === 1) {
-      te3=e3; te6=e6; te12=e12; tep3=ep3; tep6=ep6; tep12=ep12;
-    } else {
-      te3=psych(rc.e3r); te6=psych(rc.e6r); te12=psych(rc.e12r);
-      tep3=te3+psych(rc.elp3r); tep6=te6+psych(rc.elp6r); tep12=te12+psych(rc.elp12r);
-    }
-    h += '<tr>';
-    h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
-    h += '<td>' + rl + '</td>';
-    h += '<td>' + rc.tier.label + '</td><td>' + rc.elps + '</td>';
-    h += '<td>'+fmtC(te3)+'</td><td>'+fmtC(te6)+'</td><td>'+fmtC(te12)+'</td>';
-    h += '<td>'+fmtC(tep3)+'</td><td>'+fmtC(tep6)+'</td><td>'+fmtC(tep12)+'</td>';
-    h += '</tr>';
-  });
-  if (active.length > 1) {
-    h += '<tr class="total-row"><td colspan="2">Total</td><td>'+totalListings+'</td><td>'+totalElps+'</td>';
-    h += '<td>'+fmtC(e3)+'</td><td>'+fmtC(e6)+'</td><td>'+fmtC(e12)+'</td>';
-    h += '<td>'+fmtC(ep3)+'</td><td>'+fmtC(ep6)+'</td><td>'+fmtC(ep12)+'</td>';
-    h += '</tr>';
-  }
-  h += '</tbody></table></div></div>';
-
-  // Tab: Components
-  h += '<div id="tab-components" class="tab-pane"><div class="tbl-wrap"><table><thead><tr>';
-  h += '<th>Country</th><th>Region</th><th>Median Lead Value</th><th>Commission</th>';
-  h += '<th>Leads / Listing</th><th>Lead / ELP (3m)</th><th>Demand Mult.</th><th>Conversion</th>';
-  h += '</tr></thead><tbody>';
-  var seen = {};
-  active.forEach(function(rc) {
-    var distKey = rc.country + '::' + rc.loc;
-    if (seen[distKey]) return;
-    seen[distKey] = true;
-    var lookupLoc = rc.source || (rc.loc === 'Whole Country' ? Object.keys((COMPONENTS_DATA[rc.country]||{}))[0] : rc.loc);
-    var cdata = (COMPONENTS_DATA[rc.country] || {})[lookupLoc] || {};
-    var isUsd = USD_COUNTRIES.indexOf(rc.country) !== -1;
-    var medianVal = cdata.median ? (isUsd ? cdata.median * EUR_USD_RATE : cdata.median) : null;
-    var median = medianVal ? (isUsd ? '$' : '€') + Math.round(medianVal).toLocaleString('en-US') : '—';
-    var commPct = cdata.commission ? cdata.commission * 100 : null;
-    var comm = commPct !== null ? (Number.isInteger(commPct) ? commPct : commPct.toFixed(1)) + '%' : '—';
-    var lpl   = cdata.leads_per_listing !== undefined ? cdata.leads_per_listing : '—';
-    var lelp  = cdata.lead_per_elp_3m   !== undefined ? cdata.lead_per_elp_3m   : '—';
-    var dmult = cdata.demand_multiplier  !== undefined ? cdata.demand_multiplier + '×' : '—';
-    var conv = cdata.conversion !== undefined ? (cdata.conversion * 100).toFixed(1) + '%' : '—';
-    var convStr = cdata.conversion !== undefined && cdata.conversion !== 0.03 ? '<span style="color:var(--je-gold-dark);font-weight:600">' + conv + '</span>' : conv;
-    var rl = rc.loc + (rc.source ? ' <span class="region-hint">(' + rc.source + ')</span>' : '');
-    h += '<tr>';
-    h += '<td>' + (COUNTRY_NAMES[rc.country]||rc.country) + '</td>';
-    h += '<td>' + rl + '</td>';
-    h += '<td>' + median + '</td><td>' + comm + '</td>';
-    h += '<td>' + lpl + '</td><td>' + lelp + '</td><td>' + dmult + '</td><td>' + convStr + '</td>';
-    h += '</tr>';
-  });
-  h += '</tbody></table></div></div>';
-
   h += '</div>';
   $o.innerHTML = h;
-}
-
-function showTab(btn, tabId) {
-  var box = btn.closest('.breakdown-card');
-  box.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  box.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById(tabId).classList.add('active');
 }
 
 document.getElementById("btn-add").addEventListener("click", function(){ addRow(); });
