@@ -1801,7 +1801,7 @@ function renderRows() {
       if (t.corp && !_corp) return;
       if (_corp && t.count > 0 && t.count < 100) return;
       var _td = isTierDisabled(r.country, r.loc, j);
-      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + (_td?' disabled style="color:var(--je-muted-gray)"':'') + '>' + t.label + (_td?' (min. price same as ' + TIERS[j+1].label + ')':'') + '</option>';
+      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + (_td?' disabled style="color:var(--je-muted-gray)"':'') + '>' + t.label + (_td?' (same price as ' + TIERS[j+1].label + ')':'') + '</option>';
     });
     h += '</select></div>';
     h += '<div><label class="field-label">ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
@@ -1932,7 +1932,7 @@ function render() {
   // every period row) whenever the 3-month quote has hit this market's floor.
   var floorBanner = '';
   if (floored[0]) {
-    floorBanner = '<div class="floor-banner"><span class="floor-banner-icon">⚠️</span><div><strong>Floor pricing applied.</strong> This selection is below this market\'s minimum subscription volume, so the totals shown reflect the price floor rather than the standard per-listing rate.</div></div>';
+    floorBanner = '<div class="floor-banner"><span class="floor-banner-icon">⚠️</span><div><strong>Minimum price applied.</strong> This market has a price floor, so the total below won\'t go any lower.</div></div>';
   }
 
   var h = floorBanner + '<div class="pricing-grid">';
