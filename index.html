@@ -1750,11 +1750,57 @@ function isTierDisabled(country, loc, idx) {
   return tierHitsFloor(country, loc, TIERS[idx + 1]);
 }
 
+// Builds the list of options to actually show in the Listings dropdown for
+// this market. Runs of tiers that all price identically at the floor (e.g.
+// 1–5 and 6–15 both landing on the same floored total) are merged into one
+// bucket spanning the full range (e.g. "1–15") instead of showing each tier
+// separately with some disabled.
+function buildDisplayTiers(country, loc) {
+  var _corp = document.body.classList.contains("corp-mode");
+  var visibleIdx = [];
+  TIERS.forEach(function(t, j) {
+    if (t.corp && !_corp) return;
+    if (_corp && t.count > 0 && t.count < 100) return;
+    visibleIdx.push(j);
+  });
+
+  var display = [], i = 0;
+  while (i < visibleIdx.length) {
+    var startIdx = visibleIdx[i];
+    if (startIdx === 0) {
+      display.push({ idx: startIdx, label: TIERS[startIdx].label });
+      i++;
+      continue;
+    }
+    var j = i;
+    while (
+      j < visibleIdx.length - 1 &&
+      visibleIdx[j + 1] === visibleIdx[j] + 1 &&
+      isTierDisabled(country, loc, visibleIdx[j])
+    ) {
+      j++;
+    }
+    var endIdx = visibleIdx[j];
+    var startLabel = TIERS[startIdx].label.split("–")[0];
+    var endParts = TIERS[endIdx].label.split("–");
+    var endLabel = endParts.length > 1 ? endParts[1] : endParts[0];
+    var mergedLabel = (startIdx === endIdx) ? TIERS[endIdx].label : (startLabel + "–" + endLabel);
+    display.push({ idx: endIdx, label: mergedLabel });
+    i = j + 1;
+  }
+  return display;
+}
+
 function bumpTierIfNeeded(r) {
-  var guard = 0;
+  var startIdx = r.tierIdx, guard = 0;
   while (isTierDisabled(r.country, r.loc, r.tierIdx) && guard < TIERS.length) {
     r.tierIdx = r.tierIdx + 1;
     guard++;
+  }
+  // If the bump actually moved us to a different (merged) bucket, the ELP
+  // default should reflect that top bucket, not the smaller tier's default.
+  if (r.tierIdx !== startIdx) {
+    r.elps = Math.max(1, TIERS[r.tierIdx].elps);
   }
 }
 
@@ -1796,12 +1842,9 @@ function renderRows() {
     h += '</select></div>';
     h += '<div><label class="field-label">Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
     h += '<div><label class="field-label">Listings</label><select class="sel-tier" data-id="' + r.id + '">';
-    var _corp = document.body.classList.contains("corp-mode");
-    TIERS.forEach(function(t, j){
-      if (t.corp && !_corp) return;
-      if (_corp && t.count > 0 && t.count < 100) return;
-      var _td = isTierDisabled(r.country, r.loc, j);
-      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + (_td?' disabled style="color:var(--je-muted-gray)"':'') + '>' + t.label + (_td?' (same price as ' + TIERS[j+1].label + ')':'') + '</option>';
+    var displayTiers = buildDisplayTiers(r.country, r.loc);
+    displayTiers.forEach(function(dt){
+      h += '<option value="' + dt.idx + '"' + (r.tierIdx===dt.idx?" selected":"") + '>' + dt.label + '</option>';
     });
     h += '</select></div>';
     h += '<div><label class="field-label">ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
@@ -1872,9 +1915,11 @@ function render() {
     var elpHi = isUsdRow ? psych(450 * EUR_USD_RATE) : 450;
     var elpClamped = Math.min(Math.max(d.price_elp_3m, elpLo), elpHi);
     totalListings += cnt; totalElps += re;
+    var _displayTiers = buildDisplayTiers(r.country, r.loc);
+    var _mergedEntry = _displayTiers.filter(function(dt){ return dt.idx === r.tierIdx; })[0];
     rowCalcs.push({
       country: r.country, loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
-      source: info.source, tier: tier, cnt: cnt, elps: re, min3m: d.min_3m || 0,
+      source: info.source, tier: tier, mergedLabel: _mergedEntry ? _mergedEntry.label : tier.label, cnt: cnt, elps: re, min3m: d.min_3m || 0,
       e3r: pe*cnt, e6r: pe*2*0.9*cnt, e12r: pe*4*0.8*cnt,
       elp3r: elpClamped*re, elp6r: elpClamped*2*0.9*re, elp12r: elpClamped*4*0.8*re,
     });
@@ -1909,7 +1954,7 @@ function render() {
   var sym = allUSD ? '$' : '€';
   var fmtC = function(v) { return sym + v.toLocaleString("en-US"); };
   var fmtDecC = function(v) { return sym + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); };
-  var tierLabels = active.map(function(r){ return r.tier.label; }).join(" + ") + " Listings";
+  var tierLabels = active.map(function(r){ return r.mergedLabel; }).join(" + ") + " Listings";
   var provinceSummary = active.map(function(rc){ return (COUNTRY_NAMES[rc.country]||rc.country) + " — " + rc.loc + (rc.source?" ("+rc.source+")":"") + ": " + rc.tier.label + " listings, " + rc.elps + " ELPs"; }).join("\n");
   var provinceLabel = active.map(function(rc){ return rc.loc; }).join(", ");
   var countryLabel  = active.map(function(rc){ return rc.country; }).join(", ");
@@ -1932,7 +1977,8 @@ function render() {
   // every period row) whenever the 3-month quote has hit this market's floor.
   var floorBanner = '';
   if (floored[0]) {
-    floorBanner = '<div class="floor-banner"><span class="floor-banner-icon">⚠️</span><div><strong>Minimum price applied.</strong> This market has a price floor, so the total below won\'t go any lower.</div></div>';
+    var bucketNames = active.map(function(rc){ return rc.mergedLabel; }).join(' + ');
+    floorBanner = '<div class="floor-banner"><span class="floor-banner-icon">⚠️</span><div><strong>Minimum price applied.</strong> Monthly price cannot go below ' + fmtC(Math.round(floor3/3)) + ', therefore ' + bucketNames + ' is the smallest possible listing bucket available.</div></div>';
   }
 
   var h = floorBanner + '<div class="pricing-grid">';
