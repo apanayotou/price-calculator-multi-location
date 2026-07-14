@@ -14,6 +14,7 @@
   --je-green: #178475;
   --je-gold-dark: #b9a16f;
   --je-gold-light: #dfd5c0;
+  --je-warning: #E79E32;
   --je-black: #151515;
   --je-mid-gray: #606060;
   --je-light-gray: #878787;
@@ -192,6 +193,32 @@ select:focus { border-color: var(--je-mid-gray); }
 }
 .btn-add:hover { background: #f0f9fa; }
 
+/* ── Floor pricing banner ─────────────────────────────── */
+/* Shown once, above the pricing cards, whenever the 3-month price has
+   hit this market's minimum floor — replaces the old per-row badges. */
+.floor-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  background: #fdedec;
+  border: 1px solid var(--je-error);
+  border-radius: var(--radius);
+  color: #a11f1f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.floor-banner-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.floor-banner strong {
+  font-weight: 700;
+  color: #8a1414;
+}
+
 /* ── Pricing grid ───────────────────────────────────── */
 .pricing-grid {
   display: grid;
@@ -288,21 +315,6 @@ body.corp-mode .pricing-grid { grid-template-columns: 1fr 1fr 1fr; }
 }
 .save-badge.teal { background: var(--je-teal-deep); color: var(--je-white); }
 .save-badge.gold { background: var(--je-gold-dark); color: var(--je-white); }
-.floor-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 30px;
-  background: var(--je-white);
-  color: var(--je-mid-gray);
-  border: 1px solid var(--je-border);
-  margin-left: 8px;
-  vertical-align: middle;
-}
 
 .price-amount {
   font-size: 28px;
@@ -450,7 +462,8 @@ body.corp-mode .config-footer { border-top-color: #262a33; }
 body.corp-mode .period-row { border-bottom-color: #1c1f27; }
 body.corp-mode .period-row.elite-plus-row { background: #1c1a14; }
 body.corp-mode .btn-remove { background: #1c1f27; border-color: #2e323c; color: #8b909c; }
-body.corp-mode .floor-badge { background: #1c1f27; border-color: #2e323c; color: #b6bac4; }
+body.corp-mode .floor-banner { background: #2a1414; border-color: var(--je-error); color: #f0a3a3; }
+body.corp-mode .floor-banner strong { color: #f7c4c4; }
 body.corp-mode .empty { background: #16181f; border-color: #262a33; color: #8b909c; }
 body.corp-mode .price-per-listing { color: #6b7080; }
 body.corp-mode .footer { color: #6b7080; }
@@ -1712,6 +1725,39 @@ function getDistrictData(cc, loc) {
   return { data: ds[0], source: null };
 }
 
+// ── Floor-market tier logic ──────────────────────────────────────────────
+// Checks whether a GIVEN tier (its per-unit price × its listing count) would
+// already sit at or below the minimum 3-month price floor — the same basis
+// the floor-pricing banner uses. If tier N+1 hits the floor, tier N prices
+// identically at the 3-month mark, so tier N is redundant and gets disabled
+// in favor of tier N+1.
+function tierHitsFloor(country, loc, tier) {
+  if (!tier || tier.count <= 0) return false;
+  var info = getDistrictData(country, loc);
+  if (!info || !info.data) return false;
+  var d = info.data, mm = d.min_3m || 0, pe = d[tier.priceKey];
+  if (pe == null) return false;
+  var raw3 = psych(pe * tier.count);
+  return raw3 <= mm;
+}
+
+// Tier idx is disabled when the next tier up already prices at the floor
+// (so idx would just be a duplicate of idx+1). Cascades naturally: if
+// idx+1 is itself disabled because idx+2 is floored, tierHitsFloor still
+// reports idx+1 as floored, so idx is disabled too.
+function isTierDisabled(country, loc, idx) {
+  if (idx <= 0 || idx >= TIERS.length - 1) return false;
+  return tierHitsFloor(country, loc, TIERS[idx + 1]);
+}
+
+function bumpTierIfNeeded(r) {
+  var guard = 0;
+  while (isTierDisabled(r.country, r.loc, r.tierIdx) && guard < TIERS.length) {
+    r.tierIdx = r.tierIdx + 1;
+    guard++;
+  }
+}
+
 function addRow(cc, loc, ti, elps) {
   var id = nextId++;
   ti = ti || 0;
@@ -1737,18 +1783,6 @@ function buildDistrictOptions(cc, sel) {
   return h;
 }
 
-function isFloorMarket(country, loc) {
-  var info = getDistrictData(country, loc);
-  if (!info || !info.data) return false;
-  var d = info.data, mm = d.min_3m || 0, p15 = d.price_elite_15;
-  var raw3 = psych(p15*15), raw6 = psych(p15*15*2*0.9), raw12 = psych(p15*15*4*0.8);
-  return raw3 <= mm && raw6 <= mm*2*0.9 && raw12 <= mm*4*0.8;
-}
-
-function bumpTierIfNeeded(r) {
-  if (r.tierIdx === 1 && isFloorMarket(r.country, r.loc)) r.tierIdx = 2;
-}
-
 function renderRows() {
   var c = document.getElementById("rows-container");
   c.innerHTML = "";
@@ -1762,13 +1796,12 @@ function renderRows() {
     h += '</select></div>';
     h += '<div><label class="field-label">Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
     h += '<div><label class="field-label">Listings</label><select class="sel-tier" data-id="' + r.id + '">';
-    var _disable1to5 = isFloorMarket(r.country, r.loc);
     var _corp = document.body.classList.contains("corp-mode");
     TIERS.forEach(function(t, j){
       if (t.corp && !_corp) return;
       if (_corp && t.count > 0 && t.count < 100) return;
-      var _td = (j === 1 && _disable1to5);
-      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + (_td?' disabled style="color:var(--je-muted-gray)"':'') + '>' + t.label + (_td?' (min. price same as 6–15)':'') + '</option>';
+      var _td = isTierDisabled(r.country, r.loc, j);
+      h += '<option value="' + j + '"' + (r.tierIdx===j?" selected":"") + (_td?' disabled style="color:var(--je-muted-gray)"':'') + '>' + t.label + (_td?' (min. price same as ' + TIERS[j+1].label + ')':'') + '</option>';
     });
     h += '</select></div>';
     h += '<div><label class="field-label">ELPs</label><select class="sel-elps" data-id="' + r.id + '">';
@@ -1801,7 +1834,8 @@ function renderRows() {
       var id = parseInt(this.getAttribute("data-id")), nt = parseInt(el.value);
       rows.forEach(function(r){
         if(r.id===id){
-          r.tierIdx = (nt === 1 && isFloorMarket(r.country, r.loc)) ? 2 : nt;
+          r.tierIdx = nt;
+          bumpTierIfNeeded(r);
           r.elps = Math.max(1, TIERS[r.tierIdx].elps);
         }
       });
@@ -1893,7 +1927,15 @@ function render() {
   ];
 
   var corpMode = document.body.classList.contains("corp-mode");
-  var h = '<div class="pricing-grid">';
+
+  // Floor pricing banner — shown once above the cards (instead of a badge on
+  // every period row) whenever the 3-month quote has hit this market's floor.
+  var floorBanner = '';
+  if (floored[0]) {
+    floorBanner = '<div class="floor-banner"><span class="floor-banner-icon">⚠️</span><div><strong>Floor pricing applied.</strong> This selection is below this market\'s minimum subscription volume, so the totals shown reflect the price floor rather than the standard per-listing rate.</div></div>';
+  }
+
+  var h = floorBanner + '<div class="pricing-grid">';
 
   // Classic card (corporate mode only)
   if (corpMode) {
@@ -1902,11 +1944,10 @@ function render() {
     periods.forEach(function(p, i){
       var cT = Math.max(psych(p.eT / 3), p.floor);
       var cS = psych(p.eS / 3);
-      var cFloored = cT <= p.floor;
       h += '<div class="period-row">';
       h += '<div class="period-name">' + p.label + '</div>';
       if (cS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(cS) + '</span></div>';
-      h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(cT) + '</div>' + (cFloored ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
+      h += '<div class="price-amount">' + fmtC(cT) + '</div>';
       h += '<div class="price-monthly">' + fmtDecC(cT/p.mo) + ' / month</div>';
       h += '<div class="price-per-listing">' + fmtDecC(cT/p.mo/totalListings) + ' / listing / month</div>';
       h += '</div>';
@@ -1921,7 +1962,7 @@ function render() {
     h += '<div class="period-row">';
     h += '<div class="period-name">' + p.label + '</div>';
     if (p.eS > 0) h += '<div><span class="save-badge teal">Save ' + fmtC(p.eS) + '</span></div>';
-    h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(p.eT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
+    h += '<div class="price-amount">' + fmtC(p.eT) + '</div>';
     h += '<div class="price-monthly">' + fmtDecC(p.eT/p.mo) + ' / month</div>';
     h += '<div class="price-per-listing">' + fmtDecC(p.eT/p.mo/totalListings) + ' / listing / month</div>';
     h += '</div>';
@@ -1935,7 +1976,7 @@ function render() {
     h += '<div class="period-row elite-plus-row">';
     h += '<div class="period-name">' + p.label + '</div>';
     if (p.epS > 0) h += '<div><span class="save-badge gold">Save ' + fmtC(p.epS) + '</span></div>';
-    h += '<div style="display:flex;align-items:baseline;gap:8px"><div class="price-amount">' + fmtC(p.epT) + '</div>' + (floored[i] ? '<span class="floor-badge">⚠️ Min. price floor</span>' : '') + '</div>';
+    h += '<div class="price-amount">' + fmtC(p.epT) + '</div>';
     h += '<div class="price-monthly">' + fmtDecC(p.epT/p.mo) + ' / month</div>';
     h += '<div class="price-per-listing">' + fmtDecC(p.epT/p.mo/totalListings) + ' / listing / month</div>';
     h += '</div>';
