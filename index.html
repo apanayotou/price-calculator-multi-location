@@ -194,8 +194,9 @@ select:focus { border-color: var(--je-mid-gray); }
 .btn-add:hover { background: #f0f9fa; }
 
 /* ── Floor pricing banner ─────────────────────────────── */
-/* Shown once, above the pricing cards, whenever the 3-month price has
-   hit this market's minimum floor — replaces the old per-row badges. */
+/* Shown once, above the pricing cards, whenever the 3-month Elite price has
+   hit this market's minimum floor. Floored Elite rows are greyed (below);
+   Elite Plus stays live wherever promoted listings lift it above the floor. */
 .floor-banner {
   display: flex;
   align-items: flex-start;
@@ -237,8 +238,61 @@ body.corp-mode .pricing-grid { grid-template-columns: 1fr 1fr 1fr; }
   border: 1px solid var(--je-divider);
   border-radius: var(--radius);
   overflow: hidden;
+  position: relative;
 }
 .pricing-card.elite-plus { border-color: var(--je-gold-dark); }
+
+/* ── Size-up overlay ──────────────────────────────────── */
+/* Semi-transparent panel laid over the Elite card when the selected bucket is
+   redundant (a larger listing tier costs the same). Explains you can size up
+   at no extra cost. The price stays faintly visible behind it. */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  text-align: center;
+  background: rgba(206,206,206,0.85);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.card-overlay-inner {
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.card-overlay-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--je-teal-deep);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+.card-overlay-icon:hover { background: var(--je-teal-deep-hover); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,108,117,0.35); }
+.card-overlay-icon:focus-visible { box-shadow: 0 0 0 3px rgba(0,108,117,0.35); }
+.card-overlay-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #2e2e2e;
+}
+.card-overlay-text strong { color: var(--je-black); font-weight: 600; }
+.card-overlay-note {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-top: 2px;
+}
 
 .card-header {
   padding: 20px 24px 16px;
@@ -338,6 +392,26 @@ body.corp-mode .pricing-grid { grid-template-columns: 1fr 1fr 1fr; }
   font-size: 11px;
   color: var(--je-muted-gray);
   margin-top: 1px;
+}
+
+/* ── Floored (at-minimum) Elite rows ──────────────────── */
+/* When Elite has bottomed out at the price floor for a tier, the row is
+   greyed rather than hidden — the tier stays selectable, and Elite Plus
+   remains full-colour wherever ELPs push the total back above the floor. */
+.period-row.floored .price-amount { color: var(--je-muted-gray); }
+.period-row.floored .price-monthly,
+.period-row.floored .price-per-listing { color: var(--je-muted-gray); }
+.floor-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--je-muted-gray);
+  border: 1px solid var(--je-border);
+  border-radius: 30px;
+  padding: 2px 8px;
+  margin-bottom: 6px;
 }
 
 /* ── Update deal button ───────────────────────────────── */
@@ -466,6 +540,14 @@ body.corp-mode .floor-banner { background: #2a1414; border-color: var(--je-error
 body.corp-mode .floor-banner strong { color: #f7c4c4; }
 body.corp-mode .empty { background: #16181f; border-color: #262a33; color: #8b909c; }
 body.corp-mode .price-per-listing { color: #6b7080; }
+body.corp-mode .card-overlay { background: rgba(58,62,72,0.86); }
+body.corp-mode .card-overlay-text { color: #b6bac4; }
+body.corp-mode .card-overlay-text strong { color: #f4f5f8; }
+body.corp-mode .card-overlay-note { color: #f4f5f8; }
+body.corp-mode .period-row.floored .price-amount,
+body.corp-mode .period-row.floored .price-monthly,
+body.corp-mode .period-row.floored .price-per-listing { color: #6b7080; }
+body.corp-mode .floor-tag { color: #6b7080; border-color: #2e323c; }
 body.corp-mode .footer { color: #6b7080; }
 body.corp-mode .corp-toggle-wrap { color: #8b909c; }
 body.corp-mode .corp-switch { background: #2e323c; }
@@ -514,34 +596,42 @@ body.corp-mode .corp-switch.on { background: var(--je-gold-dark); }
 <script>
 var N8N_WEBHOOK_URL = "https://james-edition.app.n8n.cloud/webhook/price-calculator-hs";
 
-var COUNTRY_NAMES = { FR:"France 🇫🇷", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹", ES:"Spain 🇪🇸", CH:"Switzerland 🇨🇭", AE:"UAE 🇦🇪", GB:"United Kingdom 🇬🇧", US:"United States 🇺🇸", Other:"Rest of the World 🌍" };
+var COUNTRY_NAMES = { FR:"France 🇫🇷", GR:"Greece 🇬🇷", IT:"Italy 🇮🇹", PT:"Portugal 🇵🇹", ES:"Spain 🇪🇸", CH:"Switzerland 🇨🇭", AE:"UAE 🇦🇪", GB:"United Kingdom 🇬🇧", US:"United States 🇺🇸", CA:"Canada 🇨🇦", ZA:"South Africa 🇿🇦", Other:"Rest of the World 🌍" };
 
 // Countries whose ALL_DATA price fields below are stored in USD (converted from the
 // EUR-denominated BigQuery output). See USD_CONVERSION section for the rate applied.
-var USD_COUNTRIES = ["US", "AE"];
+// Per je-currency-reference (Sales currency-by-market guide): US, UAE, and Canada
+// quote in USD; South Africa also quotes in USD (ZAR too weak for the luxury segment).
+var USD_COUNTRIES = ["US", "AE", "CA", "ZA"];
 
+// ── Rest of the World: regional pricing ───────────────────────────────────
+// RoW carries a REGION picker in the second dropdown. "Other" is the baseline
+// floor (all unlisted countries); the regions below price UP from it via a
+// per-region multiplier (see ROW_REGION_MULT). Grouped for Sales, tempered with
+// business logic where the data is too thin. To reprice a region, edit its
+// multiplier — nothing else.
 var ALL_DATA = {
   "AE": [
     {
       "district": "Other",
-      "price_elite_5": 101.89,
-      "price_elite_15": 81.51,
-      "price_elite_30": 57.06,
-      "price_elite_60": 48.91,
-      "price_elite_100": 40.75,
-      "price_elite_150": 36.68,
-      "price_elite_200": 32.6,
-      "price_elite_500": 27.71,
-      "price_elite_1000": 26.9,
-      "price_elite_1500": 26.08,
-      "price_elite_2000": 25.27,
-      "price_elite_2500": 24.45,
-      "price_elite_3000": 23.64,
-      "price_elite_3500": 22.82,
-      "price_elite_4000": 22.01,
-      "price_elite_4500": 21.19,
-      "price_elite_5000": 20.38,
-      "price_elp_3m": 327,
+      "price_elite_5": 71.32,
+      "price_elite_15": 57.06,
+      "price_elite_30": 39.94,
+      "price_elite_60": 34.24,
+      "price_elite_100": 28.52,
+      "price_elite_150": 25.68,
+      "price_elite_200": 22.82,
+      "price_elite_500": 19.4,
+      "price_elite_1000": 18.83,
+      "price_elite_1500": 18.26,
+      "price_elite_2000": 17.69,
+      "price_elite_2500": 17.11,
+      "price_elite_3000": 16.55,
+      "price_elite_3500": 15.97,
+      "price_elite_4000": 15.41,
+      "price_elite_4500": 14.83,
+      "price_elite_5000": 14.27,
+      "price_elp_3m": 229,
       "min_3m": 600
     }
   ],
@@ -1219,25 +1309,25 @@ var ALL_DATA = {
   ],
   "Other": [
     {
-      "district": "Rest of the World",
-      "price_elite_5": 68.83,
-      "price_elite_15": 55.06,
-      "price_elite_30": 38.54,
-      "price_elite_60": 33.04,
-      "price_elite_100": 27.53,
-      "price_elite_150": 24.78,
-      "price_elite_200": 22.03,
-      "price_elite_500": 18.72,
-      "price_elite_1000": 18.17,
-      "price_elite_1500": 17.62,
-      "price_elite_2000": 17.07,
-      "price_elite_2500": 16.52,
-      "price_elite_3000": 15.97,
-      "price_elite_3500": 15.42,
-      "price_elite_4000": 14.87,
-      "price_elite_4500": 14.32,
-      "price_elite_5000": 13.77,
-      "price_elp_3m": 289,
+      "district": "Other",
+      "price_elite_5": 37.86,
+      "price_elite_15": 30.28,
+      "price_elite_30": 21.20,
+      "price_elite_60": 18.17,
+      "price_elite_100": 15.14,
+      "price_elite_150": 13.63,
+      "price_elite_200": 12.12,
+      "price_elite_500": 10.30,
+      "price_elite_1000": 9.99,
+      "price_elite_1500": 9.69,
+      "price_elite_2000": 9.39,
+      "price_elite_2500": 9.09,
+      "price_elite_3000": 8.78,
+      "price_elite_3500": 8.48,
+      "price_elite_4000": 8.18,
+      "price_elite_4500": 7.88,
+      "price_elite_5000": 7.57,
+      "price_elp_3m": 159,
       "min_3m": 600
     }
   ],
@@ -1332,34 +1422,141 @@ var ALL_DATA = {
       "price_elp_3m": 1365,
       "min_3m": 600
     }
+  ],
+  "CA": [
+    {
+      "district": "Other",
+      "price_elite_5": 93.61,
+      "price_elite_15": 74.88,
+      "price_elite_30": 52.41,
+      "price_elite_60": 44.93,
+      "price_elite_100": 37.44,
+      "price_elite_150": 33.7,
+      "price_elite_200": 29.96,
+      "price_elite_500": 25.46,
+      "price_elite_1000": 24.71,
+      "price_elite_1500": 23.96,
+      "price_elite_2000": 23.22,
+      "price_elite_2500": 22.47,
+      "price_elite_3000": 21.72,
+      "price_elite_3500": 20.97,
+      "price_elite_4000": 20.22,
+      "price_elite_4500": 19.48,
+      "price_elite_5000": 18.73,
+      "price_elp_3m": 393,
+      "min_3m": 600
+    }
+  ],
+  "ZA": [
+    {
+      "district": "Cape Town",
+      "price_elite_5": 49.78,
+      "price_elite_15": 39.82,
+      "price_elite_30": 27.87,
+      "price_elite_60": 23.89,
+      "price_elite_100": 19.91,
+      "price_elite_150": 17.92,
+      "price_elite_200": 15.92,
+      "price_elite_500": 13.54,
+      "price_elite_1000": 13.14,
+      "price_elite_1500": 12.74,
+      "price_elite_2000": 12.34,
+      "price_elite_2500": 11.95,
+      "price_elite_3000": 11.55,
+      "price_elite_3500": 11.15,
+      "price_elite_4000": 10.75,
+      "price_elite_4500": 10.35,
+      "price_elite_5000": 9.95,
+      "price_elp_3m": 179,
+      "min_3m": 600
+    },
+    {
+      "district": "Other",
+      "price_elite_5": 39.81,
+      "price_elite_15": 31.85,
+      "price_elite_30": 22.29,
+      "price_elite_60": 19.11,
+      "price_elite_100": 15.92,
+      "price_elite_150": 14.33,
+      "price_elite_200": 12.74,
+      "price_elite_500": 10.83,
+      "price_elite_1000": 10.51,
+      "price_elite_1500": 10.19,
+      "price_elite_2000": 9.87,
+      "price_elite_2500": 9.55,
+      "price_elite_3000": 9.23,
+      "price_elite_3500": 8.92,
+      "price_elite_4000": 8.6,
+      "price_elite_4500": 8.28,
+      "price_elite_5000": 7.96,
+      "price_elp_3m": 144,
+      "min_3m": 600
+    }
   ]
 };
 
+// ── CURRENCY ASSIGNMENT ───────────────────────────────────────────────────
+// Per je-currency-reference (Sales currency-by-market guide), currency is NOT
+// uniform per country once Rest-of-World is broken into regions — some RoW
+// regions quote in USD, others in EUR. So every district row carries its own
+// explicit `currency` field, not just a country-level lookup. Default is EUR;
+// USD_COUNTRIES (whole-country) and ROW_USD_REGIONS (RoW sub-regions, defined
+// below) are the two places that flip a row to USD and convert its prices.
+var PRICE_FIELDS = [
+  "price_elite_5","price_elite_15","price_elite_30","price_elite_60","price_elite_100",
+  "price_elite_150","price_elite_200","price_elite_500","price_elite_1000","price_elite_1500",
+  "price_elite_2000","price_elite_2500","price_elite_3000","price_elite_3500","price_elite_4000",
+  "price_elite_4500","price_elite_5000"
+];
+Object.keys(ALL_DATA).forEach(function(cc){ ALL_DATA[cc].forEach(function(d){ d.currency = "EUR"; }); });
+
 // ── USD CONVERSION ────────────────────────────────────────────────────────
-// US and AE quotes are shown in USD. The prices above are computed by the
+// US, AE, CA, ZA quotes are shown in USD. The prices above are computed by the
 // BigQuery view from EUR-normalized listing values (price_eur), so they are
-// EUR amounts even for US/AE — they must be converted to USD before display.
-// Rate below is the mid-market EUR/USD rate as of Jul 2026; refresh this
-// alongside the normal data refresh (see je-price-calculator skill).
+// EUR amounts even for these markets — they must be converted to USD before
+// display. Rate below is the mid-market EUR/USD rate as of Jul 2026; refresh
+// this alongside the normal data refresh (see je-price-calculator skill).
 var EUR_USD_RATE = 1.14;
-(function applyUsdConversion() {
-  var priceFields = [
-    "price_elite_5","price_elite_15","price_elite_30","price_elite_60","price_elite_100",
-    "price_elite_150","price_elite_200","price_elite_500","price_elite_1000","price_elite_1500",
-    "price_elite_2000","price_elite_2500","price_elite_3000","price_elite_3500","price_elite_4000",
-    "price_elite_4500","price_elite_5000"
-  ];
-  USD_COUNTRIES.forEach(function(cc){
-    (ALL_DATA[cc] || []).forEach(function(d){
-      priceFields.forEach(function(f){
-        if (d[f] != null) d[f] = Math.round(d[f] * EUR_USD_RATE * 100) / 100;
-      });
-      if (d.price_elp_3m != null) d.price_elp_3m = Math.round(d.price_elp_3m * EUR_USD_RATE);
-      // USD floor is $200/month, same baseline as the EUR floor (€600 for 3 months = €200/month).
-      // Stored here as the 3-month total so it flows through the existing 2x0.9 / 4x0.8
-      // period multipliers exactly the same way the EUR floor does.
-      if (d.min_3m != null) d.min_3m = 600;
-    });
+function convertDistrictToUsd(d) {
+  PRICE_FIELDS.forEach(function(f){
+    if (d[f] != null) d[f] = Math.round(d[f] * EUR_USD_RATE * 100) / 100;
+  });
+  if (d.price_elp_3m != null) d.price_elp_3m = Math.round(d.price_elp_3m * EUR_USD_RATE);
+  // USD floor is $600, same flat baseline as the EUR floor — not rate-scaled.
+  if (d.min_3m != null) d.min_3m = 600;
+  d.currency = "USD";
+}
+USD_COUNTRIES.forEach(function(cc){ (ALL_DATA[cc] || []).forEach(convertDistrictToUsd); });
+
+// ── RoW region multipliers (sc-57847) ─────────────────────────────────────
+// RoW is grouped for Sales, not fit to raw data: most of these markets have thin
+// supply/liquidity, so the data is tempered with business logic (Timur). "Other"
+// is the FLOOR (and absorbs Eastern/Southern Europe — Croatia, Cyprus, Poland,
+// Balkans — which are oversupplied/low-liquidity). Every region prices UP from it.
+// Intended order (high→low): Western & Northern Europe ≈ Oceania > Asia & Middle
+// East ≈ Caribbean & Latin America > Other. W/N Europe anchored near Portugal
+// (below Spain-Málaga). Edit a value to reprice a region.
+var ROW_REGION_MULT = {
+  "Western & Northern Europe": 1.40,
+  "Oceania":                   1.40,
+  "Asia & Middle East":        1.15,
+  "Caribbean & Latin America": 1.15
+};
+// Per je-currency-reference: Oceania (AU/NZ) and Asia & Middle East / Caribbean
+// & Latin America (Singapore, HK, Japan, Middle East ex-UAE, Mexico, Brazil,
+// Caribbean, etc.) quote in USD. "Other" (Eastern/Southern Europe catch-all)
+// and Western & Northern Europe (Nordics, Benelux, etc.) stay EUR.
+var ROW_USD_REGIONS = ["Oceania", "Asia & Middle East", "Caribbean & Latin America"];
+(function buildRowRegions(){
+  var base = ALL_DATA["Other"][0]; // baseline "Other" (Rest of the World) row — stays EUR
+  Object.keys(ROW_REGION_MULT).forEach(function(region){
+    var m = ROW_REGION_MULT[region];
+    var row = { district: region, currency: "EUR" };
+    PRICE_FIELDS.forEach(function(f){ row[f] = Math.round(base[f] * m * 100) / 100; });
+    row.price_elp_3m = Math.round(base.price_elp_3m * m);
+    row.min_3m = base.min_3m;
+    if (ROW_USD_REGIONS.indexOf(region) !== -1) convertDistrictToUsd(row);
+    ALL_DATA["Other"].push(row);
   });
 })();
 
@@ -1725,12 +1922,12 @@ function getDistrictData(cc, loc) {
   return { data: ds[0], source: null };
 }
 
-// ── Floor-market tier logic ──────────────────────────────────────────────
-// Checks whether a GIVEN tier (its per-unit price × its listing count) would
-// already sit at or below the minimum 3-month price floor — the same basis
-// the floor-pricing banner uses. If tier N+1 hits the floor, tier N prices
-// identically at the 3-month mark, so tier N is redundant and gets disabled
-// in favor of tier N+1.
+// ── Tier display & floor greying ─────────────────────────────────────────
+// Every listing tier is shown (no merging). A tier whose 3-month Elite price
+// has bottomed out at the floor prices identically to every smaller tier — the
+// smaller ones are strictly worse (same price, fewer listings), so they are
+// greyed/disabled in the selector. The HIGHEST floored tier stays live: it's
+// the best value at the floor and the smallest bucket worth selling there.
 function tierHitsFloor(country, loc, tier) {
   if (!tier || tier.count <= 0) return false;
   var info = getDistrictData(country, loc);
@@ -1741,68 +1938,36 @@ function tierHitsFloor(country, loc, tier) {
   return raw3 <= mm;
 }
 
-// Tier idx is disabled when the next tier up already prices at the floor
-// (so idx would just be a duplicate of idx+1). Cascades naturally: if
-// idx+1 is itself disabled because idx+2 is floored, tierHitsFloor still
-// reports idx+1 as floored, so idx is disabled too.
-function isTierDisabled(country, loc, idx) {
-  if (idx <= 0 || idx >= TIERS.length - 1) return false;
-  return tierHitsFloor(country, loc, TIERS[idx + 1]);
+// Index of the highest visible tier still sitting at the floor (−1 if none).
+function highestFlooredIdx(country, loc) {
+  var _corp = document.body.classList.contains("corp-mode");
+  var hi = -1;
+  TIERS.forEach(function(t, j){
+    if (t.count <= 0) return;
+    if (t.corp && !_corp) return;
+    if (_corp && t.count > 0 && t.count < 100) return;
+    if (tierHitsFloor(country, loc, t)) hi = j;
+  });
+  return hi;
 }
 
-// Builds the list of options to actually show in the Listings dropdown for
-// this market. Runs of tiers that all price identically at the floor (e.g.
-// 1–5 and 6–15 both landing on the same floored total) are merged into one
-// bucket spanning the full range (e.g. "1–15") instead of showing each tier
-// separately with some disabled.
+// All buckets stay selectable; no tier is disabled or auto-bumped. A redundant
+// floored bucket is signalled instead by greying the displayed PRICES (see
+// render), not by disabling the bucket in the selector.
+function isTierDisabled(country, loc, idx) { return false; }
+
 function buildDisplayTiers(country, loc) {
   var _corp = document.body.classList.contains("corp-mode");
-  var visibleIdx = [];
+  var display = [];
   TIERS.forEach(function(t, j) {
     if (t.corp && !_corp) return;
     if (_corp && t.count > 0 && t.count < 100) return;
-    visibleIdx.push(j);
+    display.push({ idx: j, label: t.label });
   });
-
-  var display = [], i = 0;
-  while (i < visibleIdx.length) {
-    var startIdx = visibleIdx[i];
-    if (startIdx === 0) {
-      display.push({ idx: startIdx, label: TIERS[startIdx].label });
-      i++;
-      continue;
-    }
-    var j = i;
-    while (
-      j < visibleIdx.length - 1 &&
-      visibleIdx[j + 1] === visibleIdx[j] + 1 &&
-      isTierDisabled(country, loc, visibleIdx[j])
-    ) {
-      j++;
-    }
-    var endIdx = visibleIdx[j];
-    var startLabel = TIERS[startIdx].label.split("–")[0];
-    var endParts = TIERS[endIdx].label.split("–");
-    var endLabel = endParts.length > 1 ? endParts[1] : endParts[0];
-    var mergedLabel = (startIdx === endIdx) ? TIERS[endIdx].label : (startLabel + "–" + endLabel);
-    display.push({ idx: endIdx, label: mergedLabel });
-    i = j + 1;
-  }
   return display;
 }
 
-function bumpTierIfNeeded(r) {
-  var startIdx = r.tierIdx, guard = 0;
-  while (isTierDisabled(r.country, r.loc, r.tierIdx) && guard < TIERS.length) {
-    r.tierIdx = r.tierIdx + 1;
-    guard++;
-  }
-  // If the bump actually moved us to a different (merged) bucket, the ELP
-  // default should reflect that top bucket, not the smaller tier's default.
-  if (r.tierIdx !== startIdx) {
-    r.elps = Math.max(1, TIERS[r.tierIdx].elps);
-  }
-}
+function bumpTierIfNeeded(r) { /* no-op: every bucket stays selectable */ }
 
 function addRow(cc, loc, ti, elps) {
   var id = nextId++;
@@ -1837,10 +2002,12 @@ function renderRows() {
     var div = document.createElement("div");
     div.className = "config-row";
     var showX = rows.length > 1;
+    // For Rest of the World the second dropdown is a country picker, not a region one.
+    var locLabel = (r.country === 'Other') ? 'Region' : 'Region / Province';
     var h = '<div><label class="field-label">Country</label><select class="sel-country" data-id="' + r.id + '">';
-    ['FR','GR','IT','PT','ES','CH','AE','GB','US','Other'].forEach(function(k){ if(!COUNTRY_NAMES[k]) return; h += '<option value="' + k + '"' + (r.country===k?" selected":"") + '>' + COUNTRY_NAMES[k] + '</option>'; });
+    ['FR','GR','IT','PT','ES','CH','AE','GB','US','CA','ZA','Other'].forEach(function(k){ if(!COUNTRY_NAMES[k]) return; h += '<option value="' + k + '"' + (r.country===k?" selected":"") + '>' + COUNTRY_NAMES[k] + '</option>'; });
     h += '</select></div>';
-    h += '<div><label class="field-label">Region / Province</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
+    h += '<div><label class="field-label">' + locLabel + '</label><select class="sel-loc" data-id="' + r.id + '">' + buildDistrictOptions(r.country, r.loc) + '</select></div>';
     h += '<div><label class="field-label">Listings</label><select class="sel-tier" data-id="' + r.id + '">';
     var displayTiers = buildDisplayTiers(r.country, r.loc);
     displayTiers.forEach(function(dt){
@@ -1861,7 +2028,7 @@ function renderRows() {
   c.querySelectorAll(".sel-country").forEach(function(el){
     el.addEventListener("change", function(){
       var id = parseInt(this.getAttribute("data-id"));
-      rows.forEach(function(r){ if(r.id===id){ r.country=el.value; r.loc='__whole__'; } });
+      rows.forEach(function(r){ if(r.id===id){ r.country=el.value; r.loc = (el.value === 'Other') ? 'Other' : '__whole__'; } });
       renderRows(); render();
     });
   });
@@ -1907,10 +2074,11 @@ function render() {
     hasAny = true;
     var cnt = tier.count, re = r.elps, pe = d[tier.priceKey];
     // The ELP price is clamped into a fixed band. That band is defined in EUR terms —
-    // for USD countries it must be converted (and psych-rounded, for the same reason
+    // for USD rows it must be converted (and psych-rounded, for the same reason
     // the min_3m floor needed it) or the clamp silently pins USD quotes to EUR-scale
-    // numbers and swallows the whole currency correction.
-    var isUsdRow = USD_COUNTRIES.indexOf(r.country) !== -1;
+    // numbers and swallows the whole currency correction. Currency is read off the
+    // district itself (d.currency) rather than the country, since RoW mixes currencies.
+    var isUsdRow = d.currency === "USD";
     var elpLo = isUsdRow ? psych(420 * EUR_USD_RATE) : 420;
     var elpHi = isUsdRow ? psych(450 * EUR_USD_RATE) : 450;
     var elpClamped = Math.min(Math.max(d.price_elp_3m, elpLo), elpHi);
@@ -1919,7 +2087,7 @@ function render() {
     var _mergedEntry = _displayTiers.filter(function(dt){ return dt.idx === r.tierIdx; })[0];
     rowCalcs.push({
       country: r.country, loc: r.loc === "__whole__" ? "Whole Country" : r.loc,
-      source: info.source, tier: tier, mergedLabel: _mergedEntry ? _mergedEntry.label : tier.label, cnt: cnt, elps: re, min3m: d.min_3m || 0,
+      source: info.source, tier: tier, mergedLabel: _mergedEntry ? _mergedEntry.label : tier.label, cnt: cnt, elps: re, min3m: d.min_3m || 0, currency: d.currency,
       e3r: pe*cnt, e6r: pe*2*0.9*cnt, e12r: pe*4*0.8*cnt,
       elp3r: elpClamped*re, elp6r: elpClamped*2*0.9*re, elp12r: elpClamped*4*0.8*re,
     });
@@ -1945,12 +2113,26 @@ function render() {
     elp3+=psych(rc.elp3r); elp6+=psych(rc.elp6r); elp12+=psych(rc.elp12r);
   });
   var floored = [e3<=floor3, e6<=floor6, e12<=floor12];
+  // A selected bucket is "redundant" when it is floored AND a larger listing tier
+  // prices identically (also floored). When that's the case the displayed prices
+  // are greyed — you can size up to the largest same-price tier at no extra cost.
+  // The largest floored tier itself is NOT redundant, so its prices stay normal.
+  var anyRedundant = false, upsellToLabel = null, upsellRowId = null, upsellToIdx = null;
+  rows.forEach(function(r){
+    var t = TIERS[r.tierIdx];
+    if (!t || t.count <= 0) return;
+    var hi = highestFlooredIdx(r.country, r.loc);
+    if (tierHitsFloor(r.country, r.loc, t) && r.tierIdx < hi) {
+      anyRedundant = true;
+      if (upsellToLabel === null) { upsellToLabel = TIERS[hi].label; upsellRowId = r.id; upsellToIdx = hi; }
+    }
+  });
   var ep3=e3+elp3, ep6=e6+elp6, ep12=e12+elp12;
   var eS6=Math.max(e3*2-e6,0), eS12=Math.max(e3*4-e12,0);
   var epS6=Math.max(ep3*2-ep6,0), epS12=Math.max(ep3*4-ep12,0);
 
   var active = rowCalcs.filter(function(r){ return r; });
-  var allUSD = active.length > 0 && active.every(function(rc){ return USD_COUNTRIES.indexOf(rc.country) !== -1; });
+  var allUSD = active.length > 0 && active.every(function(rc){ return rc.currency === "USD"; });
   var sym = allUSD ? '$' : '€';
   var fmtC = function(v) { return sym + v.toLocaleString("en-US"); };
   var fmtDecC = function(v) { return sym + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ","); };
@@ -1973,15 +2155,7 @@ function render() {
 
   var corpMode = document.body.classList.contains("corp-mode");
 
-  // Floor pricing banner — shown once above the cards (instead of a badge on
-  // every period row) whenever the 3-month quote has hit this market's floor.
-  var floorBanner = '';
-  if (floored[0]) {
-    var bucketNames = active.map(function(rc){ return rc.mergedLabel; }).join(' + ');
-    floorBanner = '<div class="floor-banner"><span class="floor-banner-icon">⚠️</span><div><strong>Minimum price applied.</strong> Monthly price cannot go below ' + fmtC(Math.round(floor3/3)) + ', therefore ' + bucketNames + ' is the smallest possible listing bucket available.</div></div>';
-  }
-
-  var h = floorBanner + '<div class="pricing-grid">';
+  var h = '<div class="pricing-grid">';
 
   // Classic card (corporate mode only)
   if (corpMode) {
@@ -2013,6 +2187,7 @@ function render() {
     h += '<div class="price-per-listing">' + fmtDecC(p.eT/p.mo/totalListings) + ' / listing / month</div>';
     h += '</div>';
   });
+  if (anyRedundant) h += '<div class="card-overlay"><div class="card-overlay-inner"><span class="card-overlay-icon" data-sizeup-row="' + upsellRowId + '" data-sizeup-idx="' + upsellToIdx + '" role="button" tabindex="0" title="Size up to ' + upsellToLabel + '">&#8593;</span><div class="card-overlay-text">This is the <strong>' + fmtC(Math.round(floor3/3)) + ' / month</strong> minimum on Elite. The <strong>' + upsellToLabel + '</strong> listing tier costs the same \u2014 tap the arrow to size up at no extra cost.</div><div class="card-overlay-note">Elite Plus is still available \u2192</div></div></div>';
   h += '</div>';
 
   // Elite Plus card
@@ -2033,6 +2208,18 @@ function render() {
 
   h += '</div>';
   $o.innerHTML = h;
+
+  var upBtn = $o.querySelector('.card-overlay-icon[data-sizeup-row]');
+  if (upBtn) {
+    var doSizeUp = function(){
+      var rid = parseInt(upBtn.getAttribute('data-sizeup-row'));
+      var idx = parseInt(upBtn.getAttribute('data-sizeup-idx'));
+      rows.forEach(function(r){ if (r.id === rid) { r.tierIdx = idx; r.elps = Math.max(1, TIERS[idx].elps); } });
+      renderRows(); render();
+    };
+    upBtn.addEventListener('click', doSizeUp);
+    upBtn.addEventListener('keydown', function(e){ if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); doSizeUp(); } });
+  }
 }
 
 document.getElementById("btn-add").addEventListener("click", function(){ addRow(); });
